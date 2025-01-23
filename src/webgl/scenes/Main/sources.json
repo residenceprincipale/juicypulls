@@ -1,0 +1,42 @@
+[
+	{
+		"name": "environmentMapTexture",
+		"path": [
+			"textures/environmentMap/px.jpg",
+			"textures/environmentMap/nx.jpg",
+			"textures/environmentMap/py.jpg",
+			"textures/environmentMap/ny.jpg",
+			"textures/environmentMap/pz.jpg",
+			"textures/environmentMap/nz.jpg"
+		],
+		"colorSpace": "srgb"
+	},
+	{
+		"name": "grassColorTexture",
+		"path": "textures/dirt/color.ktx2"
+	},
+	{
+		"name": "grassNormalTexture",
+		"path": "textures/dirt/normal.jpg"
+	},
+	{
+		"name": "foxModel",
+		"path": "models/Fox/glTF/Fox.gltf"
+	},
+	{
+		"name": "foxAudio",
+		"path": "audio/fox.mp3"
+	},
+	{
+		"name": "clothModel",
+		"path": "models/cloth.glb"
+	},
+	{
+		"name": "clothPositionTexture",
+		"path": "textures/offsets.exr"
+	},
+	{
+		"name": "clothNormalTexture",
+		"path": "textures/normals.png"
+	}
+]
