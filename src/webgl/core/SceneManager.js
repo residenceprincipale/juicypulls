@@ -12,12 +12,18 @@ export default class SceneManager {
 			this.scenes[key.toLowerCase()] = this.scenes[key]
 		}
 
-		// get url params
-		this.urlParams = new URLSearchParams(window.location.search)
-		this.sceneName = this.urlParams.get('scene')
+		if (this.experience.canvas.attributes.getNamedItem('scene')) {
+			this.sceneName = this.experience.canvas.attributes.getNamedItem('scene').value
+		}
+
+		const urlParams = new URLSearchParams(window.location.search)
+		if (urlParams.has('scene')) {
+			this.sceneName = urlParams.get('scene')
+		}
 
 		// if scene name is not in the list, get the first one
 		if (!this.scenes[this.sceneName]) {
+			console.warn(`Scene ${this.sceneName} not found, using ${Object.keys(this.scenes)[0]} instead`)
 			this.sceneName = Object.keys(this.scenes)[0]
 		}
 

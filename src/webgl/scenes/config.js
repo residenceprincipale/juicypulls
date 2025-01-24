@@ -1,7 +1,7 @@
 import Main from './Main'
-import SingleCube from './SingleCube.js'
+import Score from './Score'
 
 export default {
 	main: Main,
-	'single-cube': SingleCube,
+	score: Score,
 }
