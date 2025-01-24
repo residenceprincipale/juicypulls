@@ -24,6 +24,10 @@
 		"path": "models/Fox/glTF/Fox.gltf"
 	},
 	{
+		"name": "casinoModel",
+		"path": "models/roues-casino.glb"
+	},
+	{
 		"name": "foxAudio",
 		"path": "audio/fox.mp3"
 	},

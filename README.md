@@ -5,8 +5,8 @@ This is a starter template for threejs with vite based on Bruno Simon's starter.
 ## Usage
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ## Stack
