@@ -51,16 +51,15 @@ export default class Cube {
 			if (!child.isMesh) return
 			if (child.name === 'machine') {
 				// Main machine model
-			} else {
+			} else if (child.name.includes('roue')) {
 				child.material = this.material
 				this.wheels.push(child) // Push each wheel mesh into the wheels array
+			} else if (child.name.includes('led')) {
+				child.material = new MeshBasicMaterial({ color: 0xffffff })
+			} else if (child.name.includes('base')) {
+				child.material = new MeshBasicMaterial({ color: 0x000000 })
 			}
 		})
-
-		console.log(this.wheels)
-
-		// reverse order of wheels
-		this.wheels.reverse()
 
 		this.wheels.forEach((wheel, index) => {
 			//offset to center o ssymbol
@@ -139,7 +138,6 @@ export default class Cube {
 	spinWheels() {
 		const segmentOffset = 0; // Adjust this value if needed
 
-		// Step 1: Randomly select a segment for each wheel
 		this.results = this.wheels.map(() => Math.floor(Math.random() * this.segments));
 
 		console.log("Spin Result:", this.results);
@@ -152,31 +150,22 @@ export default class Cube {
 		this.wheels.forEach((wheel, index) => {
 			gsap.killTweensOf(wheel.rotation);
 
-			// Step 3: Get the random segment for this wheel
 			const randomSegment = this.results[index];
+			const segmentAngle = 360 / this.segments;
 
-			// Step 4: Calculate the stop angle (aligned to center)
-			const segmentAngle = 360 / this.segments; // 60° per segment
-			const stopAngle = randomSegment * segmentAngle;
+			const fullRotations = 5; // for more realism
 
-			// Step 5: Add full spins for realism
-			const fullRotations = 5;
+			const rotationDegrees = (wheel.rotation.x * 180) / Math.PI;
+			const previousRotationDegrees = rotationDegrees % 360;
+			const rotationToStopAngle = randomSegment * segmentAngle - previousRotationDegrees + segmentAngle / 2; // rotation needed to go from previous to new result
 
-			// Step 6: Convert to degrees
-			const previousRotationRadians = wheel.rotation.x % (Math.PI * 2); // Ensure alignment with segments
-			const previousIndex = Math.floor(previousRotationRadians / (Math.PI / 3));
-			const shortestStopAngle = (randomSegment - previousIndex) * segmentAngle;
+			const targetRotation = rotationDegrees + (fullRotations * 360 + rotationToStopAngle);
 
-			const currentRotationDegrees = (wheel.rotation.x * 180) / Math.PI;
-			const targetRotation = currentRotationDegrees + (fullRotations * 360 + shortestStopAngle);
-
-			// Step 7: Animate the wheel
 			gsap.to(wheel.rotation, {
-				x: (targetRotation * Math.PI) / 180, // Convert back to radians
+				x: (targetRotation * Math.PI) / 180, // Convert to radians
 				duration: 3 + index * 0.3, // Stagger effect
 				ease: 'power4.out',
 				onComplete: () => {
-					console.log(`Wheel ${index + 1} stopped at segment ${randomSegment}`);
 				},
 			});
 		});
