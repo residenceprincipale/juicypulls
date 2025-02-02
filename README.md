@@ -24,3 +24,8 @@ pnpm run dev
 - `Audio management`: Add audios and positional audios with a complete debug panel
 - `Input management`: Minimal input management
 - `addObjectDebug or addMaterialDebug`: Auto debug parameters of a mesh or a material
+
+
+## Features to come I hope
+
+- Debounce the 3d objects interaction click

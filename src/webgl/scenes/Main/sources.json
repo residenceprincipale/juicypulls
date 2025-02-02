@@ -20,6 +20,10 @@
 		"path": "textures/dirt/normal.jpg"
 	},
 	{
+		"name": "wheelTexture",
+		"path": "textures/roue.jpg"
+	},
+	{
 		"name": "foxModel",
 		"path": "models/Fox/glTF/Fox.gltf"
 	},

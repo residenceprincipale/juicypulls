@@ -1,7 +1,8 @@
 import Experience from 'core/Experience.js'
 import fragmentShader from './fragmentShader.frag'
 import vertexShader from './vertexShader.vert'
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3 } from 'three'
+import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial } from 'three'
+import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 
 export default class Cube {
@@ -15,49 +16,170 @@ export default class Cube {
 
 		this.setMaterial()
 
-		this.resource = this.resources.items.foxModel
+		this.resource = this.resources.items.casinoModel
 
 		this.setModel()
+
+		this.setInteraction()
+
+		this.numWheels = 5;
+		this.segments = 6;
+		this.results = new Array(5).fill(0);
+		this.customCombinations = new Map(); // Custom sequences with their points
+		this.basePoints = {
+			"Quintuple": 50,
+			"Carré": 40,
+			"Full House": 35,
+			"Brelan": 25,
+			"Double Paire": 20,
+			"Paire": 10,
+			"Carte haute": 5
+		};
 
 		if (this.debug.active) this.setDebug()
 	}
 
 	setModel() {
 		this.model = this.resource.scene
-		this.model.scale.set(0.1, 0.1, 0.1)
 		this.model.name = 'casino machine'
 		this.scene.add(this.model)
 
+		// Array to store wheel meshes
+		this.wheels = []
+
 		this.model.traverse((child) => {
-			if (child instanceof Mesh) {
-				child.castShadow = true
+			if (!child.isMesh) return
+			if (child.name === 'machine') {
+				// Main machine model
+			} else {
+				child.material = this.material
+				this.wheels.push(child) // Push each wheel mesh into the wheels array
 			}
+		})
+
+		console.log(this.wheels)
+
+		// reverse order of wheels
+		this.wheels.reverse()
+
+		this.wheels.forEach((wheel, index) => {
+			//offset to center o ssymbol
+			const offset = (Math.PI / 3) / 2
+			wheel.rotation.x = offset
 		})
 	}
 
 	setMaterial() {
-		this.material = new ShaderMaterial({
-			fragmentShader,
-			vertexShader,
-			uniforms: {
-				uOpacity: { value: 1 },
-			},
-		})
+		// Material for the wheels
+		this.material = new MeshBasicMaterial({ map: this.resources.items.wheelTexture })
 	}
 
-	setMesh() {
-		this.mesh = new Mesh(this.geometry, this.material)
-		this.mesh.position.copy(this.position)
-		this.mesh.name = 'cube'
-		this.scene.add(this.mesh)
-
-		if (this.debug.active) addObjectDebug(this.experience.debug.ui, this.mesh)
-	}
-
+	// Optional: Add an interaction to trigger the spin
 	setInteraction() {
-		this.experience.interactionManager.addInteractiveObject(this.mesh)
-		this.mesh.addEventListener('click', () => {
-			console.log('cube click')
+		this.experience.interactionManager.addInteractiveObject(this.model)
+		this.model.addEventListener('click', () => {
+			// debounce
+			if (this.isCliked) return
+			this.isCliked = true
+			this.spinWheels()
+			gsap.delayedCall(0.5, () => {
+				this.isCliked = false
+			})
 		})
 	}
+
+	/**
+	* Combinaison Detection Logic
+	*/
+	addCustomCombination(sequence, points) {
+		const sortedSeq = sequence.sort((a, b) => a - b).join(",");
+		this.customCombinations.set(sortedSeq, points);
+	}
+
+	/** Count occurrences of each number */
+	countOccurrences() {
+		return this.results.reduce((acc, num) => {
+			acc[num] = (acc[num] || 0) + 1;
+			return acc;
+		}, {});
+	}
+
+	/** Checks for a custom sequence */
+	isCustomSequence() {
+		const sortedResults = [...new Set(this.results)].sort((a, b) => a - b).join(",");
+		return this.customCombinations.get(sortedResults) || null;
+	}
+
+	/** Determines the best combination */
+	getCombination() {
+		const counts = Object.values(this.countOccurrences()).sort((a, b) => b - a);
+
+		// Check for a custom sequence
+		const customPoints = this.isCustomSequence();
+		if (customPoints !== null) return `Custom Combination (Worth ${customPoints} Points)`;
+
+		if (counts[0] === 5) return "Quintuple (Five of a Kind)";
+		if (counts[0] === 4) return "Carré (Four of a Kind)";
+		if (counts[0] === 3 && counts[1] === 2) return "Full House";
+		if (counts[0] === 3) return "Brelan (Three of a Kind)";
+		if (counts[0] === 2 && counts[1] === 2) return "Double Paire (Two Pair)";
+		if (counts[0] === 2) return "Paire (One Pair)";
+
+		return "Carte haute (High Card)";
+	}
+
+	/** Get points based on combination */
+	getPoints(combination) {
+		if (combination.includes("Custom Combination")) {
+			return parseInt(combination.match(/\d+/)[0]); // Extract points from the name
+		}
+		return this.basePoints[combination] || 0;
+	}
+
+	spinWheels() {
+		const segmentOffset = 0; // Adjust this value if needed
+
+		// Step 1: Randomly select a segment for each wheel
+		this.results = this.wheels.map(() => Math.floor(Math.random() * this.segments));
+
+		console.log("Spin Result:", this.results);
+		const combination = this.getCombination();
+		const points = this.getPoints(combination);
+
+		console.log(`Combination: ${combination}`);
+		console.log(`Points: ${points}`);
+
+		this.wheels.forEach((wheel, index) => {
+			gsap.killTweensOf(wheel.rotation);
+
+			// Step 3: Get the random segment for this wheel
+			const randomSegment = this.results[index];
+
+			// Step 4: Calculate the stop angle (aligned to center)
+			const segmentAngle = 360 / this.segments; // 60° per segment
+			const stopAngle = randomSegment * segmentAngle;
+
+			// Step 5: Add full spins for realism
+			const fullRotations = 5;
+
+			// Step 6: Convert to degrees
+			const previousRotationRadians = wheel.rotation.x % (Math.PI * 2); // Ensure alignment with segments
+			const previousIndex = Math.floor(previousRotationRadians / (Math.PI / 3));
+			const shortestStopAngle = (randomSegment - previousIndex) * segmentAngle;
+
+			const currentRotationDegrees = (wheel.rotation.x * 180) / Math.PI;
+			const targetRotation = currentRotationDegrees + (fullRotations * 360 + shortestStopAngle);
+
+			// Step 7: Animate the wheel
+			gsap.to(wheel.rotation, {
+				x: (targetRotation * Math.PI) / 180, // Convert back to radians
+				duration: 3 + index * 0.3, // Stagger effect
+				ease: 'power4.out',
+				onComplete: () => {
+					console.log(`Wheel ${index + 1} stopped at segment ${randomSegment}`);
+				},
+			});
+		});
+	}
+
 }
