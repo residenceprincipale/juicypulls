@@ -24,12 +24,32 @@
 		"path": "textures/roue.jpg"
 	},
 	{
+		"name": "casinoRoughness",
+		"path": "textures/casinoRoughness.png"
+	},
+	{
+		"name": "casinoAO",
+		"path": "textures/casinoAO.png"
+	},
+	{
+		"name": "roulettesAO",
+		"path": "textures/roulettesAO.png"
+	},
+	{
+		"name": "glassMatcap",
+		"path": "textures/glassMatcap.jpg"
+	},
+	{
+		"name": "keysTexture",
+		"path": "textures/keys.jpg"
+	},
+	{
 		"name": "foxModel",
 		"path": "models/Fox/glTF/Fox.gltf"
 	},
 	{
 		"name": "casinoModel",
-		"path": "models/roues-casino.glb"
+		"path": "models/roues-casino-v2.glb"
 	},
 	{
 		"name": "foxAudio",

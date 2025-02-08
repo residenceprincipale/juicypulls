@@ -29,3 +29,8 @@ pnpm run dev
 ## Features to come I hope
 
 - Debounce the 3d objects interaction click
+- Afficher quelque chose quand ya une erreur de path de chargement de texture ? sinon c'est penible de deviner
+- Flip Y activé de base pour les textures, ou au moins une option dans le source.json
+- Ecrire un doc je t'en supplie
+- "debug.ui" je capte pas trop debug tout court ou debug.panel plutot pour ajouter les folders ça me parrait plus clair
+- La fonction addDebugMaterial() pourrais avoir la possibilité de passer juste un string qui créer le folder avec le nom en question ou passer le folder directement comme c'est deja le cas
