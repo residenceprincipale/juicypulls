@@ -1,7 +1,7 @@
 import Experience from 'core/Experience.js'
 import fragmentShader from './fragmentShader.frag'
 import vertexShader from './vertexShader.vert'
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping } from 'three'
+import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -33,6 +33,7 @@ export default class Cube {
 		//reversed version
 		this.wheelEmojis = ["❤️", "7️⃣", "🍏", "🔺", "🍊", "🍌"];
 
+		this.setLight()
 		this.setMaterial()
 		this.setRouletteMaterial()
 
@@ -81,10 +82,10 @@ export default class Cube {
 			} else if (child.name.includes('ROULETTE')) {
 				child.material = this.rouletteMaterial;
 				this.leds.push(child)
-			} else if (child.name.includes('base')) {
-				child.material = new MeshBasicMaterial({ color: 0x000000 })
+			} else if (child.name.includes('SEPARATEUR')) {
+				child.material = new MeshMatcapMaterial({ matcap: this.resources.items.goldMatcap })
 			} else if (child.name.includes('keyplanes')) {
-				child.material = new MeshBasicMaterial({ map: keyTexture })
+				child.material = new MeshBasicMaterial({ color: new Color(0x000000), map: keyTexture })
 			}
 		})
 
@@ -98,7 +99,26 @@ export default class Cube {
 		// Material for the wheels
 		const texture = this.resources.items.casinoRoughness
 		texture.flipY = false;
-		this.material = new MeshBasicMaterial({ map: this.resources.items.casinoRoughness })
+
+		this.material = new MeshBasicMaterial({ color: 0x333333, map: this.resources.items.casinoRoughness })
+	}
+
+	setLight() {
+		this.sunLight = new DirectionalLight('#ffffff', 2)
+		// this.sunLight.castShadow = true
+		// this.sunLight.shadow.camera.far = 15
+		// this.sunLight.shadow.mapSize.set(1024, 1024)
+		// this.sunLight.shadow.normalBias = 0.05
+		this.sunLight.position.set(0, 1.7, 1.5)
+		this.sunLight.name = 'sunLight'
+		this.scene.add(this.sunLight)
+
+		this.sunLight.target.position.set(0, 1, 0)
+
+		// Debug
+		if (this.debug.active) {
+			const debugFolder = addObjectDebug(this.debug.ui, this.sunLight)
+		}
 	}
 
 	setRouletteMaterial() {

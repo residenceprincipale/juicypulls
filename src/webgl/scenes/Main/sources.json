@@ -40,6 +40,10 @@
 		"path": "textures/glassMatcap.jpg"
 	},
 	{
+		"name": "goldMatcap",
+		"path": "textures/goldMatcap.jpeg"
+	},
+	{
 		"name": "keysTexture",
 		"path": "textures/keys.jpg"
 	},
