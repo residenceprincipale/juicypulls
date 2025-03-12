@@ -21,7 +21,7 @@
 	},
 	{
 		"name": "wheelTexture",
-		"path": "textures/roue.jpg"
+		"path": "textures/roue-3.jpg"
 	},
 	{
 		"name": "casinoRoughness",
@@ -53,7 +53,7 @@
 	},
 	{
 		"name": "casinoModel",
-		"path": "models/roues-casino-v2.glb"
+		"path": "models/roues-casino-v3.glb"
 	},
 	{
 		"name": "foxAudio",

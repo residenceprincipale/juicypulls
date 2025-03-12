@@ -1,7 +1,7 @@
 import Experience from 'core/Experience.js'
 import fragmentShader from './fragmentShader.frag'
 import vertexShader from './vertexShader.vert'
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight } from 'three'
+import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -16,7 +16,7 @@ export default class Cube {
 		this.position = _position
 
 		this.numWheels = 5;
-		this.segments = 6;
+		this.segments = 5;
 		this.results = new Array(5).fill(0);
 		this.customCombinations = new Map(); // Custom sequences with their points
 		this.basePoints = {
@@ -31,7 +31,36 @@ export default class Cube {
 		// de bas en haut sur la texture (depend des uvs de la roulette et de la base rotation offset)
 		// this.wheelEmojis = ["🍌", "🍊", "🔺", "🍏", "7️⃣", "❤️"];
 		//reversed version
-		this.wheelEmojis = ["❤️", "7️⃣", "🍏", "🔺", "🍊", "🍌"];
+		this.wheelEmojis = ["", "7️⃣", "🍏", "🔺", "🍊", "🍌"];
+		this.wheelEmojis = ["🔴", "👑", "💎", "💀", "👁️"];
+		// reverse the array
+		this.wheelEmojis = this.wheelEmojis.reverse();
+
+		this.symbolValues = {
+			"jeton": 100, // Jeton
+			"couronne": 50,  // Couronne
+			"diamant": 0,   // Diamant
+			"crane": "malus", // Crâne
+			"oeuil": "special" // Œil
+		};
+		this.symbolNames = [
+			'oeuil',
+			'crane',
+			'diamant',
+			'couronne',
+			'jeton',
+		]
+
+		/**
+		* Custom Combination Points
+		*/
+		this.combinationPoints = {
+			"5jeton": 1000,
+			"5couronne": 600,
+			"unique": 1500 // Suite complète (différent symbole sur chaque roulette)
+		};
+
+
 
 		this.setLight()
 		this.setMaterial()
@@ -77,12 +106,12 @@ export default class Cube {
 
 		this.model.traverse((child) => {
 			if (!child.isMesh) return
-			if (child.name.includes('SLUT')) {
+			if (child.name.includes('slut-base')) {
 				child.material = this.material
-			} else if (child.name.includes('ROULETTE')) {
+			} else if (child.name.includes('wheels')) {
 				child.material = this.rouletteMaterial;
 				this.leds.push(child)
-			} else if (child.name.includes('SEPARATEUR')) {
+			} else if (child.name.includes('gold')) {
 				child.material = new MeshMatcapMaterial({ matcap: this.resources.items.goldMatcap })
 			} else if (child.name.includes('keyplanes')) {
 				child.material = new MeshBasicMaterial({ color: new Color(0x000000), map: keyTexture })
@@ -100,15 +129,11 @@ export default class Cube {
 		const texture = this.resources.items.casinoRoughness
 		texture.flipY = false;
 
-		this.material = new MeshBasicMaterial({ color: 0x333333, map: this.resources.items.casinoRoughness })
+		this.material = new MeshPhongMaterial({ color: 0x333333, map: this.resources.items.casinoRoughness })
 	}
 
 	setLight() {
-		this.sunLight = new DirectionalLight('#ffffff', 2)
-		// this.sunLight.castShadow = true
-		// this.sunLight.shadow.camera.far = 15
-		// this.sunLight.shadow.mapSize.set(1024, 1024)
-		// this.sunLight.shadow.normalBias = 0.05
+		this.sunLight = new DirectionalLight('#ffffff', 2.9)
 		this.sunLight.position.set(0, 1.7, 1.5)
 		this.sunLight.name = 'sunLight'
 		this.scene.add(this.sunLight)
@@ -140,9 +165,9 @@ export default class Cube {
 				uMatcapIntensity: { value: 0.2 },
 				uRoughness: { value: 0.5 },
 				uWheelsSpacing: { value: 4.8 },
-				uWheelsOffset: { value: 0.78 },
-				uAOIntensity: { value: 1 },
-				uBaseRotationOffset: { value: - (1.0 / this.segments) * 2 },
+				uWheelsOffset: { value: 0.76 },
+				uAOIntensity: { value: 0.30 },
+				uBaseRotationOffset: { value: -0.843 },
 				uRotation0: { value: 0 },
 				uRotation1: { value: 0 },
 				uRotation2: { value: 0 },
@@ -174,44 +199,26 @@ export default class Cube {
 		this.customCombinations.set(sortedSeq, points);
 	}
 
-	/** Count occurrences of each number */
 	countOccurrences() {
-		return this.results.reduce((acc, num) => {
-			acc[num] = (acc[num] || 0) + 1;
+		const counts = this.symbolNames.reduce((acc, symbol) => {
+			acc[symbol] = 0; // Initialize all symbols with zero count
 			return acc;
 		}, {});
+
+		this.results.forEach(index => {
+			const symbolName = this.symbolNames[index];
+			counts[symbolName] = (counts[symbolName] || 0) + 1;
+		});
+
+		console.log('counts', counts)
+
+		return counts;
 	}
 
 	/** Checks for a custom sequence */
 	isCustomSequence() {
 		const sortedResults = [...new Set(this.results)].sort((a, b) => a - b).join(",");
 		return this.customCombinations.get(sortedResults) || null;
-	}
-
-	/** Determines the best combination */
-	getCombination() {
-		const counts = Object.values(this.countOccurrences()).sort((a, b) => b - a);
-
-		// Check for a custom sequence
-		const customPoints = this.isCustomSequence();
-		if (customPoints !== null) return `Custom Combination (Worth ${customPoints} Points)`;
-
-		if (counts[0] === 5) return "Quintuple";
-		if (counts[0] === 4) return "Carré";
-		if (counts[0] === 3 && counts[1] === 2) return "Full House";
-		if (counts[0] === 3) return "Brelan";
-		if (counts[0] === 2 && counts[1] === 2) return "Double Paire";
-		if (counts[0] === 2) return "Paire";
-
-		return "Carte haute (High Card)";
-	}
-
-	/** Get points based on combination */
-	getPoints(combination) {
-		if (combination.includes("Custom Combination")) {
-			return parseInt(combination.match(/\d+/)[0]); // Extract points from the name
-		}
-		return this.basePoints[combination] || 0;
 	}
 
 	lockWheel(index) {
@@ -226,47 +233,100 @@ export default class Cube {
 		}
 	}
 
-	spinWheels() {
-		const segmentOffset = 0; // Adjust this value if needed
+	/**
+	* Determines the best combination and applies malus effects
+	*/
+	getCombination() {
+		const counts = this.countOccurrences();
+		let points = 0;
+		let craniumCount = counts["crane"] || 0;
+		console.log("Cranium Count:", craniumCount);
+		let eyeCount = counts["oeuil"] || 0;
+		let uniqueSymbols = Object.keys(counts).filter(symbol => counts[symbol] > 0).length; // Fix unique detection
 
-		const previousResults = this.results;
+		// Check for special cases first
+		if (craniumCount >= 3) return { name: "Farkle", points: 0, farkle: true };
+		if (craniumCount === 2) points -= 30;
+		if (craniumCount === 1) points -= 10;
 
-		this.results = this.wheels.map((wheel, index) => {
-			if (wheel.isLocked) return previousResults[index]; // Skip locked wheels
-			return Math.floor(Math.random() * this.segments);
+		// Check for unique symbol jackpot
+		if (uniqueSymbols === this.wheels.length) {
+			return { name: "Suite Complète", points: this.combinationPoints["unique"] };
+		}
+
+		// Count normal points for jetons and couronnes
+		points += (counts["jeton"] || 0) * this.symbolValues["jeton"];
+		points += (counts["couronne"] || 0) * this.symbolValues["couronne"];
+
+		console.log("Points:", points);
+		console.log(counts);
+
+		// Check for 5-symbol special jackpot
+		["jeton", "couronne"].forEach(symbol => {
+			let comboKey = `5${symbol}`;
+			if (counts[symbol] === 5 && this.combinationPoints[comboKey]) {
+				points = this.combinationPoints[comboKey]; // Override with jackpot
+				console.log("Jackpot:", points);
+			}
 		});
 
-		console.log("Spin Result :", this.results); // Original array
-		console.log("Spin Result :", this.results.map(index => this.wheelEmojis[index]).join(" "));
+		// Handle special Eye mechanic
+		if (eyeCount >= 3) {
+			return { name: "Special Roulette", points: 0, special: true };
+		}
 
+		return { name: points > 0 ? "Valid Combination" : "Farkle", points, farkle: points === 0 };
+	}
+
+	/**
+	* Get points based on the combination detected
+	*/
+	getPoints() {
 		const combination = this.getCombination();
-		const points = this.getPoints(combination);
+		return combination.points;
+	}
 
-		console.log(`Combination: ${combination}`);
-		console.log(`Points: ${points}`);
+	/**
+	* Spins the wheels and evaluates the results
+	*/
+	spinWheels() {
+		const previousResults = this.results;
+		this.results = this.wheels.map((wheel, index) => {
+			if (wheel.isLocked) return previousResults[index];
+			return Math.floor(Math.random() * this.wheelEmojis.length);
+		});
+
+		console.log("Spin Result:", this.results.map(index => this.wheelEmojis[index]).join(" "));
+
+		const { name, points, farkle, special } = this.getCombination();
+
+		if (farkle) {
+			console.log("Farkle! Score of the round is lost.");
+		} else {
+			console.log(`Combination: ${name}`);
+			console.log(`Points: ${points}`);
+		}
+
+		if (special) {
+			console.log("Triggering Special Roulette Mechanics!");
+		}
 
 		this.wheels.forEach((wheel, index) => {
 			gsap.killTweensOf(wheel.rotation);
-
-			if (wheel.isLocked) return; // Skip locked wheels
+			if (wheel.isLocked) return;
 
 			const randomSegment = this.results[index];
-			const segmentAngle = 1 / this.segments;
-
-			const fullRotations = 5; // for more realism
-
+			const segmentAngle = 1 / this.wheelEmojis.length;
+			const fullRotations = 5;
 			const rotationDegrees = wheel.rotation.value;
 			const previousRotationDegrees = rotationDegrees % 1;
-			const rotationToStopAngle = randomSegment * segmentAngle - previousRotationDegrees; // rotation needed to go from previous to new result
-
+			const rotationToStopAngle = randomSegment * segmentAngle - previousRotationDegrees;
 			const targetRotation = rotationDegrees + (fullRotations + rotationToStopAngle);
 
 			gsap.to(wheel.rotation, {
-				value: targetRotation, // Convert to radians
-				duration: 3 + index * 0.3, // Stagger effect
-				ease: 'power4.out',
-				onComplete: () => {
-				},
+				value: targetRotation,
+				duration: 3 + index * 0.3,
+				ease: 'power4.out'
 			});
 		});
 	}

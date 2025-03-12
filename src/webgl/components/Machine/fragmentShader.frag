@@ -49,7 +49,10 @@ vec2 rotateUV(vec2 uv, float rotation)
 void main()  {
 	// AO
 	float ao = 1.0;
-	vec3 aoMap = texture2D( uAoTexture, vUv ).rgb;
+	vec2 vUvAo = vUv;
+	vUvAo.x *= 0.8;
+	vUvAo.x += 0.06;
+	vec3 aoMap = texture2D( uAoTexture, vUvAo ).rgb;
 	ao *= (aoMap.g - 1.0) * uAOIntensity + 1.0;
 
 	vec3 aoColor = vec3(1.0);
