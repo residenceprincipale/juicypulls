@@ -56,6 +56,10 @@
 		"path": "models/roues-casino-v3.glb"
 	},
 	{
+		"name": "physicalPartsModel",
+		"path": "models/physical-parts.glb"
+	},
+	{
 		"name": "foxAudio",
 		"path": "audio/fox.mp3"
 	},

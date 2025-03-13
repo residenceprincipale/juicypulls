@@ -6,7 +6,7 @@ import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 
-export default class Cube {
+export default class Machine {
 	constructor(_position = new Vector3(0, 0, 0)) {
 		this.experience = new Experience()
 		this.scene = this.experience.scene
@@ -70,7 +70,7 @@ export default class Cube {
 
 		this.setModel()
 
-		this.setInteraction()
+		// this.setInteraction()
 
 
 		this.ledMaterials = [
@@ -180,7 +180,7 @@ export default class Cube {
 	// Optional: Add an interaction to trigger the spin
 	setInteraction() {
 		this.experience.interactionManager.addInteractiveObject(this.model)
-		this.model.addEventListener('click', () => {
+		this.model.addEventListener('click', (e) => {
 			// debounce
 			if (this.isCliked) return
 			this.isCliked = true
@@ -210,8 +210,6 @@ export default class Cube {
 			counts[symbolName] = (counts[symbolName] || 0) + 1;
 		});
 
-		console.log('counts', counts)
-
 		return counts;
 	}
 
@@ -226,10 +224,8 @@ export default class Cube {
 
 		if (!this.wheels[index].isLocked) {
 			this.wheels[index].isLocked = true;
-			this.leds[index].material = this.ledMaterials[index];
 		} else {
 			this.wheels[index].isLocked = false;
-			this.leds[index].material = new MeshBasicMaterial({ color: 0xffffff });
 		}
 	}
 
@@ -240,7 +236,6 @@ export default class Cube {
 		const counts = this.countOccurrences();
 		let points = 0;
 		let craniumCount = counts["crane"] || 0;
-		console.log("Cranium Count:", craniumCount);
 		let eyeCount = counts["oeuil"] || 0;
 		let uniqueSymbols = Object.keys(counts).filter(symbol => counts[symbol] > 0).length; // Fix unique detection
 
@@ -258,15 +253,11 @@ export default class Cube {
 		points += (counts["jeton"] || 0) * this.symbolValues["jeton"];
 		points += (counts["couronne"] || 0) * this.symbolValues["couronne"];
 
-		console.log("Points:", points);
-		console.log(counts);
-
 		// Check for 5-symbol special jackpot
 		["jeton", "couronne"].forEach(symbol => {
 			let comboKey = `5${symbol}`;
 			if (counts[symbol] === 5 && this.combinationPoints[comboKey]) {
 				points = this.combinationPoints[comboKey]; // Override with jackpot
-				console.log("Jackpot:", points);
 			}
 		});
 

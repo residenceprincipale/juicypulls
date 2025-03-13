@@ -3,10 +3,11 @@ import Environment from 'components/Environment.js'
 import Floor from 'components/Floor.js'
 import Fox from 'components/Fox/Fox.js'
 import Cube from 'components/Cube/Cube.js'
-import Machine from 'components/Machine/Machine.js'
+import Machine from '@/webgl/components/Machine/index.js'
 import VAT from 'components/VAT'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
+import PhysicalMachineParts from '@/webgl/components/PhysicalMachineParts/index.js'
 
 export default class Main {
 	constructor() {
@@ -16,17 +17,18 @@ export default class Main {
 
 		// Wait for resources
 		this.scene.resources.on('ready', () => {
-			// Setup
-			// this.floor = new Floor()
-			// this.fox = new Fox()
-			this.cube = new Machine()
-			// this.environment = new Environment()
-			// this.vat = new VAT()
+
+			this.machine = new Machine()
+
+			if (window.location.hash === "#debug-dev") {
+
+				console.log("Debug physical parts enabled!");
+				this.physicalMachineParts = new PhysicalMachineParts()
+			}
 		})
 	}
 
 	update() {
 		if (this.fox) this.fox.update()
-		if (this.vat) this.vat.update()
 	}
 }

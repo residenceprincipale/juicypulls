@@ -8,7 +8,7 @@ import Experience from 'core/Experience.js'
 export default class Debug {
 	constructor() {
 		this.experience = new Experience()
-		this.active = window.location.hash === '#debug'
+		this.active = window.location.hash.includes('#debug')
 
 		if (this.active) {
 			this.ui = new Pane({ title: '⚙️ Debug' })
@@ -93,7 +93,7 @@ export default class Debug {
 		titleElement.childNodes.forEach((child) => {
 			child.style.pointerEvents = 'none'
 		})
-		let move = () => {}
+		let move = () => { }
 		let hasMoved = true
 		const handleMouseDown = (event) => {
 			titleElement.style.cursor = 'grabbing'
