@@ -21,6 +21,7 @@ export default class Main {
 			this.machine = new Machine()
 
 			if (window.location.hash === "#debug-dev") {
+				this.machine.isDebugDev = true;
 
 				console.log("Debug physical parts enabled!");
 				this.physicalMachineParts = new PhysicalMachineParts()
@@ -30,5 +31,6 @@ export default class Main {
 
 	update() {
 		if (this.fox) this.fox.update()
+		if (this.physicalMachineParts) this.physicalMachineParts.update()
 	}
 }

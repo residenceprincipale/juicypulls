@@ -44,8 +44,8 @@
 		"path": "textures/goldMatcap.jpeg"
 	},
 	{
-		"name": "keysTexture",
-		"path": "textures/keys.jpg"
+		"name": "collectButtonTexture",
+		"path": "textures/collect-button.jpg"
 	},
 	{
 		"name": "foxModel",

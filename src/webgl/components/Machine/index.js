@@ -51,6 +51,10 @@ export default class Machine {
 			'jeton',
 		]
 
+		this.currentSpinPoints = 0;
+		this.rollingPoints = 0;
+		this.collectedPoints = 0;
+
 		/**
 		* Custom Combination Points
 		*/
@@ -101,9 +105,6 @@ export default class Machine {
 		]
 		this.leds = []
 
-		const keyTexture = this.resources.items.keysTexture
-		keyTexture.flipY = false
-
 		this.model.traverse((child) => {
 			if (!child.isMesh) return
 			if (child.name.includes('slut-base')) {
@@ -113,8 +114,6 @@ export default class Machine {
 				this.leds.push(child)
 			} else if (child.name.includes('gold')) {
 				child.material = new MeshMatcapMaterial({ matcap: this.resources.items.goldMatcap })
-			} else if (child.name.includes('keyplanes')) {
-				child.material = new MeshBasicMaterial({ color: new Color(0x000000), map: keyTexture })
 			}
 		})
 
@@ -229,6 +228,20 @@ export default class Machine {
 		}
 	}
 
+	collect() {
+		this.collectedPoints += this.rollingPoints;
+		this.rollingPoints = 0;
+		console.log(`Collected ${points} points! Total: ${this._totalPoints}`);
+
+		// Update screen points
+		if (this.isDebugDev) {
+			this.experience.activeScene.physicalMachineParts.updateCollectedPoints(this.collectedPoints);
+			// this.physicalMachineParts.updateRollingPoints(this.rollingPoints);
+		} else {
+			// Update external screen points TODO: find how were doing this
+		}
+	}
+
 	/**
 	* Determines the best combination and applies malus effects
 	*/
@@ -291,6 +304,10 @@ export default class Machine {
 
 		const { name, points, farkle, special } = this.getCombination();
 
+		this.currentSpinPoints = points;
+
+		this.rollingPoints += points;
+
 		if (farkle) {
 			console.log("Farkle! Score of the round is lost.");
 		} else {
@@ -324,30 +341,30 @@ export default class Machine {
 
 	addEventListeners() {
 		//listen to keyboard touches
-		document.addEventListener('keydown', (event) => {
-			switch (event.key) {
-				case ' ':
-					this.spinWheels()
-					break
-				case 'e':
-					this.lockWheel(0)
-					break
-				case 'v':
-					this.lockWheel(1)
-					break
-				case 'y':
-					this.lockWheel(2)
-					break
-				case 'j':
-					this.lockWheel(3)
-					break
-				case 'm':
-					this.lockWheel(4)
-					break
-				default:
-					break
-			}
-		})
+		// document.addEventListener('keydown', (event) => {
+		// 	switch (event.key) {
+		// 		case ' ':
+		// 			this.spinWheels()
+		// 			break
+		// 		case 'e':
+		// 			this.lockWheel(0)
+		// 			break
+		// 		case 'v':
+		// 			this.lockWheel(1)
+		// 			break
+		// 		case 'y':
+		// 			this.lockWheel(2)
+		// 			break
+		// 		case 'j':
+		// 			this.lockWheel(3)
+		// 			break
+		// 		case 'm':
+		// 			this.lockWheel(4)
+		// 			break
+		// 		default:
+		// 			break
+		// 	}
+		// })
 	}
 
 	setDebug() {

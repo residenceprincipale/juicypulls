@@ -1,5 +1,6 @@
 import Experience from 'core/Experience.js'
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial } from 'three'
+import { Scene, BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial } from 'three'
+import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -46,7 +47,7 @@ export default class PhysicalMachineParts {
 			new MeshBasicMaterial({ color: 0xff0000 }), // Red
 			new MeshBasicMaterial({ color: 0x0000ff }), // Blue
 			new MeshBasicMaterial({ color: 0x008000 }), // Green
-			new MeshBasicMaterial({ color: 0xffa500 })  // Orange
+			new MeshBasicMaterial({ color: 0xff00f0 })  // Orange
 		];
 
 		this.ledWhiteMaterial = new MeshBasicMaterial({ color: 0xffffff })
@@ -54,11 +55,21 @@ export default class PhysicalMachineParts {
 		this.setModel()
 		this.setInteraction()
 
+		this.css3dRenderer = this.setCss3dRenderer()
+		this.css3dScene = this.setCss3dScene()
+		this.css3dScreen = this.setCss3dScreen()
+
 		this.addEventListeners()
 
 		if (this.debug.active) this.setDebug()
 	}
 
+	// public
+	updateCollectedPoints() {
+		this.css3dScreen.element.textContent = this.machine.collectedPoints;
+	}
+
+	// private
 	setModel() {
 		this.model = this.resource.scene
 		this.model.name = 'physical machine parts'
@@ -66,8 +77,8 @@ export default class PhysicalMachineParts {
 
 		this.leds = []
 
-		const keyTexture = this.resources.items.keysTexture
-		keyTexture.flipY = false
+		const collectButtonTexture = this.resources.items.collectButtonTexture
+		collectButtonTexture.flipY = false
 
 		this.model.traverse((child) => {
 			if (!child.isMesh) return
@@ -75,8 +86,9 @@ export default class PhysicalMachineParts {
 				this.leds.push(child)
 			} else if (child.name.includes('base')) {
 				child.material = new MeshMatcapMaterial({ matcap: this.resources.items.goldMatcap })
-			} else if (child.name.includes('keyplanes')) {
-				child.material = new MeshBasicMaterial({ color: new Color(0x000000), map: keyTexture })
+			} else if (child.name.includes('collect')) {
+				child.material = new MeshBasicMaterial({ map: collectButtonTexture })
+				this.collectButton = child
 			} else if (child.name.includes('machine')) {
 				child.material = new MeshBasicMaterial({ color: new Color(0x000000) })
 			} else if (child.name.includes('lever')) {
@@ -84,17 +96,62 @@ export default class PhysicalMachineParts {
 				child.material = new MeshPhongMaterial({ color: new Color(0x444444) })
 			} else if (child.name.includes('ball')) {
 				child.material = new MeshPhongMaterial({ color: new Color(0xff0000) })
+			} else if (child.name.includes('screen')) {
+				this.doubleScreenPlane = child
+				child.material = new MeshBasicMaterial({ color: new Color(0x000000) })
 			}
 		})
 
 		this.leds.forEach((led, i) => {
 			led.material = this.ledWhiteMaterial
+			led.isWhite = true
 		})
 	}
+
+	setCss3dRenderer() {
+		const renderer = new CSS3DRenderer()
+		renderer.setSize(window.innerWidth, window.innerHeight)
+		renderer.domElement.style.position = 'absolute'
+		renderer.domElement.style.top = 0
+		renderer.domElement.style.pointerEvents = 'none'
+		document.body.appendChild(renderer.domElement)
+
+		return renderer
+	}
+
+	setCss3dScene() {
+		const scene = new Scene()
+
+		return scene
+	}
+
+	setCss3dScreen() {
+		const screenElement = document.createElement('div')
+		screenElement.style.width = '100px'
+		screenElement.style.height = '50px'
+		screenElement.style.backgroundColor = 'red'
+		screenElement.style.color = 'white'
+		screenElement.style.textAlign = 'left'
+		screenElement.style.fontSize = '20px'
+		screenElement.textContent = '00'
+		screenElement.style.pointerEvents = 'none'
+
+		const cssObject = new CSS3DObject(screenElement)
+
+		cssObject.position.copy(this.doubleScreenPlane.position)
+		cssObject.position.x -= 0.3
+
+		cssObject.rotation.x = this.doubleScreenPlane.rotation.x - Math.PI / 2
+		cssObject.scale.set(0.01, 0.01, 0.01)
+
+		this.css3dScene.add(cssObject)
+
+		return cssObject
+	}
+
 	// Optional: Add an interaction to trigger the spin
 	setInteraction() {
 		this.experience.interactionManager.addInteractiveObject(this.lever)
-
 		this.lever.addEventListener('click', (e) => {
 			// debounce
 			if (this.isCliked) return
@@ -105,16 +162,33 @@ export default class PhysicalMachineParts {
 			})
 		})
 
+		this.experience.interactionManager.addInteractiveObject(this.collectButton)
+		this.collectButton.addEventListener('click', (e) => {
+			this.collectButton.material.color.set(0x008000)
+			gsap.delayedCall(0.1, () => {
+				this.collectButton.material.color.set(0xffffff)
+			})
+
+			this.machine.collect();
+		});
+
 		this.leds.forEach((led, i) => {
 			this.experience.interactionManager.addInteractiveObject(led)
 
 			led.addEventListener('click', (e) => {
-				led.material = this.ledMaterials[i]
-				this.machine.lockWheel(i)
+				this.machine.lockWheel(i) // locks or unlocks the wheel
+
+				led.isWhite = !led.isWhite
+
+				if (led.isWhite) {
+					led.material = this.ledWhiteMaterial
+				} else {
+					led.material = this.ledMaterials[i]
+				}
 			})
 		})
-
 	}
+
 
 	playAnimation() {
 		gsap.killTweensOf(this.lever.rotation)
@@ -129,6 +203,10 @@ export default class PhysicalMachineParts {
 		gsap.delayedCall(0.15, () => {
 			this.machine.spinWheels()
 		})
+	}
+
+	update() {
+		if (this.css3dRenderer) this.css3dRenderer.render(this.css3dScene, this.experience.camera.instance);
 	}
 
 	addEventListeners() {
@@ -157,6 +235,10 @@ export default class PhysicalMachineParts {
 					break
 			}
 		})
+
+		window.addEventListener('resize', () => {
+			this.css3dRenderer.setSize(window.innerWidth, window.innerHeight);
+		});
 	}
 
 	setDebug() {
