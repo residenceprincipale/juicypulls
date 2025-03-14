@@ -3,10 +3,10 @@ import glslify from 'vite-plugin-glslify'
 import path from 'path'
 
 export default defineConfig({
-	root: 'src',
-	publicDir: '../public',
+	root: 'src/pages',
+	publicDir: path.resolve(__dirname, 'public'),
 	build: {
-		outDir: '../dist',
+		outDir: path.resolve(__dirname, 'dist'),
 	},
 	resolve: {
 		alias: {
