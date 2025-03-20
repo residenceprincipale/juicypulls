@@ -66,7 +66,12 @@ export default class PhysicalMachineParts {
 
 	// public
 	updateCollectedPoints() {
-		this.css3dScreen.element.textContent = this.machine.collectedPoints;
+		this.collectedElement.textContent = this.machine.collectedPoints;
+	}
+
+	updateRollingPoints() {
+		this.rollingElement.textContent = this.machine.rollingPoints;
+		console.log(this.machine.rollingPoints);
 	}
 
 	// private
@@ -126,20 +131,15 @@ export default class PhysicalMachineParts {
 	}
 
 	setCss3dScreen() {
-		const screenElement = document.createElement('div')
-		screenElement.style.width = '100px'
-		screenElement.style.height = '50px'
-		screenElement.style.backgroundColor = 'red'
-		screenElement.style.color = 'white'
-		screenElement.style.textAlign = 'left'
-		screenElement.style.fontSize = '20px'
-		screenElement.textContent = '00'
-		screenElement.style.pointerEvents = 'none'
+		const screenElement = document.querySelector('.top-screens')
+
+		this.collectedElement = screenElement.querySelector('.score-container')
+		this.rollingElement = screenElement.querySelector('.current-container')
 
 		const cssObject = new CSS3DObject(screenElement)
 
 		cssObject.position.copy(this.doubleScreenPlane.position)
-		cssObject.position.x -= 0.3
+		// cssObject.position.x -= 0.3
 
 		cssObject.rotation.x = this.doubleScreenPlane.rotation.x - Math.PI / 2
 		cssObject.scale.set(0.01, 0.01, 0.01)

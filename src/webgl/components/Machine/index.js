@@ -236,9 +236,10 @@ export default class Machine {
 		// Update screen points
 		if (this.isDebugDev) {
 			this.experience.activeScene.physicalMachineParts.updateCollectedPoints(this.collectedPoints);
-			// this.physicalMachineParts.updateRollingPoints(this.rollingPoints);
+			this.rollingPoints = 0;
+			this.experience.activeScene.physicalMachineParts.updateRollingPoints(this.rollingPoints);
 		} else {
-			// Update external screen points TODO: find how were doing this
+			// Update external screen points SOCKET HERE
 		}
 	}
 
@@ -308,8 +309,10 @@ export default class Machine {
 
 		this.rollingPoints += points;
 
+
 		if (farkle) {
 			console.log("Farkle! Score of the round is lost.");
+			this.rollingPoints = 0;
 		} else {
 			console.log(`Combination: ${name}`);
 			console.log(`Points: ${points}`);
@@ -317,6 +320,14 @@ export default class Machine {
 
 		if (special) {
 			console.log("Triggering Special Roulette Mechanics!");
+		}
+
+		// Update screen points
+		if (this.isDebugDev) {
+			this.experience.activeScene.physicalMachineParts.updateRollingPoints(this.rollingPoints);
+			// this.physicalMachineParts.updateRollingPoints(this.rollingPoints);
+		} else {
+			// Update external screen points SOCKET HERE
 		}
 
 		this.wheels.forEach((wheel, index) => {

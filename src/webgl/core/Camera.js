@@ -82,7 +82,7 @@ export default class Camera {
 		if (!this.sceneCamera.cameraHelper) {
 			this.sceneCamera.cameraHelper = new CameraHelper(this.sceneCamera)
 			this.sceneCamera.cameraHelper.name = 'cameraHelper'
-			this.scene.add(this.sceneCamera.cameraHelper)
+			// this.scene.add(this.sceneCamera.cameraHelper)
 		}
 
 		this.instance = this.controlsCamera
