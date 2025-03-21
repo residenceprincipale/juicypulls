@@ -19,4 +19,5 @@ export default defineConfig({
 		},
 	},
 	plugins: [glslify()],
+	envDir: path.resolve(__dirname),
 })
