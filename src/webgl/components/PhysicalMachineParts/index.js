@@ -116,7 +116,7 @@ export default class PhysicalMachineParts {
 	setCss3dRenderer() {
 		const renderer = new CSS3DRenderer()
 		renderer.setSize(window.innerWidth, window.innerHeight)
-		renderer.domElement.style.position = 'absolute'
+		renderer.domElement.style.position = 'fixed'
 		renderer.domElement.style.top = 0
 		renderer.domElement.style.pointerEvents = 'none'
 		document.body.appendChild(renderer.domElement)
@@ -135,14 +135,15 @@ export default class PhysicalMachineParts {
 
 		this.collectedElement = screenElement.querySelector('.score-container')
 		this.rollingElement = screenElement.querySelector('.current-container')
+		this.videoElement = screenElement.querySelector('.joined-screen')
 
 		const cssObject = new CSS3DObject(screenElement)
 
 		cssObject.position.copy(this.doubleScreenPlane.position)
-		// cssObject.position.x -= 0.3
+		cssObject.position.x += 0.15
 
 		cssObject.rotation.x = this.doubleScreenPlane.rotation.x - Math.PI / 2
-		cssObject.scale.set(0.01, 0.01, 0.01)
+		cssObject.scale.set(0.003, 0.003, 0.003)
 
 		this.css3dScene.add(cssObject)
 

@@ -4,6 +4,7 @@ import Floor from 'components/Floor.js'
 import Fox from 'components/Fox/Fox.js'
 import Cube from 'components/Cube/Cube.js'
 import Machine from '@/webgl/components/Machine/index.js'
+import CameraPlayer from '@/webgl/components/CameraPlayer/index.js'
 import VAT from 'components/VAT'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
@@ -19,6 +20,7 @@ export default class Main {
 		this.scene.resources.on('ready', () => {
 
 			this.machine = new Machine()
+			// this.cameraPlayer = new CameraPlayer()
 
 			if (window.location.hash === "#debug-dev") {
 				this.machine.isDebugDev = true;

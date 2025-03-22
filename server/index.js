@@ -20,6 +20,7 @@ socketServer.on('connection', (socket, client) => {
 	} else {
 		socket.name = name
 		clients.set(name, socket)
+		console.log('connected: %s', name)
 	}
 
 	socket.on('error', console.error)
@@ -34,22 +35,30 @@ function handleDisconnection(name) {
 }
 
 function handleMessage(name, socket, message, isBinary) {
-	console.log('received from %s: %s', name, message)
-	if (message.includes('receiver')) {
-		const receiverName = JSON.parse(message).receiver
-		const receiverClient = clients.get(receiverName)
-		if (!receiverClient) {
-			socket.send('receiver not found')
-			return
+	console.log('received from %s', name)
+	try {
+		const parsedMessage = JSON.parse(message);
+		const receiverName = parsedMessage.receiver;
+
+		if (receiverName) {
+			const receiverClient = clients.get(receiverName);
+			if (!receiverClient) {
+				socket.send(JSON.stringify({ event: "error", message: "receiver not found" }));
+				return;
+			}
+			console.log('sending to %s', receiverName);
+			receiverClient.send(JSON.stringify(parsedMessage), { binary: isBinary });
+		} else {
+			console.log("No receiver specified, broadcasting...");
+			socketServer.clients.forEach((client) => {
+				if (client.readyState !== WebSocket.OPEN || client === socket) return;
+				console.log('sending to %s', client.name);
+				client.send(JSON.stringify(parsedMessage), { binary: isBinary });
+			});
 		}
-		console.log('sending to %s: %s', receiverName, message)
-		receiverClient.send(message, { binary: isBinary })
-	} else {
-		socketServer.clients.forEach((client) => {
-			if (client.readyState !== WebSocket.OPEN || client === socket) return
-			console.log('sending to %s: %s', client.name, message)
-			client.send(message, { binary: isBinary })
-		})
+	} catch (err) {
+		console.error("Failed to parse incoming message:", err);
 	}
+
 }
 // socketServer.listen()

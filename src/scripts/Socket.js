@@ -11,7 +11,10 @@ export default class Socket extends EventEmitter {
 	}
 
 	connect(name) {
-		this.ws = new WebSocket(`${process.env.SERVER_URL}?name=${name}`)
+		this.ws = new WebSocket(`ws://localhost:3001?name=${name}`)
+
+		// console.log('connecting to %s', process.env.VITE_SERVER_URL)
+
 		this.ws.onopen = () => {
 			this.trigger('open')
 		}
