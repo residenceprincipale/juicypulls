@@ -8,12 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@recast-navigation/three':
+        specifier: ^0.39.0
+        version: 0.39.0(@types/three@0.172.0)(three@0.172.0)
       delaunator:
         specifier: ^5.0.1
         version: 5.0.1
       gsap:
         specifier: ^3.12.7
         version: 3.12.7
+      recast-navigation:
+        specifier: ^0.39.0
+        version: 0.39.0
       three:
         specifier: ^0.172.0
         version: 0.172.0
@@ -211,6 +217,21 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@recast-navigation/core@0.39.0':
+    resolution: {integrity: sha512-l48GHrimIUR+9ugAsjIecdUh5ohHULrFYUn5EqClafV5HJB/cPFBbN4n9HV2jDamCjGRGEhtSpId7NpkhoF0qQ==}
+
+  '@recast-navigation/generators@0.39.0':
+    resolution: {integrity: sha512-ymiacmEWK4SGY/FUlr6/n9/FgvA9NikPR57JyCGbteScEG10UYByrPGXJQU/UXuzUhUbmtKlPJAk2KP+MLgxJA==}
+
+  '@recast-navigation/three@0.39.0':
+    resolution: {integrity: sha512-zk2EnZSoMY1P2uYexGFnfoOG92kUD94B1R+7pz4MMOjcryqCKzGhTSalThyY8SbNi9r4MrKe7Xd50W4vS/1k8A==}
+    peerDependencies:
+      '@types/three': 0.x.x
+      three: 0.x.x
+
+  '@recast-navigation/wasm@0.39.0':
+    resolution: {integrity: sha512-1P/8pqXtwJSVseLBtO0AOdqQe1XnhPFTVvG9FMORFVFunYqkKXxULgni8x3fsutkQisyY+X7YQoIMLvZR4lKFA==}
 
   '@rollup/pluginutils@4.2.1':
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
@@ -594,6 +615,9 @@ packages:
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
 
+  recast-navigation@0.39.0:
+    resolution: {integrity: sha512-xh9gYN990nDGs8QXRPXt4gqDCSQhS954lSTukI1i//GHecWonKVBFNxt79mqC+v0Lz2RFz5gKqpQQPHLdFM/iQ==}
+
   regenerator-runtime@0.14.1:
     resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
@@ -889,6 +913,24 @@ snapshots:
 
   '@esbuild/win32-x64@0.24.2':
     optional: true
+
+  '@recast-navigation/core@0.39.0':
+    dependencies:
+      '@recast-navigation/wasm': 0.39.0
+
+  '@recast-navigation/generators@0.39.0':
+    dependencies:
+      '@recast-navigation/core': 0.39.0
+      '@recast-navigation/wasm': 0.39.0
+
+  '@recast-navigation/three@0.39.0(@types/three@0.172.0)(three@0.172.0)':
+    dependencies:
+      '@recast-navigation/core': 0.39.0
+      '@recast-navigation/generators': 0.39.0
+      '@types/three': 0.172.0
+      three: 0.172.0
+
+  '@recast-navigation/wasm@0.39.0': {}
 
   '@rollup/pluginutils@4.2.1':
     dependencies:
@@ -1284,6 +1326,11 @@ snapshots:
       safe-buffer: 5.1.2
       string_decoder: 1.1.1
       util-deprecate: 1.0.2
+
+  recast-navigation@0.39.0:
+    dependencies:
+      '@recast-navigation/core': 0.39.0
+      '@recast-navigation/generators': 0.39.0
 
   regenerator-runtime@0.14.1: {}
 

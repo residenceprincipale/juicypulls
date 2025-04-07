@@ -4,6 +4,7 @@ import sources from './sources.json'
 import Environment from 'components/Environment.js'
 import { DirectionalLight } from 'three'
 import Snow from 'components/Snow/index.js'
+import Nav from 'components/Nav/index.js'
 
 export default class Camera {
 	constructor() {
@@ -16,6 +17,7 @@ export default class Camera {
 		this.scene.resources.on('ready', () => {
 			this.snow = new Snow()
 			this.environment = new Environment()
+			this.nav = new Nav()
 
 			this.scene.add(new DirectionalLight())
 		})
@@ -30,5 +32,6 @@ export default class Camera {
 
 	update() {
 		if (this.snow) this.snow.update()
+		if (this.nav) this.nav.update()
 	}
 }

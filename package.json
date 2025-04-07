@@ -12,8 +12,10 @@
 		"dev:kinect": "concurrently \"cd server && source ~/libfreenect2/build/kinect-env/bin/activate && export DYLD_LIBRARY_PATH=~/libfreenect2/build/lib:$DYLD_LIBRARY_PATH && export LD_LIBRARY_PATH=~/libfreenect2/build/lib:$LD_LIBRARY_PATH && python kinect_client.py\" \"vite --port 3000 --host\""
 	},
 	"dependencies": {
+		"@recast-navigation/three": "^0.39.0",
 		"delaunator": "^5.0.1",
 		"gsap": "^3.12.7",
+		"recast-navigation": "^0.39.0",
 		"three": "^0.172.0",
 		"ws": "^8.18.0"
 	},

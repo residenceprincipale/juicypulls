@@ -13,7 +13,7 @@ export default class Environment {
 
 	_createModel() {
 		this.scene.add(this.glb.scene)
-		this.changeCamera(0)
+		// this.changeCamera(0)
 	}
 
 	changeCamera(index) {
