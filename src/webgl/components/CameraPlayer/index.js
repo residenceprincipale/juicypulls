@@ -1,7 +1,7 @@
 import Experience from 'core/Experience.js';
 import fragmentShader from './fragmentShader.frag';
 import vertexShader from './vertexShader.vert';
-import { BackSide, BoxGeometry, BufferAttribute, BufferGeometry, DoubleSide, Mesh, MeshNormalMaterial, MeshStandardMaterial, Points, PointsMaterial, ShaderMaterial, Vector3 } from 'three';
+import { BackSide, BoxGeometry, BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshBasicMaterial, MeshNormalMaterial, MeshStandardMaterial, Points, PointsMaterial, ShaderMaterial, Vector3 } from 'three';
 import addObjectDebug from 'utils/addObjectDebug.js';
 import Socket from '@/scripts/Socket.js';
 import Delaunator from 'delaunator';
@@ -17,9 +17,11 @@ export default class CameraPlayer {
 
 		// this.setGeometry();
 		// this.setMaterial();
-		this.setMesh();
 
-		// this.setPointCloud();
+		this.setSettings();
+
+		this.setPointCloud();
+		// this.setMesh();
 
 		this.setKinectDebugCanvas();
 		this.setDataListeners();
@@ -42,23 +44,33 @@ export default class CameraPlayer {
 	}
 
 	setMesh() {
-		this.geometry = new BufferGeometry();
+		this.meshGeometry = new BufferGeometry();
 
 		// Empty arrays for dynamic updates
-		this.positions = [];
-		this.normals = [];
-		this.indices = [];
+		this.meshPositions = [];
+		this.meshNormals = [];
+		this.meshIndices = [];
 
 		// Material for the mesh
-		this.material = new MeshNormalMaterial({
+		this.meshMaterial = new MeshBasicMaterial({
+			wireframe: false,
+			side: BackSide,
+			color: 0xff0000,
+
+		});
+
+		this.meshMaterialRed = new MeshBasicMaterial({
+			color: 0xff0000,
 			wireframe: false,
 			side: BackSide,
 		});
 
 		// Create the mesh and add it to the scene
-		this.mesh = new Mesh(this.geometry, this.material);
+		this.mesh = new Mesh(this.meshGeometry, this.meshMaterial);
 		this.scene.add(this.mesh);
+	}
 
+	setSettings() {
 		// Depth thresholds for filtering
 		this.minDepth = 559;  // Adjust based on scene needs (in mm)
 		this.maxDepth = 3800; // Ignore anything beyond this distance
@@ -70,9 +82,10 @@ export default class CameraPlayer {
 		// Offset setting for alignment between color & depth sensors
 		this.xColorOffset = 0; // Adjust this value to align the color properly
 		this.yColorOffset = 0; // Adjust this value to align the color properly
+		this.colorDarknessFactor = 1.0; // Adjust this value to change the darkness of the color
 
 		// Depth crop parameters (REMOVE vertices in this range)
-		this.depthCropMin = 1028;  // Start removing vertices at this depth
+		this.depthCropMin = 100;  // Start removing vertices at this depth
 		this.depthCropMax = 5000; // Stop removing vertices at this depth
 
 		// Store previous depth frame for smoothing
@@ -86,8 +99,6 @@ export default class CameraPlayer {
 	setDataListeners() {
 		this.socket = new Socket();
 		this.socket.connect('camera');
-
-		console.log('socket', this.socket);
 
 		this.socket.on('message', (message) => {
 			this.updateCanvas(message.data, 512, 424, this.isDepthView);
@@ -105,6 +116,8 @@ export default class CameraPlayer {
 		this.kinectCanvas.style.left = '10px';
 		this.kinectCanvas.style.border = '2px solid white';
 		this.kinectCanvas.style.cursor = 'pointer';
+		this.kinectCanvas.style.transform = 'scale(0)';
+		this.kinectCanvas.style.transformOrigin = 'top left';
 		document.body.appendChild(this.kinectCanvas);
 
 		this.kinectCtx = this.kinectCanvas.getContext('2d');
@@ -120,21 +133,21 @@ export default class CameraPlayer {
 		const height = 424;
 
 		// Create geometry for point cloud
-		this.geometry = new BufferGeometry();
+		this.pointGeometry = new BufferGeometry();
 
 		// Positions (X, Y, Z) for each point
-		this.positions = new Float32Array(width * height * 3);
-		this.geometry.setAttribute('position', new BufferAttribute(this.positions, 3));
+		this.pointPositions = new Float32Array(width * height * 3);
+		this.pointGeometry.setAttribute('position', new BufferAttribute(this.pointPositions, 3));
 
 		// Colors (R, G, B) for each point
-		this.colors = new Float32Array(width * height * 3);
-		this.geometry.setAttribute('color', new BufferAttribute(this.colors, 3));
+		this.pointColors = new Float32Array(width * height * 3);
+		this.pointGeometry.setAttribute('color', new BufferAttribute(this.pointColors, 3));
 
 		// Material that uses per-vertex colors
-		this.material = new PointsMaterial({ size: 0.02, vertexColors: true });
+		this.pointMaterial = new PointsMaterial({ size: 0.01, vertexColors: false, color: 0xffffff });
 
 		// Create a point cloud with positions & colors
-		this.pointCloud = new Points(this.geometry, this.material);
+		this.pointCloud = new Points(this.pointGeometry, this.pointMaterial);
 		this.scene.add(this.pointCloud);
 
 	}
@@ -166,8 +179,8 @@ export default class CameraPlayer {
 
 		// If both depth & color data are available, update the point cloud
 		if (this.lastDepthArray && this.lastColorArray) {
-			// this.updatePointCloud(this.lastDepthArray, this.lastColorArray, width, height);
-			this.updateMesh(this.lastDepthArray, width, height);
+			if (this.pointCloud) this.updatePointCloud(this.lastDepthArray, this.lastColorArray, width, height);
+			if (this.mesh) this.updateMesh(this.lastDepthArray, width, height);
 		}
 
 		if (isDepth) {
@@ -202,49 +215,44 @@ export default class CameraPlayer {
 		let index = 0;
 		let colorIndex = 0;
 
-		const stepSize = 2; // Reduce point density
-		const colorDarknessFactor = 0.5; // Darken colors
+		const points = this.updateDepthArray(depthArray, width, height, false);
 
-		for (let y = 0; y < height; y += stepSize) {
-			for (let x = 0; x < width; x += stepSize) {
-				let depth = depthArray[y * width + x];
+		for (let i = 0; i < points.length; i++) {
+			let [worldX, worldY, worldZ] = points[i];
 
-				// Perspective shift based on depth and GUI-controlled offsets
-				let correctedX = x + depth * this.xColorOffset;
-				let correctedY = y + depth * this.yColorOffset;
+			// and use those to compute correctedX/Y and colors, etc.
+			// Perspective shift based on depth and GUI-controlled offsets
+			let correctedX = worldX + worldZ * this.xColorOffset;
+			let correctedY = worldY + worldZ * this.yColorOffset;
 
-				// Ensure corrected X/Y stays within bounds
-				let colorX = Math.min(Math.max(Math.round(correctedX), 0), width - 1);
-				let colorY = Math.min(Math.max(Math.round(correctedY), 0), height - 1);
-				let colorPos = (colorY * width + colorX) * 3;
+			// Ensure corrected X/Y stays within bounds
+			let colorX = Math.min(Math.max(Math.round(correctedX), 0), width - 1);
+			let colorY = Math.min(Math.max(Math.round(correctedY), 0), height - 1);
+			let colorPos = (colorY * width + colorX) * 3;
 
-				let r = (colorArray[colorPos] / 255) * colorDarknessFactor;
-				let g = (colorArray[colorPos + 1] / 255) * colorDarknessFactor;
-				let b = (colorArray[colorPos + 2] / 255) * colorDarknessFactor;
+			let r = (colorArray[colorPos] / 255) * this.colorDarknessFactor;
+			let g = (colorArray[colorPos + 1] / 255) * this.colorDarknessFactor;
+			let b = (colorArray[colorPos + 2] / 255) * this.colorDarknessFactor;
 
-				// Convert depth map pixel (x, y) to 3D space
-				let worldX = (x - width / 2) / 100;
-				let worldY = -(y - height / 2) / 100;
-				let worldZ = -depth / 1000;
+			// Convert depth map pixel (x, y) to 3D space
 
-				// Store position
-				this.positions[index] = worldX;
-				this.positions[index + 1] = worldY;
-				this.positions[index + 2] = worldZ;
+			// Store position
+			this.pointPositions[index] = worldX;
+			this.pointPositions[index + 1] = worldY;
+			this.pointPositions[index + 2] = worldZ;
 
-				// Store color
-				this.colors[colorIndex] = r;
-				this.colors[colorIndex + 1] = g;
-				this.colors[colorIndex + 2] = b;
+			// Store color
+			this.pointColors[colorIndex] = r;
+			this.pointColors[colorIndex + 1] = g;
+			this.pointColors[colorIndex + 2] = b;
 
-				index += 3;
-				colorIndex += 3;
-			}
+			index += 3;
+			colorIndex += 3;
 		}
 
 		// Mark attributes as needing update
-		this.geometry.attributes.position.needsUpdate = true;
-		this.geometry.attributes.color.needsUpdate = true;
+		this.pointGeometry.attributes.position.needsUpdate = true;
+		this.pointGeometry.attributes.color.needsUpdate = true;
 	}
 
 	updateMesh(depthArray, width, height) {
@@ -253,6 +261,62 @@ export default class CameraPlayer {
 			this.previousDepthArray.set(depthArray);
 		}
 
+		const points = this.updateDepthArray(depthArray, width, height);
+
+		let delaunay = Delaunator.from(points.map(p => [p[0], p[1]]));
+		let indices = delaunay.triangles;
+
+		let positions = new Float32Array(points.flat());
+
+		this.meshGeometry.setAttribute('position', new BufferAttribute(positions, 3));
+		this.meshGeometry.setIndex(new BufferAttribute(new Uint32Array(indices), 1));
+
+		// Compute normals (without smoothing)
+		this.computeNormals();
+
+		this.meshGeometry.attributes.position.needsUpdate = true;
+	}
+
+	computeNormals() {
+		const positions = this.meshGeometry.attributes.position.array;
+		const indices = this.meshGeometry.index.array;
+		const normals = new Float32Array(positions.length);
+		const normalSmoothingFactor = 0.9; // Higher = more stable, but slower updates
+
+		if (!this.previousNormals) {
+			this.previousNormals = new Float32Array(normals.length);
+		}
+
+		for (let i = 0; i < indices.length; i += 3) {
+			let a = indices[i] * 3;
+			let b = indices[i + 1] * 3;
+			let c = indices[i + 2] * 3;
+
+			let p1 = new Vector3(positions[a], positions[a + 1], positions[a + 2]);
+			let p2 = new Vector3(positions[b], positions[b + 1], positions[b + 2]);
+			let p3 = new Vector3(positions[c], positions[c + 1], positions[c + 2]);
+
+			let normal = new Vector3().crossVectors(
+				p2.clone().sub(p1),
+				p3.clone().sub(p1)
+			).normalize();
+
+			normals[a] += normal.x; normals[a + 1] += normal.y; normals[a + 2] += normal.z;
+			normals[b] += normal.x; normals[b + 1] += normal.y; normals[b + 2] += normal.z;
+			normals[c] += normal.x; normals[c + 1] += normal.y; normals[c + 2] += normal.z;
+		}
+
+		// // Blend with previous frame's normals
+		// for (let i = 0; i < normals.length; i++) {
+		// 	this.previousNormals[i] = normalSmoothingFactor * this.previousNormals[i] + (1 - normalSmoothingFactor) * normals[i];
+		// 	normals[i] = this.previousNormals[i];
+		// }
+
+		this.meshGeometry.setAttribute('normal', new BufferAttribute(normals, 3));
+		this.meshGeometry.attributes.normal.needsUpdate = true;
+	}
+
+	updateDepthArray(depthArray, width, height, returnAsFloat32Array = false) {
 		let points = [];
 		const smoothingFactor = 0.85; // Higher = more stable, but slower updates
 
@@ -290,67 +354,21 @@ export default class CameraPlayer {
 
 					let worldZ = -(smoothedDepth * amplificationFactor) / 1000;
 
-					points.push([worldX, worldY, worldZ]);
+					if (returnAsFloat32Array) {
+						points.push(worldX, worldY, worldZ); // flattened
+					} else {
+						points.push([worldX, worldY, worldZ]); // structured as triplets
+					}
 				}
 			}
 		}
 
-		let delaunay = Delaunator.from(points.map(p => [p[0], p[1]]));
-		let indices = delaunay.triangles;
-
-		let positions = new Float32Array(points.flat());
-
-		this.geometry.setAttribute('position', new BufferAttribute(positions, 3));
-		this.geometry.setIndex(new BufferAttribute(new Uint32Array(indices), 1));
-
-		// Compute normals (without smoothing)
-		this.computeNormals();
-
-		this.geometry.attributes.position.needsUpdate = true;
-	}
-
-
-
-
-	computeNormals() {
-		const positions = this.geometry.attributes.position.array;
-		const indices = this.geometry.index.array;
-		const normals = new Float32Array(positions.length);
-		const normalSmoothingFactor = 0.9; // Higher = more stable, but slower updates
-
-		if (!this.previousNormals) {
-			this.previousNormals = new Float32Array(normals.length);
+		if (returnAsFloat32Array) {
+			return new Float32Array(points);
 		}
 
-		for (let i = 0; i < indices.length; i += 3) {
-			let a = indices[i] * 3;
-			let b = indices[i + 1] * 3;
-			let c = indices[i + 2] * 3;
-
-			let p1 = new Vector3(positions[a], positions[a + 1], positions[a + 2]);
-			let p2 = new Vector3(positions[b], positions[b + 1], positions[b + 2]);
-			let p3 = new Vector3(positions[c], positions[c + 1], positions[c + 2]);
-
-			let normal = new Vector3().crossVectors(
-				p2.clone().sub(p1),
-				p3.clone().sub(p1)
-			).normalize();
-
-			normals[a] += normal.x; normals[a + 1] += normal.y; normals[a + 2] += normal.z;
-			normals[b] += normal.x; normals[b + 1] += normal.y; normals[b + 2] += normal.z;
-			normals[c] += normal.x; normals[c + 1] += normal.y; normals[c + 2] += normal.z;
-		}
-
-		// // Blend with previous frame's normals
-		// for (let i = 0; i < normals.length; i++) {
-		// 	this.previousNormals[i] = normalSmoothingFactor * this.previousNormals[i] + (1 - normalSmoothingFactor) * normals[i];
-		// 	normals[i] = this.previousNormals[i];
-		// }
-
-		this.geometry.setAttribute('normal', new BufferAttribute(normals, 3));
-		this.geometry.attributes.normal.needsUpdate = true;
+		return points;
 	}
-
 
 
 	applyDepthSmoothing(depthArray, width, height) {
