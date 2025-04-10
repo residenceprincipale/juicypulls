@@ -22,14 +22,14 @@ export default class Main {
 		// Wait for resources
 		this.scene.resources.on('ready', () => {
 
-			// this.machine = new Machine()
-			this.cameraPlayer = new CameraPlayer()
+			this.machine = new Machine()
+			// this.cameraPlayer = new CameraPlayer()
 
 			// 	if (window.location.hash === "#debug-dev") {
 			// 		this.machine.isDebugDev = true;
 
 			// 		console.log("Debug physical parts enabled!");
-			// 		this.physicalMachineParts = new PhysicalMachineParts()
+			this.physicalMachineParts = new PhysicalMachineParts()
 			// 	}
 		})
 	}

@@ -26,7 +26,7 @@ export default class CameraPlayer {
 		this.setKinectDebugCanvas();
 		this.setDataListeners();
 
-		this.setDebug();
+		if (this.debug.active) this.setDebug()
 	}
 
 	setGeometry() {
