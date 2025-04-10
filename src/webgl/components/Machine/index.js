@@ -54,6 +54,9 @@ export default class Machine {
 		this.currentSpinPoints = 0;
 		this.rollingPoints = 0;
 		this.collectedPoints = 0;
+		this.round = 1
+		this.spinsLeft = 3
+		this.maxSpins = 3
 
 		/**
 		* Custom Combination Points
@@ -229,15 +232,21 @@ export default class Machine {
 	}
 
 	collect() {
+		this.spinsLeft = 3
 		this.collectedPoints += this.rollingPoints;
 		this.rollingPoints = 0;
 		console.log(`Collected ${points} points! Total: ${this._totalPoints}`);
 
+		this.wheels.forEach(wheel => {
+			wheel.isLocked = false
+		})
+
 		// Update screen points
 		if (this.isDebugDev) {
 			this.experience.activeScene.physicalMachineParts.updateCollectedPoints(this.collectedPoints);
-			this.rollingPoints = 0;
 			this.experience.activeScene.physicalMachineParts.updateRollingPoints(this.rollingPoints);
+			this.experience.activeScene.physicalMachineParts.updateSpins(this.spinsLeft);
+			this.experience.activeScene.physicalMachineParts.resetButtons()
 		} else {
 			// Update external screen points SOCKET HERE
 		}
@@ -280,7 +289,12 @@ export default class Machine {
 			return { name: "Special Roulette", points: 0, special: true };
 		}
 
-		return { name: points > 0 ? "Valid Combination" : "Farkle", points, farkle: points === 0 };
+		const isLastSpin = this.spinsLeft === 0;
+
+		if (points <= 0 && isLastSpin) return { name: "Farkle", points: 0, farkle: true };
+		else if (points <= 0) return { name: "No crocodilo bombardelo...", points, farkle: false };
+
+		return { name: "Valid Combination", points, farkle: false };
 	}
 
 	/**
@@ -308,7 +322,10 @@ export default class Machine {
 		this.currentSpinPoints = points;
 
 		this.rollingPoints += points;
-
+		if (this.spinsLeft === 0) {
+			this.spinsLeft = 3
+		}
+		this.spinsLeft -= 1;
 
 		if (farkle) {
 			console.log("Farkle! Score of the round is lost.");
@@ -322,9 +339,12 @@ export default class Machine {
 			console.log("Triggering Special Roulette Mechanics!");
 		}
 
+
 		// Update screen points
 		if (this.isDebugDev) {
 			this.experience.activeScene.physicalMachineParts.updateRollingPoints(this.rollingPoints);
+			this.experience.activeScene.physicalMachineParts.updateSpins(this.spinsLeft);
+
 			// this.physicalMachineParts.updateRollingPoints(this.rollingPoints);
 		} else {
 			// Update external screen points SOCKET HERE
@@ -348,6 +368,8 @@ export default class Machine {
 				ease: 'power4.out'
 			});
 		});
+
+
 	}
 
 	addEventListeners() {

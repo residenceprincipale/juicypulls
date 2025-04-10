@@ -74,6 +74,18 @@ export default class PhysicalMachineParts {
 		console.log(this.machine.rollingPoints);
 	}
 
+	updateSpins() {
+		this.spinsElement.textContent = this.machine.spinsLeft;
+		console.log(this.machine.spinsLeft);
+	}
+
+	resetButtons() {
+		this.leds.forEach((led, i) => {
+			led.material = this.ledWhiteMaterial
+			led.isWhite = true
+		})
+	}
+
 	// private
 	setModel() {
 		this.model = this.resource.scene
@@ -133,17 +145,19 @@ export default class PhysicalMachineParts {
 	setCss3dScreen() {
 		const screenElement = document.querySelector('.top-screens')
 
-		this.collectedElement = screenElement.querySelector('.score-container')
-		this.rollingElement = screenElement.querySelector('.current-container')
+		this.spinsElement = screenElement.querySelector('.spins')
+		this.roundsElement = screenElement.querySelector('.round')
+		this.collectedElement = screenElement.querySelector('.score')
+		this.rollingElement = screenElement.querySelector('.current')
 		this.videoElement = screenElement.querySelector('.joined-screen')
 
 		const cssObject = new CSS3DObject(screenElement)
 
 		cssObject.position.copy(this.doubleScreenPlane.position)
-		cssObject.position.x += 0.15
+		// cssObject.position.x += 0.1
 
 		cssObject.rotation.x = this.doubleScreenPlane.rotation.x - Math.PI / 2
-		cssObject.scale.set(0.003, 0.003, 0.003)
+		cssObject.scale.set(0.005, 0.005, 0.005)
 
 		this.css3dScene.add(cssObject)
 

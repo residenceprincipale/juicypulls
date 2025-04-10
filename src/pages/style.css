@@ -8,12 +8,12 @@
 
 .top-screens-page {
 	position: relative;
-	height: 1024px;
-	width: calc(1280px *2);
 	display: flex;
 }
 
 .top-screens {
+	height: calc(1024px * 0.1);
+	width: calc(1280px * 2 * 0.1);
 	display: flex;
 }
 
@@ -23,9 +23,14 @@
 	height: 100%;
 
 	display: flex;
-	flex-direction: column;
+
+	border: solid 1px #fff;
 }
 
+.left-screen {
+	gap: 20px;
+
+}
 .joined-screen {
 	width: 100%;
 	position: absolute;
@@ -39,12 +44,17 @@
 	object-fit: cover;
 }
 
-.score-container, .current-container{
-	color: white;
-	font-size: 150px;
+.rounds-spins-container, .scores-container {
+	display: flex;
+	flex-direction: column;
+	padding: 3px;
+}
+
+.current, .score, .round, .spins {
+	font-size: 30px;
 }
 
 p {
 	color: white;
-	font-size: 20px;
+	font-size: 10px;
 }

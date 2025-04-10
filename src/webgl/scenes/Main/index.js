@@ -25,12 +25,12 @@ export default class Main {
 			this.machine = new Machine()
 			// this.cameraPlayer = new CameraPlayer()
 
-			// 	if (window.location.hash === "#debug-dev") {
-			// 		this.machine.isDebugDev = true;
+			if (window.location.hash === "#debug-dev") {
+				this.machine.isDebugDev = true;
 
-			// 		console.log("Debug physical parts enabled!");
-			this.physicalMachineParts = new PhysicalMachineParts()
-			// 	}
+				console.log("Debug physical parts enabled!");
+				this.physicalMachineParts = new PhysicalMachineParts()
+			}
 		})
 	}
 
