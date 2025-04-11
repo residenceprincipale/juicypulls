@@ -53,7 +53,15 @@
 	},
 	{
 		"name": "casinoModel",
-		"path": "models/roues-casino-v3.glb"
+		"path": "models/roues-casino-v4.glb"
+	},
+	{
+		"name": "handModel",
+		"path": "models/shifumi-hand.glb"
+	},
+	{
+		"name": "handTexture",
+		"path": "textures/hand-albedo.png"
 	},
 	{
 		"name": "physicalPartsModel",

@@ -12,6 +12,7 @@ export default class PhysicalMachineParts {
 		this.debug = this.experience.debug
 		this.resources = this.scene.resources
 		this.machine = this.experience.activeScene.machine
+		this.hands = this.experience.activeScene.hands
 
 		this.position = _position
 
@@ -191,14 +192,29 @@ export default class PhysicalMachineParts {
 			this.experience.interactionManager.addInteractiveObject(led)
 
 			led.addEventListener('click', (e) => {
-				this.machine.lockWheel(i) // locks or unlocks the wheel
 
-				led.isWhite = !led.isWhite
+				if (this.machine.isHandFighting) {
+					if (i < 2) return;
 
-				if (led.isWhite) {
-					led.material = this.ledWhiteMaterial
+					this.hands.setHandAnimation(i)
+
+					led.isWhite = !led.isWhite
+
+					if (led.isWhite) {
+						led.material = this.ledWhiteMaterial
+					} else {
+						led.material = this.ledMaterials[i]
+					}
 				} else {
-					led.material = this.ledMaterials[i]
+					this.machine.lockWheel(i) // locks or unlocks the wheel
+
+					led.isWhite = !led.isWhite
+
+					if (led.isWhite) {
+						led.material = this.ledWhiteMaterial
+					} else {
+						led.material = this.ledMaterials[i]
+					}
 				}
 			})
 		})

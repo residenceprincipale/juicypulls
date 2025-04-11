@@ -1,4 +1,4 @@
-import { Skeleton } from 'three'
+import { Skeleton, SkinnedMesh, Matrix4 } from 'three'
 
 export default function cloneGltf(gltf) {
 	const clone = {
@@ -27,19 +27,30 @@ export default function cloneGltf(gltf) {
 		}
 	})
 
-	for (let name in skinnedMeshes) {
-		const skinnedMesh = skinnedMeshes[name]
-		const skeleton = skinnedMesh.skeleton
-		const cloneSkinnedMesh = cloneSkinnedMeshes[name]
+	for (const name in skinnedMeshes) {
+		const sourceMesh = skinnedMeshes[name]
+		const sourceSkeleton = sourceMesh.skeleton
+		const targetMesh = cloneSkinnedMeshes[name]
 
 		const orderedCloneBones = []
 
-		for (let i = 0; i < skeleton.bones.length; ++i) {
-			const cloneBone = cloneBones[skeleton.bones[i].name]
-			orderedCloneBones.push(cloneBone)
+		// Map the bones in the original order to cloned bones
+		for (let i = 0; i < sourceSkeleton.bones.length; i++) {
+			const clonedBone = cloneBones[sourceSkeleton.bones[i].name]
+			orderedCloneBones.push(clonedBone)
 		}
 
-		cloneSkinnedMesh.bind(new Skeleton(orderedCloneBones, skeleton.boneInverses), cloneSkinnedMesh.matrixWorld)
+		// Preserve boneInverses
+		const boneInverses = sourceSkeleton.boneInverses.map(b => b.clone())
+
+		// Create a new skeleton and bind it
+		const clonedSkeleton = new Skeleton(orderedCloneBones, boneInverses)
+
+		// Important: bind using original bindMatrix to keep transforms intact
+		targetMesh.bind(clonedSkeleton, sourceMesh.bindMatrix.clone())
+
+		// Also preserve bindMatrixInverse (used internally)
+		targetMesh.bindMatrixInverse.copy(sourceMesh.bindMatrixInverse)
 	}
 
 	return clone

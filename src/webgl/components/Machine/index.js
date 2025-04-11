@@ -91,6 +91,40 @@ export default class Machine {
 		this.addEventListeners()
 
 		if (this.debug.active) this.setDebug()
+
+		// this.animateInnerMachineOut()
+	}
+
+	animateInnerMachineOut() {
+		this.isHandFighting = true
+		this.innerOutTimeline = gsap.timeline();
+		this.innerOutTimeline.to(this.innerMachine.position, {
+			z: -0.6,
+			ease: "none",
+			duration: 1,
+		})
+		this.innerOutTimeline.to(this.innerMachine.position, {
+			y: -0.6,
+			ease: "none",
+			duration: 1,
+			delay: 0.5
+		})
+	}
+
+	animateInnerMachineIn() {
+		this.isHandFighting = false
+		this.innerInTimeline = gsap.timeline();
+		this.innerInTimeline.to(this.innerMachine.position, {
+			y: 0,
+			ease: "none",
+			duration: 0.4,
+		})
+		this.innerInTimeline.to(this.innerMachine.position, {
+			z: 0,
+			ease: "none",
+			duration: 0.8,
+			delay: 0.4
+		})
 	}
 
 	setModel() {
@@ -117,6 +151,9 @@ export default class Machine {
 				this.leds.push(child)
 			} else if (child.name.includes('gold')) {
 				child.material = new MeshMatcapMaterial({ matcap: this.resources.items.goldMatcap })
+			}
+			if (child.name.includes('slut-base-inner')) {
+				this.innerMachine = child
 			}
 		})
 
