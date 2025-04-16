@@ -25,6 +25,16 @@ pnpm run dev
 - `Input management`: Minimal input management
 - `addObjectDebug or addMaterialDebug`: Auto debug parameters of a mesh or a material
 
+## Events
+
+- `lever`: Triggered when roulette lever sends an input (comes from : physical input or debug-dev)
+- `button-i`: Triggered when roulette button is hit (comes from : physical input or debug-dev)
+- `button-collect`: Triggered when roulette "collect" button is hit (comes from : physical input or debug-dev)
+- `remote`: Triggered when a remote button is hit, button info in the data (comes from : physical input (or debug-dev?) )
+
+## Devices 
+
+<!-- - `Roulette`: A roulette device with a lever and a button -->
 
 ## Features to come I hope
 
