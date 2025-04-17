@@ -27,11 +27,11 @@ function initChannelChange() {
 	function confirmChannelChange() {
 		dispatchEvent(new CustomEvent('no-signal', { detail: { visible: false } }))
 		experience.scene.dispatchEvent({ type: 'camera-change', message: channelContainer.innerHTML })
-		channelContainer.innerHTML = ''
+		//channelContainer.innerHTML = ''
 		hasInput = false
 	}
 
-	const confirmDebounced = debounce(confirmChannelChange, 1000)
+	const confirmDebounced = debounce(confirmChannelChange, 500)
 
 	socket.on('channel-change', handleChannelChange)
 

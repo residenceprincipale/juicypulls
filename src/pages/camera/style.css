@@ -7,7 +7,8 @@
 	outline: none;
 }
 
-div {
+.channel,
+.no-signal {
 	color: #26ff26;
 	text-shadow: 1px 1px 0 black;
 	text-rendering: optimizeSpeed;

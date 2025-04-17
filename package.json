@@ -15,6 +15,7 @@
 		"@recast-navigation/three": "^0.39.0",
 		"delaunator": "^5.0.1",
 		"gsap": "^3.12.7",
+		"postprocessing": "^6.37.2",
 		"recast-navigation": "^0.39.0",
 		"three": "^0.172.0",
 		"ws": "^8.18.0"

@@ -2,9 +2,7 @@ import Experience from 'core/Experience.js'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import Environment from 'components/Environment.js'
-import { DirectionalLight } from 'three'
-import Snow from 'components/Snow/index.js'
-import Nav from 'components/Nav/index.js'
+import { AmbientLight, DirectionalLight } from 'three'
 
 export default class Camera {
 	constructor() {
@@ -15,23 +13,33 @@ export default class Camera {
 
 		// Wait for resources
 		this.scene.resources.on('ready', () => {
-			this.snow = new Snow()
 			this.environment = new Environment()
-			this.nav = new Nav()
 
-			this.scene.add(new DirectionalLight())
+			this.scene.add(new DirectionalLight(0xffffff, 3))
+			this.scene.add(new AmbientLight())
 		})
+
 		this.scene.addEventListener('display-snow', () => {
-			this.snow.displaySnow(true)
+			this.experience.renderer.transitionPass.enabled = true
+			console.log('display-snow')
 		})
 		this.scene.addEventListener('camera-change', (channel) => {
-			this.snow.displaySnow(false)
 			this.environment.changeCamera(channel.message)
+			this.experience.renderer.transitionPass.enabled = false
+			console.log('camera-change')
 		})
+
+		// setInterval(() => {
+		// 	this.snow.displaySnow(true)
+		// 	setTimeout(() => {
+		// 		this.snow.displaySnow(false)
+		// 		this.environment.changeCamera(Math.floor(Math.random() * 10))
+		// 	}, 1000)
+		// }, 5000)
 	}
 
 	update() {
 		if (this.snow) this.snow.update()
-		if (this.nav) this.nav.update()
+		if (this.environment) this.environment.update()
 	}
 }

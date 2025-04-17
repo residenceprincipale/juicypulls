@@ -55,7 +55,7 @@ export default class Camera {
 			this.options.fov,
 			this.sizes.width / this.sizes.height,
 			this.options.frustum.min,
-			this.options.frustum.max
+			this.options.frustum.max,
 		)
 		this.sceneCamera.position.copy(this.options.position)
 		this.sceneCamera.lookAt(this.options.target)
