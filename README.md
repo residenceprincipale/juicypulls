@@ -28,13 +28,24 @@ pnpm run dev
 ## Events
 
 - `lever`: Triggered when roulette lever sends an input (comes from : physical input or debug-dev)
-- `button-i`: Triggered when roulette button is hit (comes from : physical input or debug-dev)
+- `button`: Triggered when roulette button is hit (comes from : physical input or debug-dev) index in data
+- `button-light`: Triggered  (comes from : machine-manager) index in data
 - `button-collect`: Triggered when roulette "collect" button is hit (comes from : physical input or debug-dev)
 - `remote`: Triggered when a remote button is hit, button info in the data (comes from : physical input (or debug-dev?) )
+- `update-rolling-points`: Update the current rolling points
+- `update-collected-points`: Update the total points
+- `update-quota`: Update the quota
+- `update-round`: Update the current round
+- `update-spins`: update the spins
 
-## Devices 
+## TODO 
 
-<!-- - `Roulette`: A roulette device with a lever and a button -->
+- [x] Events
+- [x] Comment gerer le fait que quand tu appuie sur un boutton il ne s'allume pas forcemnt ? 
+- [ ] Rounds and quota
+- [ ] Roulette
+- [ ] Add a way to add a gltf model with bones
+
 
 ## Features to come I hope
 
