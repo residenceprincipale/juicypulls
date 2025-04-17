@@ -20,8 +20,12 @@
 		"path": "textures/dirt/normal.jpg"
 	},
 	{
-		"name": "wheelTexture",
-		"path": "textures/roue-3.jpg"
+		"name": "wheelAlbedo",
+		"path": "textures/roue-4.jpg"
+	},
+	{
+		"name": "wheelNormal",
+		"path": "textures/roue-4_normal_map.jpg"
 	},
 	{
 		"name": "casinoRoughness",

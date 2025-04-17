@@ -19,6 +19,7 @@ uniform vec2 uMatcapOffset;
 uniform float uMatcapIntensity;
 
 uniform sampler2D uTexture;
+uniform sampler2D uNormalTexture;
 uniform sampler2D uAoTexture;
 
 vec3 matcap(float roughness) {

@@ -1,10 +1,11 @@
 import Experience from 'core/Experience.js'
-import fragmentShader from './fragmentShader.frag'
-import vertexShader from './vertexShader.vert'
+import vertexShader from './shaders/vertex.glsl';
+import fragmentShader from './shaders/fragment.glsl';
 import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
+import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
 export default class Machine {
 	constructor() {
@@ -146,21 +147,28 @@ export default class Machine {
 	}
 
 	_createRouletteMaterial() {
-		const wheelTexture = this._resources.items.wheelTexture;
-		wheelTexture.wrapS = RepeatWrapping
-		wheelTexture.wrapT = RepeatWrapping
-		wheelTexture.flipY = false
+		const wheelAlbedo = this._resources.items.wheelAlbedo;
+		wheelAlbedo.wrapS = RepeatWrapping
+		wheelAlbedo.wrapT = RepeatWrapping
+		wheelAlbedo.flipY = false
 
-		this._rouletteMaterial = new ShaderMaterial({
+		const wheelNormal = this._resources.items.wheelNormal;
+		wheelNormal.wrapS = RepeatWrapping
+		wheelNormal.wrapT = RepeatWrapping
+		wheelNormal.flipY = false
+
+		this._rouletteMaterial = new PhongCustomMaterial({
 			vertexShader,
 			fragmentShader,
-			name: "Roulette",
 			uniforms: {
 				uTime: { value: 0 },
-				uTexture: { value: this._resources.items.wheelTexture },
-				uAoTexture: { value: this._resources.items.roulettesAO },
+				uAlbedoMap: { value: this._resources.items.wheelAlbedo },
+				uNormalMap: { value: this._resources.items.wheelNormal },
+				uAoMap: { value: this._resources.items.roulettesAO },
 				uMatcapMap: { value: this._resources.items.glassMatcap },
 				uMatcapOffset: { value: new Vector2(0, 0) },
+				uNormalRepeat: { value: new Vector2(1, 1) },
+				uNormalScale: { value: new Vector2(1, 1) },
 				uMatcapIntensity: { value: 0.2 },
 				uRoughness: { value: 0.5 },
 				uWheelsSpacing: { value: 4.8 },
@@ -172,8 +180,15 @@ export default class Machine {
 				uRotation2: { value: 0 },
 				uRotation3: { value: 0 },
 				uRotation4: { value: 0 },
-			}
-		})
+			},
+			defines: {
+				USE_NORMAL: true,
+			},
+		});
+
+		console.log(this._rouletteMaterial)
+		// console.log(this._rouletteMaterialOld)
+
 	}
 
 	/**

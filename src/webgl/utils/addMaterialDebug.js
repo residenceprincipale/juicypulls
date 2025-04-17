@@ -159,9 +159,9 @@ export default function addMaterialDebug(folder, material, options = {}) {
 						typeof materialOption.options[0] === 'object'
 							? materialOption.options
 							: materialOption.options.map((v) => ({
-									value: v.toString(),
-									text: v.toString(),
-							  }))
+								value: v.toString(),
+								text: v.toString(),
+							}))
 
 					gui
 						.addBlade({
@@ -182,6 +182,7 @@ export default function addMaterialDebug(folder, material, options = {}) {
 					const uniformsValues = Object.values(keyValue)
 					uniformsNames.forEach((uniformName, index) => {
 						const uniformValue = uniformsValues[index].value
+						if (!uniformName.startsWith('u')) return // avoid adding uniforms for threejs built-in uniforms
 						if (uniformValue.isTexture) {
 							const bindImage = (image) => {
 								gui
@@ -230,6 +231,7 @@ export default function addMaterialDebug(folder, material, options = {}) {
 							if (!image.src) return
 							bindImage(image)
 						} else {
+							if (!uniformName.startsWith('u')) return // avoid adding uniforms for threejs built-in uniforms
 							gui.addBinding(keyValue[uniformName], 'value', {
 								label: uniformName,
 							})

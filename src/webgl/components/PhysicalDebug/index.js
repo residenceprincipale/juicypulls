@@ -181,7 +181,6 @@ export default class PhysicalDebug {
 		})
 	}
 
-
 	_createEventListeners() {
 		window.addEventListener('resize', () => {
 			this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
