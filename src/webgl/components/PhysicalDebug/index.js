@@ -23,13 +23,27 @@ export default class PhysicalDebug {
 		this._createMaterials()
 		this._createModel()
 		this._createInteraction()
-		this._css3dRenderer = this._createCss3dRenderer()
-		this._css3dScene = this._createCss3dScene()
-		this._css3dScreen = this._createCss3dScreen()
+		// this._css3dRenderer = this._createCss3dRenderer()
+		// this._css3dScene = this._createCss3dScene()
+		this._cssScreen = this._createCssScreen()
+		// this._css3dScreen = this._createCss3dScreen()
 
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
+	}
+
+	// public
+	printToRightScreen(message) {
+		if (!this._rightScreen) return
+		// create element on right screen
+		const element = document.createElement('div')
+		element.className = 'right-screen-text'
+		element.textContent = message
+		element.style.color = '#ffffff'
+		element.style.fontSize = '15px'
+		element.style.fontFamily = 'Arial, sans-serif'
+		this._rightScreen.appendChild(element)
 	}
 
 	// private
@@ -107,6 +121,7 @@ export default class PhysicalDebug {
 		this._roundsElement = screenElement.querySelector('.round')
 		this._collectedElement = screenElement.querySelector('.score')
 		this._rollingElement = screenElement.querySelector('.current')
+		this._rightScreen = screenElement.querySelector('.right-screen')
 		this._videoElement = screenElement.querySelector('.joined-screen')
 
 		const cssObject = new CSS3DObject(screenElement)
@@ -119,6 +134,17 @@ export default class PhysicalDebug {
 		this._css3dScene.add(cssObject)
 
 		return cssObject
+	}
+
+	_createCssScreen() {
+		const screenElement = document.querySelector('.top-screens')
+
+		this._spinsElement = screenElement.querySelector('.spins')
+		this._roundsElement = screenElement.querySelector('.round')
+		this._collectedElement = screenElement.querySelector('.score')
+		this._rollingElement = screenElement.querySelector('.current')
+		this._rightScreen = screenElement.querySelector('.right-screen')
+		this._videoElement = screenElement.querySelector('.joined-screen')
 	}
 
 	_createInteraction() {

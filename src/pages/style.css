@@ -12,9 +12,16 @@
 }
 
 .top-screens {
-	height: calc(1024px * 0.1);
-	width: calc(1280px * 2 * 0.1);
+	height: 25vh;
+	width: calc(25vh * 2);
 	display: flex;
+	position: fixed;
+	top: 0;
+	left: 0;
+	margin: 0 auto;
+	inset: 0;
+
+	z-index: 2;
 }
 
 .left-screen,
@@ -27,10 +34,15 @@
 	border: solid 1px #fff;
 }
 
-.left-screen {
-	gap: 20px;
-
+.right-screen {
+	overflow: scroll;
+	display: block;;
 }
+
+.left-screen {
+	gap: 10%;
+}
+
 .joined-screen {
 	width: 100%;
 	position: absolute;
@@ -47,14 +59,18 @@
 .rounds-spins-container, .scores-container {
 	display: flex;
 	flex-direction: column;
-	padding: 3px;
+	padding: 3%;
+	gap: 10%;
 }
 
 .current, .score, .round, .spins {
-	font-size: 30px;
+	font-size: 200%;
+}
+.current, .score {
+	font-size: 200%;
 }
 
 p {
 	color: white;
-	font-size: 10px;
+	font-size: 120%;
 }

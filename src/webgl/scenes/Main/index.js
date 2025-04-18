@@ -33,7 +33,7 @@ export default class Main {
 				this._machine.isDebugDev = true;
 				console.log("Debug physical parts enabled!");
 				this._physicalDebug = new PhysicalDebug()
-				this._machineManager.physicalDebug = this._physicalDebug;
+				this._machineManager._physicalDebug = this._physicalDebug;
 			}
 		})
 

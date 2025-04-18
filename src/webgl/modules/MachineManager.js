@@ -12,6 +12,7 @@ export default class MachineManager {
         this._debug = this._experience.debug
 
         this._machine = options.machine
+        this._physicalDebug = options.physicalDebug
 
         this._createConstants()
 
@@ -123,6 +124,7 @@ export default class MachineManager {
         this._collectedPoints += this._rollingPoints;
         this._rollingPoints = 0;
         console.log(`Collected ${points} points! Total: ${this.__totalPoints}`);
+        this._physicalDebug.printToRightScreen(`Collected ${this._collectedPoints} points!`);
 
         this._machine.wheels.forEach(wheel => {
             wheel.isLocked = false
@@ -215,15 +217,17 @@ export default class MachineManager {
         });
 
         console.log("Spin Result:", this._results.map(index => this._wheelEmojis[index]).join(" "));
+        this._physicalDebug.printToRightScreen(`Spin Result: ${this._results.map(index => this._wheelEmojis[index]).join(" ")}`);
 
         const { name, points, farkle, special } = this._getCombination();
 
         this._currentSpinPoints = points;
 
-        this._rollingPoints += points;
         if (this._spinsLeft === 0) {
+            this._collect();
             this._spinsLeft = 3
         }
+        this._rollingPoints += points;
         this._spinsLeft -= 1;
 
         socket.send({
@@ -236,14 +240,18 @@ export default class MachineManager {
 
         if (farkle) {
             console.log("Farkle! Score of the round is lost.");
+            this._physicalDebug.printToRightScreen("Farkle! Score of the round is lost.");
             this._rollingPoints = 0;
         } else {
             console.log(`Combination: ${name}`);
             console.log(`Points: ${points}`);
+            this._physicalDebug.printToRightScreen(`Combination: ${name}`);
+            this._physicalDebug.printToRightScreen(`Points: ${points}`);
         }
 
         if (special) {
             console.log("Triggering Special Roulette Mechanics!");
+            this._physicalDebug.printToRightScreen("Triggering Special Roulette Mechanics!");
         }
 
         gsap.delayedCall(2, () => {
