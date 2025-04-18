@@ -13,7 +13,7 @@
 
 .top-screens {
 	height: 25vh;
-	width: calc(25vh * 2);
+	width: calc(30vh * 2);
 	display: flex;
 	position: fixed;
 	top: 0;
