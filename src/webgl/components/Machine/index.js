@@ -180,6 +180,7 @@ export default class Machine {
 				uRotation2: { value: 0 },
 				uRotation3: { value: 0 },
 				uRotation4: { value: 0 },
+				uDiffuseIntensity: { value: 0.7 },
 			},
 			defines: {
 				USE_NORMAL: true,
