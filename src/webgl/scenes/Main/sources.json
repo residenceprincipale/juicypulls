@@ -25,7 +25,7 @@
 	},
 	{
 		"name": "wheelNormal",
-		"path": "textures/roue-4_normal_map.jpg"
+		"path": "textures/roue-4-normal.jpg"
 	},
 	{
 		"name": "casinoRoughness",

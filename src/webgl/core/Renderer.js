@@ -37,8 +37,11 @@ export default class Renderer {
 	}
 
 	update() {
-		// this.instance.render(this.scene, this.camera.instance)
-		this.composer.render()
+		if (this.composer) {
+			this.composer.render()
+		} else {
+			this.instance.render(this.scene, this.camera.instance)
+		}
 	}
 
 	createPostProcessing() {
