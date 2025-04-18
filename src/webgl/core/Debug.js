@@ -4,6 +4,10 @@ import * as TweakpanePluginMedia from 'tweakpane-plugin-media'
 import * as TweakpaneFileImportPlugin from 'tweakpane-plugin-file-import'
 import Stats from 'stats.js'
 import Experience from 'core/Experience.js'
+import addUndoRedoFeature from 'tweakpane-undo-redo-plugin';
+import * as Tweakpane from 'tweakpane';
+
+addUndoRedoFeature(Tweakpane);
 
 export default class Debug {
 	constructor() {

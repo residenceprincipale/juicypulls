@@ -38,15 +38,6 @@ pnpm run dev
 - `update-round`: Update the current round
 - `update-spins`: update the spins
 
-## TODO 
-
-- [x] Events
-- [x] Comment gerer le fait que quand tu appuie sur un boutton il ne s'allume pas forcemnt ? 
-- [ ] Rounds and quota
-- [ ] Roulette
-- [ ] Add a way to add a gltf model with bones
-
-
 ## Features to come I hope
 
 - Debounce the 3d objects interaction click

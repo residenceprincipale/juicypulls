@@ -26,6 +26,9 @@ importers:
       three:
         specifier: ^0.172.0
         version: 0.172.0
+      tweakpane-undo-redo-plugin:
+        specifier: github:cosmicshelter/tweakpane-undo-redo-plugin
+        version: https://codeload.github.com/cosmicshelter/tweakpane-undo-redo-plugin/tar.gz/634ab65e8ba0a3918fe6b872784ec579aa21ffdf
       ws:
         specifier: ^8.18.0
         version: 8.18.0
@@ -721,6 +724,9 @@ packages:
   three@0.172.0:
     resolution: {integrity: sha512-6HMgMlzU97MsV7D/tY8Va38b83kz8YJX+BefKjspMNAv0Vx6dxMogHOrnRl/sbMIs3BPUKijPqDqJ/+UwJbIow==}
 
+  three@0.175.0:
+    resolution: {integrity: sha512-nNE3pnTHxXN/Phw768u0Grr7W4+rumGg/H6PgeseNJojkJtmeHJfZWi41Gp2mpXl1pg1pf1zjwR4McM1jTqkpg==}
+
   through2@0.6.5:
     resolution: {integrity: sha512-RkK/CCESdTKQZHdmKICijdKKsCRVHs5KsLZ6pACAmF/1GPUQhonHSXWNERctxEp7RmvjdNbZTL5z9V7nSCXKcg==}
 
@@ -743,6 +749,10 @@ packages:
     resolution: {integrity: sha512-BmLuK7aDro8LRDdm36ZsullMJelcfdAIympqHqa0LlPIErjsXnm46Ob1PVlAxbkDhvtsM5YKtNzi8lFajd/2ZQ==}
     peerDependencies:
       tweakpane: ^4.0.3
+
+  tweakpane-undo-redo-plugin@https://codeload.github.com/cosmicshelter/tweakpane-undo-redo-plugin/tar.gz/634ab65e8ba0a3918fe6b872784ec579aa21ffdf:
+    resolution: {tarball: https://codeload.github.com/cosmicshelter/tweakpane-undo-redo-plugin/tar.gz/634ab65e8ba0a3918fe6b872784ec579aa21ffdf}
+    version: 0.0.0
 
   tweakpane@4.0.5:
     resolution: {integrity: sha512-rxEXdSI+ArlG1RyO6FghC4ZUX8JkEfz8F3v1JuteXSV0pEtHJzyo07fcDG+NsJfN5L39kSbCYbB9cBGHyuI/tQ==}
@@ -1442,6 +1452,8 @@ snapshots:
 
   three@0.172.0: {}
 
+  three@0.175.0: {}
+
   through2@0.6.5:
     dependencies:
       readable-stream: 1.0.34
@@ -1462,6 +1474,11 @@ snapshots:
 
   tweakpane-plugin-media@1.0.3(tweakpane@4.0.5):
     dependencies:
+      tweakpane: 4.0.5
+
+  tweakpane-undo-redo-plugin@https://codeload.github.com/cosmicshelter/tweakpane-undo-redo-plugin/tar.gz/634ab65e8ba0a3918fe6b872784ec579aa21ffdf:
+    dependencies:
+      three: 0.175.0
       tweakpane: 4.0.5
 
   tweakpane@4.0.5: {}
