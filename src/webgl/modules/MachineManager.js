@@ -58,6 +58,7 @@ export default class MachineManager {
         //reversed version
         this._wheelEmojis = ["", "7️⃣", "🍏", "🔺", "🍊", "🍌"];
         this._wheelEmojis = ["🔴", "👑", "💎", "💀", "👁️"];
+        this._wheelEmojis = ["🔴", "👑", "💎", "💀", "7️⃣"];
         // reverse the array
         this._wheelEmojis = this._wheelEmojis.reverse();
 

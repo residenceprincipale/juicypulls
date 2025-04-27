@@ -44,6 +44,9 @@ export default class PhysicalDebug {
 		element.style.fontSize = '15px'
 		element.style.fontFamily = 'Arial, sans-serif'
 		this._rightScreen.appendChild(element)
+
+		// scroll right screen to the bottom
+		this._rightScreen.scrollTop = this._rightScreen.scrollHeight
 	}
 
 	// private
@@ -185,7 +188,7 @@ export default class PhysicalDebug {
 		gsap.delayedCall(0.15, () => {
 			socket.send({
 				event: 'lever',
-				receiver: 'physical-debug', // add physical non-debug too
+				receiver: 'machine', // add physical non-debug too
 			})
 		})
 
@@ -203,7 +206,7 @@ export default class PhysicalDebug {
 
 		socket.send({
 			event: 'button-collect',
-			receiver: 'physical-debug', // add physical non-debug too
+			receiver: 'machine', // add physical non-debug too
 		})
 	}
 
