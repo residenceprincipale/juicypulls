@@ -51,8 +51,9 @@ export default function addObjectDebug(folder, object, options = {}) {
 
 	// display helper
 	const helperName = object.constructor.name + 'Helper'
+	let helperObject = null
 	if (helperName in THREE) {
-		const helperObject = new THREE[helperName](object)
+		helperObject = new THREE[helperName](object)
 		helperObject.devObject = true
 		debugFolder
 			.addBinding({ helperVisible: false }, 'helperVisible', {

@@ -44,6 +44,7 @@ pnpm run dev
 ### Debug Utilities
 - `addObjectDebug` / `addMaterialDebug`: Automatically debug Mesh or Material parameters.
 - `addCustomMaterialDebug`: Debug custom material uniforms with live exportable settings.
+- `addLightDebug`: Debug lights with live exportable settings. Compatible with dynamic light creation directly from settings file, see (`LightsMain/index.js`).
 
 ### Custom Materials
 

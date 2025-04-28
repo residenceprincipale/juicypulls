@@ -1,7 +1,7 @@
 import Experience from 'core/Experience.js'
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl';
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial } from 'three'
+import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -18,7 +18,7 @@ export default class Machine {
 		this._resource = this._resources.casino
 		this._resource = this._resources.items.casinoModel
 
-		this._createLight()
+		// this._createLights()
 		this._createMaterial()
 		this._createRouletteMaterial()
 		this._createModel()
@@ -134,17 +134,49 @@ export default class Machine {
 		this._material = new MeshPhongMaterial({ color: 0x333333, map: this._resources.items.casinoRoughness })
 	}
 
-	_createLight() {
-		this._light = new DirectionalLight('#ffffff', 2.9)
-		this._light.position.set(0, 1.7, 1.5)
-		this._light.name = 'machineLight'
-		this._scene.add(this._light)
+	_createLights() {
+		this._lightTop = new DirectionalLight('#ffffff', 2.9);
+		this._lightTop.position.set(0, 1.7, 1.5);
+		this._lightTop.name = 'machineLightTop';
+		this._scene.add(this._lightTop);
 
-		this._light.target.position.set(0, 1, 0)
+		this._lightTop.target.position.set(0, 1, 0);
 
 		// Debug
 		if (this._debug.active) {
-			const debugFolder = addObjectDebug(this._debug.ui, this._light)
+			addObjectDebug(this._debug.ui, this._lightTop);
+			// const topLightHelper = new DirectionalLightHelper(this._lightTop, 0.5);
+			// this._scene.add(topLightHelper);
+		}
+
+		// light left
+		this._lightLeft = new DirectionalLight('#ffffff', 2);
+		this._lightLeft.position.set(-1, 1, 1);
+		this._lightLeft.name = 'machineLightLeft';
+		this._scene.add(this._lightLeft);
+
+		this._lightLeft.target.position.set(0, 1, 0);
+
+		// Debug
+		if (this._debug.active) {
+			addObjectDebug(this._debug.ui, this._lightLeft);
+			// const leftLightHelper = new DirectionalLightHelper(this._lightLeft, 0.5);
+			// this._scene.add(leftLightHelper);
+		}
+
+		// light right
+		this._lightRight = new DirectionalLight('#ffffff', 2);
+		this._lightRight.position.set(1, 1, 1);
+		this._lightRight.name = 'machineLightRight';
+		this._scene.add(this._lightRight);
+
+		this._lightRight.target.position.set(0, 1, 0);
+
+		// Debug
+		if (this._debug.active) {
+			addObjectDebug(this._debug.ui, this._lightRight);
+			// const rightLightHelper = new DirectionalLightHelper(this._lightRight, 0.5);
+			// this._scene.add(rightLightHelper);
 		}
 	}
 

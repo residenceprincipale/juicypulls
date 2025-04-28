@@ -4,6 +4,7 @@ import Floor from 'components/Floor.js'
 import Fox from 'components/Fox/Fox.js'
 import Cube from 'components/Cube/Cube.js'
 import Machine from '@/webgl/components/Machine/index.js'
+import LightsMain from '@/webgl/components/LightsMain/index.js'
 import Hands from '@/webgl/components/Hands/index.js'
 import CameraPlayer from '@/webgl/components/CameraPlayer/index.js'
 import VAT from 'components/VAT'
@@ -20,6 +21,7 @@ export default class Main {
 		this._scene = this._experience.scene
 		this._scene.resources = new Resources(sources)
 		this._debug = this._experience.debug
+		this._lights = new LightsMain()
 
 		this._scene.resources.on('ready', () => {
 
@@ -44,6 +46,7 @@ export default class Main {
 		if (this._fox) this.fox.update()
 		if (this._hands) this._hands.update()
 		if (this._physicalDebug) this._physicalDebug.update()
+		if (this._lights) this._lights.update()
 	}
 
 	lose() {
