@@ -122,7 +122,6 @@ export default class Machine {
 
 		this._wheels.forEach((wheel, index) => {
 			wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
-			console.log(this._rouletteMaterial.uniforms)
 			// wheel.rotation.value = (1.0 / this._segments) / 2
 		})
 	}
@@ -168,8 +167,6 @@ export default class Machine {
 				USE_NORMAL: true,
 			},
 		});
-
-		console.log(this._rouletteMaterial)
 
 	}
 
