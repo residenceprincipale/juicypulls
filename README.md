@@ -1,48 +1,105 @@
-# Threejs vite starter
+# Three.js + Vite Starter
 
-This is a starter template for threejs with vite based on Bruno Simon's starter.
+A powerful starter template for Three.js projects using Vite, inspired by Bruno Simon's structure.
 
-## Usage
+---
+
+## ✨ Usage
 
 ```bash
 pnpm install
 pnpm run dev
 ```
 
-## Stack
+---
 
-- [`Threejs`](https://threejs.org/)
-- [`Vite`](https://vitejs.dev/)
-- [`Tweakpane`](https://cocopon.github.io/tweakpane/)
-- [`Glslify`](https://github.com/KusStar/vite-plugin-glslify)
+## 📚 Stack
 
-## Features
+- [Three.js](https://threejs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tweakpane](https://cocopon.github.io/tweakpane/)
+- [Glslify](https://github.com/KusStar/vite-plugin-glslify)
 
-- `Scene management`: Add multiple scenes and switch between them by adding `?scene=scene-name` to the url
-- `Debug mode`: Enable debug mode by adding `#debug` to the url
-- `GltfClone`: Clone a gltf model with bones
-- `Audio management`: Add audios and positional audios with a complete debug panel
-- `Input management`: Minimal input management
-- `addObjectDebug or addMaterialDebug`: Auto debug parameters of a mesh or a material
+---
 
-## Events
+## 🔧 Features
 
-- `lever`: Triggered when roulette lever sends an input (comes from : physical input or debug-dev)
-- `button`: Triggered when roulette button is hit (comes from : physical input or debug-dev) index in data
-- `button-light`: Triggered  (comes from : machine-manager) index in data
-- `button-collect`: Triggered when roulette "collect" button is hit (comes from : physical input or debug-dev)
-- `remote`: Triggered when a remote button is hit, button info in the data (comes from : physical input (or debug-dev?) )
-- `update-rolling-points`: Update the current rolling points
-- `update-collected-points`: Update the total points
-- `update-quota`: Update the quota
-- `update-round`: Update the current round
-- `update-spins`: update the spins
+### Scene Management
+- Easily add multiple scenes.
+- Switch scenes via URL: `?scene=scene-name`.
 
-## Features to come I hope
+### Debug Mode
+- Enable debug tools by adding `#debug` to the URL.
 
-- Debounce the 3d objects interaction click
-- Afficher quelque chose quand ya une erreur de path de chargement de texture ? sinon c'est penible de deviner
-- Flip Y activé de base pour les textures, ou au moins une option dans le source.json
-- Ecrire un doc je t'en supplie
-- "debug.ui" je capte pas trop debug tout court ou debug.panel plutot pour ajouter les folders ça me parrait plus clair
-- La fonction addDebugMaterial() pourrais avoir la possibilité de passer juste un string qui créer le folder avec le nom en question ou passer le folder directement comme c'est deja le cas
+### Model Cloning
+- `GltfClone` utility for cloning GLTF models with bones support.
+
+### Audio Management
+- Add and manage 3D positional audios.
+- Full debug panel for audio controls.
+
+### Input Management
+- Minimal, extensible input management for keyboards, buttons, etc.
+
+### Debug Utilities
+- `addObjectDebug` / `addMaterialDebug`: Automatically debug Mesh or Material parameters.
+- `addCustomMaterialDebug`: Debug custom material uniforms with live exportable settings.
+
+### Custom Materials
+
+#### PhongCustomMaterial
+- Optimized custom Phong shading with external uniform settings (`materialSettings.js`).
+
+Uniform Types:
+| Type     | Example |
+|----------|---------|
+| Float    | `uMatcapIntensity: { value: 0.2 }` |
+| Vector2  | `uMatcapOffset: { value: { x: 0, y: 0 } }` |
+| Vector3  | `uMatcapScale: { value: { x: 0, y: 0, z: 0 } }` |
+| Color    | `uAmbientColor: { value: "#ffffff" }` or `uAmbientColor: { value: "0x00ff00" }` |
+| Texture  | `uMatcapTexture: { value: "theResourceItemName" }` |
+
+---
+
+## 📊 Events
+
+| Event | Description |
+|------|-------------|
+| `lever` | Triggered when roulette lever sends an input (physical or debug-dev). |
+| `button` | Triggered when roulette button is hit, with button index in data. |
+| `button-light` | Triggered when button light state changes. |
+| `button-collect` | Triggered when "collect" button is hit. |
+| `remote` | Triggered when a remote button is hit (info in data). |
+| `update-rolling-points` | Updates current rolling points. |
+| `update-collected-points` | Updates total collected points. |
+| `update-quota` | Updates quota info. |
+| `update-round` | Updates the current round. |
+| `update-spins` | Updates spin count. |
+
+---
+
+## 🔀 Planned Improvements
+
+- Debounce 3D object interaction clicks.
+- Improve error feedback for missing texture paths.
+- Optionally enable Y-flip for textures (via `source.json`).
+- Complete and clean documentation.
+- Improve debug folder creation clarity (`debug.ui` vs `debug.panel`).
+- Enhance `addDebugMaterial()` to accept either a folder name or folder instance.
+
+---
+
+## 🎉 Special Thanks
+
+Based on the excellent Three.js starter by Bruno Simon. Feel free to extend, modify, and make it your own!
+
+---
+
+## 🌐 License
+
+MIT
+
+---
+
+> Happy Coding! 🚀
+
