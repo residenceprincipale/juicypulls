@@ -5,8 +5,10 @@ import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2,
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
+import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
+import materialUniforms from './materialSettings.js'
 export default class Machine {
 	constructor() {
 		this._experience = new Experience()
@@ -120,6 +122,7 @@ export default class Machine {
 
 		this._wheels.forEach((wheel, index) => {
 			wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
+			console.log(this._rouletteMaterial.uniforms)
 			// wheel.rotation.value = (1.0 / this._segments) / 2
 		})
 	}
@@ -160,35 +163,13 @@ export default class Machine {
 		this._rouletteMaterial = new PhongCustomMaterial({
 			vertexShader,
 			fragmentShader,
-			uniforms: {
-				uTime: { value: 0 },
-				uAlbedoMap: { value: this._resources.items.wheelAlbedo },
-				uNormalMap: { value: this._resources.items.wheelNormal },
-				uAoMap: { value: this._resources.items.roulettesAO },
-				uMatcapMap: { value: this._resources.items.glassMatcap },
-				uMatcapOffset: { value: new Vector2(0, 0) },
-				uNormalRepeat: { value: new Vector2(1, 1) },
-				uNormalScale: { value: new Vector2(1, 1) },
-				uMatcapIntensity: { value: 0.2 },
-				uRoughness: { value: 0.5 },
-				uWheelsSpacing: { value: 4.8 },
-				uWheelsOffset: { value: 0.76 },
-				uAOIntensity: { value: 0.30 },
-				uBaseRotationOffset: { value: -0.843 },
-				uRotation0: { value: 0 },
-				uRotation1: { value: 0 },
-				uRotation2: { value: 0 },
-				uRotation3: { value: 0 },
-				uRotation4: { value: 0 },
-				uDiffuseIntensity: { value: 0.7 },
-			},
+			uniforms: materialUniforms,
 			defines: {
 				USE_NORMAL: true,
 			},
 		});
 
 		console.log(this._rouletteMaterial)
-		// console.log(this._rouletteMaterialOld)
 
 	}
 
@@ -207,6 +188,7 @@ export default class Machine {
 			title: 'Machine',
 			expanded: true,
 		})
-		addMaterialDebug(folder, this._rouletteMaterial)
+		// addMaterialDebug(folder, this._rouletteMaterial)
+		addCustomMaterialDebug(folder, materialUniforms, this._resources, this._rouletteMaterial)
 	}
 }
