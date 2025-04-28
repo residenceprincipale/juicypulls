@@ -1,4 +1,4 @@
-# Three.js + Vite Starter
+# Flipette 👻 | Built with Three.js + Vite Starter
 
 A powerful starter template for Three.js projects using Vite, inspired by Bruno Simon's structure.
 
@@ -50,7 +50,7 @@ pnpm run dev
 #### PhongCustomMaterial
 - Optimized custom Phong shading with external uniform settings (`materialSettings.js`).
 
-Uniform Types:
+Uniform Types in (`materialSettings.js`) file:
 | Type     | Example |
 |----------|---------|
 | Float    | `uMatcapIntensity: { value: 0.2 }` |
