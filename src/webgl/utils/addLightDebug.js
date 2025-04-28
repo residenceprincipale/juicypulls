@@ -9,7 +9,7 @@ export default function addLightDebug(folder, object, settings) {
 
 	const debugFolder = folder.addFolder({
 		title,
-		expanded: true,
+		expanded: false,
 	});
 
 	// Binding basic settings

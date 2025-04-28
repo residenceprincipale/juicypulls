@@ -44,7 +44,7 @@ export default class LightsMain {
     _createLights() {
         this._lightSettings.forEach((settings) => {
             const light = new DirectionalLight(
-                new Color(settings.color.value),
+                new Color(parseInt(settings.color.value)),
                 settings.intensity.value
             );
 

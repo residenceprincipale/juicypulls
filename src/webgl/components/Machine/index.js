@@ -1,6 +1,8 @@
 import Experience from 'core/Experience.js'
-import vertexShader from './shaders/vertex.glsl';
-import fragmentShader from './shaders/fragment.glsl';
+import baseVertexShader from './shadersBase/vertex.glsl';
+import baseFragmentShader from './shadersBase/fragment.glsl';
+import rouletteVertexShader from './shadersRoulette/vertex.glsl';
+import rouletteFragmentShader from './shadersRoulette/fragment.glsl';
 import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
@@ -8,7 +10,8 @@ import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
-import materialUniforms from './materialSettings.js'
+import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
+import baseMaterialUniforms from './baseMaterialSettings.js'
 export default class Machine {
 	constructor() {
 		this._experience = new Experience()
@@ -19,8 +22,8 @@ export default class Machine {
 		this._resource = this._resources.items.casinoModel
 
 		// this._createLights()
-		this._createMaterial()
 		this._createRouletteMaterial()
+		this._createBaseMaterial()
 		this._createModel()
 
 		this._createEventListeners()
@@ -108,7 +111,7 @@ export default class Machine {
 		this._model.traverse((child) => {
 			if (!child.isMesh) return
 			if (child.name.includes('slut-base')) {
-				child.material = this._material
+				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
 				child.material = this._rouletteMaterial;
 				this._leds.push(child)
@@ -126,75 +129,25 @@ export default class Machine {
 		})
 	}
 
-	_createMaterial() {
-		// Material for the wheels
-		const texture = this._resources.items.casinoRoughness
-		texture.flipY = false;
-
-		this._material = new MeshPhongMaterial({ color: 0x333333, map: this._resources.items.casinoRoughness })
-	}
-
-	_createLights() {
-		this._lightTop = new DirectionalLight('#ffffff', 2.9);
-		this._lightTop.position.set(0, 1.7, 1.5);
-		this._lightTop.name = 'machineLightTop';
-		this._scene.add(this._lightTop);
-
-		this._lightTop.target.position.set(0, 1, 0);
-
-		// Debug
-		if (this._debug.active) {
-			addObjectDebug(this._debug.ui, this._lightTop);
-			// const topLightHelper = new DirectionalLightHelper(this._lightTop, 0.5);
-			// this._scene.add(topLightHelper);
-		}
-
-		// light left
-		this._lightLeft = new DirectionalLight('#ffffff', 2);
-		this._lightLeft.position.set(-1, 1, 1);
-		this._lightLeft.name = 'machineLightLeft';
-		this._scene.add(this._lightLeft);
-
-		this._lightLeft.target.position.set(0, 1, 0);
-
-		// Debug
-		if (this._debug.active) {
-			addObjectDebug(this._debug.ui, this._lightLeft);
-			// const leftLightHelper = new DirectionalLightHelper(this._lightLeft, 0.5);
-			// this._scene.add(leftLightHelper);
-		}
-
-		// light right
-		this._lightRight = new DirectionalLight('#ffffff', 2);
-		this._lightRight.position.set(1, 1, 1);
-		this._lightRight.name = 'machineLightRight';
-		this._scene.add(this._lightRight);
-
-		this._lightRight.target.position.set(0, 1, 0);
-
-		// Debug
-		if (this._debug.active) {
-			addObjectDebug(this._debug.ui, this._lightRight);
-			// const rightLightHelper = new DirectionalLightHelper(this._lightRight, 0.5);
-			// this._scene.add(rightLightHelper);
-		}
+	_createBaseMaterial() {
+		this._baseMaterial = new PhongCustomMaterial({
+			vertexShader: baseVertexShader,
+			fragmentShader: baseFragmentShader,
+			uniforms: baseMaterialUniforms,
+			name: 'Base Material',
+			defines: {
+				USE_NORMAL: false,
+			},
+		});
 	}
 
 	_createRouletteMaterial() {
-		const wheelAlbedo = this._resources.items.wheelAlbedo;
-		wheelAlbedo.wrapS = RepeatWrapping
-		wheelAlbedo.wrapT = RepeatWrapping
-		wheelAlbedo.flipY = false
-
-		const wheelNormal = this._resources.items.wheelNormal;
-		wheelNormal.wrapS = RepeatWrapping
-		wheelNormal.wrapT = RepeatWrapping
-		wheelNormal.flipY = false
 
 		this._rouletteMaterial = new PhongCustomMaterial({
-			vertexShader,
-			fragmentShader,
-			uniforms: materialUniforms,
+			vertexShader: rouletteVertexShader,
+			fragmentShader: rouletteFragmentShader,
+			uniforms: rouletteMaterialUniforms,
+			name: 'Roulette Material',
 			defines: {
 				USE_NORMAL: true,
 			},
@@ -218,6 +171,7 @@ export default class Machine {
 			expanded: true,
 		})
 		// addMaterialDebug(folder, this._rouletteMaterial)
-		addCustomMaterialDebug(folder, materialUniforms, this._resources, this._rouletteMaterial)
+		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
+		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 	}
 }

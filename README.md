@@ -83,8 +83,6 @@ Uniform Types in (`materialSettings.js`) file:
 
 - Debounce 3D object interaction clicks.
 - Improve error feedback for missing texture paths.
-- Optionally enable Y-flip for textures (via `source.json`).
-- Complete and clean documentation.
 - Improve debug folder creation clarity (`debug.ui` vs `debug.panel`).
 - Enhance `addDebugMaterial()` to accept either a folder name or folder instance.
 

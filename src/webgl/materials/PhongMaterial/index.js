@@ -10,7 +10,8 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
         fragmentShader = defaultFragmentShader,
         defines = {},
         uniforms = {},
-        parameters = {}
+        parameters = {},
+        name = 'CustomPhongMaterial',
     } = {}) {
         const experience = new Experience()
         const resources = experience.scene.resources
@@ -69,7 +70,7 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
             lights: true,
             fog: true,
             transparent: true,
-            name: 'PhongMaterial',
+            name,
             ...parameters
         });
     }
