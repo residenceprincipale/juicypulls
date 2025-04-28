@@ -21,11 +21,15 @@
 	},
 	{
 		"name": "wheelAlbedo",
-		"path": "textures/roue-4.jpg"
+		"path": "textures/roue-4.jpg",
+		"flipY": false,
+		"repeatWrapping": true
 	},
 	{
 		"name": "wheelNormal",
-		"path": "textures/roue-4-normal.jpg"
+		"path": "textures/roue-4-normal.jpg",
+		"flipY": false,
+		"repeatWrapping": true
 	},
 	{
 		"name": "casinoRoughness",

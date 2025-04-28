@@ -1,5 +1,5 @@
 import EventEmitter from 'core/EventEmitter.js'
-import { AudioLoader, CubeTexture, CubeTextureLoader, Object3D, Texture, TextureLoader, WebGLRenderer } from 'three'
+import { AudioLoader, CubeTexture, CubeTextureLoader, Object3D, Texture, TextureLoader, WebGLRenderer, RepeatWrapping } from 'three'
 import Experience from 'core/Experience.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
@@ -158,6 +158,14 @@ export default class Resources extends EventEmitter {
 		this.loaded++
 		source.endTime = performance.now()
 		source.loadTime = Math.floor(source.endTime - source.startTime)
+
+		if (source.flipY !== undefined && source.flipY) {
+			file.flipY = source.flipY
+		}
+		if (source.repeatWrapping !== undefined && source.repeatWrapping) {
+			file.wrapS = RepeatWrapping;
+			file.wrapT = RepeatWrapping;
+		}
 
 		if (this.debug.active && this.debug.debugParams.ResourceLog)
 			console.debug(
