@@ -10,6 +10,7 @@ import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
 import baseMaterialUniforms from './baseMaterialSettings.js'
+import innerMaterialUniforms from './innerMaterialSettings.js'
 export default class Machine {
 	constructor() {
 		this._experience = new Experience()
@@ -22,6 +23,7 @@ export default class Machine {
 		// this._createLights()
 		this._createRouletteMaterial()
 		this._createBaseMaterial()
+		this._createInnerMaterial()
 		this._createModel()
 
 		this._createEventListeners()
@@ -114,7 +116,7 @@ export default class Machine {
 				child.material = this._rouletteMaterial;
 				this._leds.push(child)
 			} else if (child.name.includes('gold')) {
-				child.material = new MeshMatcapMaterial({ matcap: this._resources.items.goldMatcap })
+				child.material = this._innerMaterial
 			}
 			if (child.name.includes('slut-base-inner')) {
 				this._innerMachine = child
@@ -153,6 +155,18 @@ export default class Machine {
 
 	}
 
+	_createInnerMaterial() {
+		this._innerMaterial = new PhongCustomMaterial({
+			// vertexShader: innerVertexShader,
+			// fragmentShader: innerFragmentShader,
+			uniforms: innerMaterialUniforms,
+			name: 'Inner Material',
+			defines: {
+				USE_MATCAP: true,
+			},
+		});
+	}
+
 	/**
 	 * Events
 	 */
@@ -171,5 +185,6 @@ export default class Machine {
 		// addMaterialDebug(folder, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
+		addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)
 	}
 }

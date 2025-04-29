@@ -1,5 +1,5 @@
 export default function addCustomMaterialDebug(folder, settings, resources, material) {
-    const nestedFolder = folder.addFolder({ title: material.name, expanded: true });
+    const nestedFolder = folder.addFolder({ title: material.name, expanded: false });
     for (const key in settings) {
         const element = settings[key];
         if (!element) continue;

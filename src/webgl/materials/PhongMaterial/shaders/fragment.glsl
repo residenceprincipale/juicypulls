@@ -13,13 +13,23 @@ uniform vec3 uDiffuseColor;
 uniform vec3 uSpecularColor;
 uniform vec3 uEmissiveColor;
 
-uniform sampler2D uMatcapMap;
-uniform vec2 uMatcapOffset;
-uniform float uMatcapIntensity;
+#ifdef USE_ALBEDO
+	uniform sampler2D uAlbedoMap;
+	uniform vec2 uAlbedoRepeat;
+	uniform float uAlbedoIntensity;
+#endif
 
-uniform sampler2D uRoughnessMap;
-uniform vec2 uRoughnessRepeat;
-uniform float uRoughnessIntensity;
+#ifdef USE_MATCAP
+	uniform sampler2D uMatcapMap;
+	uniform vec2 uMatcapOffset;
+	uniform float uMatcapIntensity;
+#endif
+
+#ifdef USE_ROUGHNESS
+	uniform sampler2D uRoughnessMap;
+	uniform vec2 uRoughnessRepeat;
+	uniform float uRoughnessIntensity;
+#endif
 
 #include <common>
 #include <packing>
@@ -60,6 +70,22 @@ uniform float uRoughnessIntensity;
 	#include <normalmap_pars_fragment>
 #endif
 
+#ifdef USE_MATCAP
+	vec3 matcap(float roughness) {
+		vec3 newNormal = normalize(vNormal);
+		vec3 viewDir = normalize(vViewPosition);
+		vec3 x = normalize(vec3(viewDir.z, 0.0, - viewDir.x));
+		vec3 y = cross(viewDir, x);
+		vec2 uv = vec2(dot(x, newNormal), dot(y, newNormal)) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
+		uv *= roughness;
+		uv.x += uMatcapOffset.x;
+		uv.y += uMatcapOffset.y;
+		vec3 final = texture2D(uMatcapMap, uv).rgb;
+		
+		return final;
+	}
+#endif
+
 mat3 getTangentFrame( vec3 eye_pos, vec3 surf_norm, vec2 uv ) {
 	vec3 q0 = dFdx( eye_pos.xyz );
 	vec3 q1 = dFdy( eye_pos.xyz );
@@ -78,20 +104,6 @@ mat3 getTangentFrame( vec3 eye_pos, vec3 surf_norm, vec2 uv ) {
 	float scale = ( det == 0.0 ) ? 0.0 : inversesqrt( det );
 
 	return mat3( T * scale, B * scale, N );
-}
-
-vec3 matcap(float roughness) {
-  vec3 newNormal = normalize(vNormal);
-  vec3 viewDir = normalize(vViewPosition);
-  vec3 x = normalize(vec3(viewDir.z, 0.0, - viewDir.x));
-  vec3 y = cross(viewDir, x);
-  vec2 uv = vec2(dot(x, newNormal), dot(y, newNormal)) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
-  uv *= roughness;
-  uv.x += uMatcapOffset.x;
-  uv.y += uMatcapOffset.y;
-  vec3 final = texture2D(uMatcapMap, uv).rgb;
-  
-  return final;
 }
 
 vec2 rotateUV(vec2 uv, float rotation)

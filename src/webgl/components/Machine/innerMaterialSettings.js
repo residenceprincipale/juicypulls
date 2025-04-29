@@ -1,30 +1,27 @@
 export default {
-    "uTime": {
-        "value": 0
-    },
     "uAoMap": {
         "value": "baseAO"
     },
-    "uRoughnessMap": {
-        "value": "baseRoughness"
+    "uMatcapMap": {
+        "value": "goldMatcap"
     },
-    "uRoughnessRepeat": {
+    "uMatcapOffset": {
         "value": {
-            "x": 1,
-            "y": 1
+            "x": 0,
+            "y": 0
         }
     },
-    "uRoughnessIntensity": {
-        "value": 8
-    },
-    "uAOIntensity": {
+    "uMatcapIntensity": {
         "value": 1
     },
+    "uAOIntensity": {
+        "value": 0.3
+    },
     "uAmbientIntensity": {
-        "value": 0.49999999999999994
+        "value": 0.72
     },
     "uDiffuseIntensity": {
-        "value": 0.9999999999999999
+        "value": 0.8099999999999999
     },
     "uSpecularIntensity": {
         "value": 0.040000000000000036
@@ -39,7 +36,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#000000"
+        "value": "#ffffff"
     },
     "uSpecularColor": {
         "value": "0xffffff"
