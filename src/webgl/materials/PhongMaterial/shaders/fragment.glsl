@@ -17,6 +17,10 @@ uniform sampler2D uMatcapMap;
 uniform vec2 uMatcapOffset;
 uniform float uMatcapIntensity;
 
+uniform sampler2D uRoughnessMap;
+uniform vec2 uRoughnessRepeat;
+uniform float uRoughnessIntensity;
+
 #include <common>
 #include <packing>
 #include <dithering_pars_fragment>
@@ -137,7 +141,7 @@ void main() {
 	float roughness = 1.;
 
 	#ifdef USE_ROUGHNESS
-	roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity;
+		roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity;
 	#endif
 
 	// Lighting
@@ -145,7 +149,7 @@ void main() {
 	material.diffuseColor = uDiffuseColor;
 	material.specularColor = uSpecularColor;
 	material.specularShininess = uShininess;
-	material.specularStrength = uSpecularIntensity;
+	material.specularStrength = uSpecularIntensity * roughness;
 
 	#include <lights_fragment_begin>
 	#include <lights_fragment_maps>

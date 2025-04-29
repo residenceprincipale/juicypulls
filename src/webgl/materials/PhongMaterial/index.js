@@ -20,7 +20,6 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
         for (const key in uniforms) {
             const element = uniforms[key];
             if (!element) continue;
-            if (element.value === undefined) continue;
             if (typeof element.value === 'string') {
                 if (element.value.startsWith('#')) { // color hex
                     processedUniforms[key] = { value: new THREE.Color(element.value) };
