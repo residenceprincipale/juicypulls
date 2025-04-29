@@ -10,13 +10,13 @@ export default {
         "value": false
     },
     "intensity": {
-        "value": 2.9
+        "value": 0.5434782608695652
     },
     "color": {
         "value": "0xffffff"
     },
     "helper": {
-        "value": true
+        "value": false
     },
     "transformControl": {
         "value": false
@@ -24,8 +24,8 @@ export default {
     "position": {
         "value": {
             "x": 0,
-            "y": 1.2174421937417703,
-            "z": 1.5
+            "y": 1.4167257272047964,
+            "z": 0.3192315369423474
         }
     },
     "rotation": {
@@ -49,7 +49,7 @@ export default {
         "value": {
             "x": 0,
             "y": 0.3962550216655073,
-            "z": 0.4559808411646928
+            "z": 0.13908022081605304
         }
     },
     "targetRotation": {

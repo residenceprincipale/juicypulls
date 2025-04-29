@@ -1,5 +1,5 @@
 export default {
-    "name": "lightLeft",
+    "name": "lightRight",
     "visible": {
         "value": true
     },
@@ -10,7 +10,7 @@ export default {
         "value": false
     },
     "intensity": {
-        "value": 2.9
+        "value": 0.43478260869565216
     },
     "color": {
         "value": "0xffffff"
@@ -23,9 +23,9 @@ export default {
     },
     "position": {
         "value": {
-            "x": 0,
-            "y": 0.46983386147377226,
-            "z": 1.5
+            "x": 1.360110729497174,
+            "y": 0.26783278911427244,
+            "z": 1.3120843801376822
         }
     },
     "rotation": {
@@ -47,9 +47,9 @@ export default {
     },
     "targetPosition": {
         "value": {
-            "x": 0,
-            "y": 0.8699966788699347,
-            "z": -0.14407784497756665
+            "x": 0.1013168947587747,
+            "y": -1.0505362207814672,
+            "z": -1.0013253523295575
         }
     },
     "targetRotation": {
