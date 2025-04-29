@@ -33,10 +33,10 @@ export default {
         }
     },
     "uMatcapIntensity": {
-        "value": 0.2
+        "value": 0.21
     },
     "uRoughness": {
-        "value": 0.5
+        "value": 0.53
     },
     "uWheelsSpacing": {
         "value": 4.8
@@ -45,37 +45,42 @@ export default {
         "value": 0.76
     },
     "uAOIntensity": {
-        "value": 0.3
+        "value": 0.38
     },
     "uBaseRotationOffset": {
         "value": -0.843
     },
     "uRotation0": {
-        "value": 0
+        "value": 0,
+        "debug": false
     },
     "uRotation1": {
-        "value": 0
+        "value": 0,
+        "debug": false
     },
     "uRotation2": {
-        "value": 0
+        "value": 0,
+        "debug": false
     },
     "uRotation3": {
-        "value": 0
+        "value": 0,
+        "debug": false
     },
     "uRotation4": {
-        "value": 0
+        "value": 0,
+        "debug": false
     },
     "uAmbientIntensity": {
         "value": 1
     },
     "uDiffuseIntensity": {
-        "value": 0.47
+        "value": 1.44
     },
     "uSpecularIntensity": {
-        "value": 0.68
+        "value": 0.79
     },
     "uShininess": {
-        "value": 100
+        "value": 100.19
     },
     "uOpacity": {
         "value": 1
@@ -84,7 +89,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "0xdd0000"
+        "value": "#ffffff"
     },
     "uSpecularColor": {
         "value": "0xffffff"

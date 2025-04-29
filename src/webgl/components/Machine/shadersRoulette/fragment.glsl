@@ -17,6 +17,12 @@ uniform sampler2D uMatcapMap;
 uniform vec2 uMatcapOffset;
 uniform float uMatcapIntensity;
 
+#ifdef USE_ROUGHNESS
+	uniform sampler2D uRoughnessMap;
+	uniform vec2 uRoughnessRepeat;
+	uniform float uRoughnessIntensity;
+#endif
+
 // uniforms
 uniform float uRoughness;
 uniform float uWheelsSpacing;
@@ -174,7 +180,7 @@ void main() {
 	material.diffuseColor = diffuseColor.rgb;
 	material.specularColor = uSpecularColor;
 	material.specularShininess = uShininess;
-	material.specularStrength = uSpecularIntensity;
+	material.specularStrength = uSpecularIntensity * roughness;
 
 	#include <lights_fragment_begin>
 	#include <lights_fragment_maps>

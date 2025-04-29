@@ -32,12 +32,14 @@
 		"repeatWrapping": true
 	},
 	{
-		"name": "casinoRoughness",
-		"path": "textures/casinoRoughness.png"
+		"name": "baseRoughness",
+		"path": "textures/casinoRoughness.png",
+		"flipY": false
 	},
 	{
-		"name": "casinoAO",
-		"path": "textures/casinoAO.png"
+		"name": "baseAO",
+		"path": "textures/casinoAO.png",
+		"flipY": false
 	},
 	{
 		"name": "roulettesAO",

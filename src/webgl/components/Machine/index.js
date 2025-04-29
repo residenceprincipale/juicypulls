@@ -1,6 +1,4 @@
 import Experience from 'core/Experience.js'
-import baseVertexShader from './shadersBase/vertex.glsl';
-import baseFragmentShader from './shadersBase/fragment.glsl';
 import rouletteVertexShader from './shadersRoulette/vertex.glsl';
 import rouletteFragmentShader from './shadersRoulette/fragment.glsl';
 import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
@@ -131,12 +129,12 @@ export default class Machine {
 
 	_createBaseMaterial() {
 		this._baseMaterial = new PhongCustomMaterial({
-			vertexShader: baseVertexShader,
-			fragmentShader: baseFragmentShader,
+			// vertexShader: baseVertexShader,
+			// fragmentShader: baseFragmentShader,
 			uniforms: baseMaterialUniforms,
 			name: 'Base Material',
 			defines: {
-				USE_NORMAL: false,
+				USE_ROUGHNESS: true,
 			},
 		});
 	}

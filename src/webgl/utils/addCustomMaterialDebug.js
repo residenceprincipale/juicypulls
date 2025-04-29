@@ -3,7 +3,8 @@ export default function addCustomMaterialDebug(folder, settings, resources, mate
     for (const key in settings) {
         const element = settings[key];
         if (!element) continue;
-        if (!element.value) continue;
+        if (element.value === undefined) continue;
+        if (element.debug === false) continue;
         if (typeof element.value === 'string') {
             if (element.value.startsWith('#') || element.value.startsWith('0x')) { // color
                 nestedFolder.addBinding(element, 'value', { label: key, view: 'color' }).on('change', () => updateMaterial({ material, element, key, settingsName: settings }));
