@@ -1,6 +1,8 @@
 import Experience from 'core/Experience.js'
 import rouletteVertexShader from './shadersRoulette/vertex.glsl';
 import rouletteFragmentShader from './shadersRoulette/fragment.glsl';
+import innerReflectionVertexShader from './shadersInnerReflection/vertex.glsl';
+import innerReflectionFragmentShader from './shadersInnerReflection/fragment.glsl';
 import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
@@ -11,6 +13,7 @@ import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
 import baseMaterialUniforms from './baseMaterialSettings.js'
 import innerMaterialUniforms from './innerMaterialSettings.js'
+import innerReflectionMaterialUniforms from './innerReflectionMaterialSettings.js'
 export default class Machine {
 	constructor() {
 		this._experience = new Experience()
@@ -24,6 +27,7 @@ export default class Machine {
 		this._createRouletteMaterial()
 		this._createBaseMaterial()
 		this._createInnerMaterial()
+		this._createInnerReflectionMaterial()
 		this._createModel()
 
 		this._createEventListeners()
@@ -110,7 +114,10 @@ export default class Machine {
 
 		this._model.traverse((child) => {
 			if (!child.isMesh) return
-			if (child.name.includes('slut-base')) {
+			if (child.name.includes('gold-inner')) {
+				child.material = this._innerReflectionMaterial
+				console.log(child)
+			} else if (child.name.includes('slut-base')) {
 				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
 				child.material = this._rouletteMaterial;
@@ -125,6 +132,7 @@ export default class Machine {
 
 		this._wheels.forEach((wheel, index) => {
 			wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
+			this._innerReflectionMaterial.uniforms[`uRotation${index}`] = wheel.rotation
 			// wheel.rotation.value = (1.0 / this._segments) / 2
 		})
 	}
@@ -143,7 +151,6 @@ export default class Machine {
 	}
 
 	_createRouletteMaterial() {
-
 		this._rouletteMaterial = new PhongCustomMaterial({
 			vertexShader: rouletteVertexShader,
 			fragmentShader: rouletteFragmentShader,
@@ -154,7 +161,21 @@ export default class Machine {
 				USE_MATCAP: true,
 			},
 		});
+	}
 
+	_createInnerReflectionMaterial() {
+		this._innerReflectionMaterial = new PhongCustomMaterial({
+			vertexShader: innerReflectionVertexShader,
+			fragmentShader: innerReflectionFragmentShader,
+			// vertexShader: rouletteVertexShader,
+			// fragmentShader: rouletteFragmentShader,
+			uniforms: innerReflectionMaterialUniforms,
+			name: 'Inner Reflection Material',
+			defines: {
+				USE_ROUGHNESS: true,
+				USE_MATCAP: true,
+			},
+		});
 	}
 
 	_createInnerMaterial() {
@@ -189,5 +210,6 @@ export default class Machine {
 		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 		addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)
+		addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
 	}
 }
