@@ -150,7 +150,8 @@ export default class Machine {
 			uniforms: rouletteMaterialUniforms,
 			name: 'Roulette Material',
 			defines: {
-				USE_NORMAL: true,
+				USE_ROUGHNESS: true,
+				USE_MATCAP: true,
 			},
 		});
 
