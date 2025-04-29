@@ -1,33 +1,39 @@
 export default {
-    "uAoMap": {
-        "value": "baseAO"
+    "uRoughnessMap": {
+        "value": "baseRoughness"
+    },
+    "uRoughnessRepeat": {
+        "value": {
+            "x": 1.5,
+            "y": 1.5
+        }
+    },
+    "uRoughnessIntensity": {
+        "value": 0.9999999999999998
     },
     "uMatcapMap": {
         "value": "goldMatcap"
     },
     "uMatcapOffset": {
         "value": {
-            "x": 0,
+            "x": 0.04,
             "y": 0
         }
     },
     "uMatcapIntensity": {
         "value": 1
     },
-    "uAOIntensity": {
-        "value": 0.3
-    },
     "uAmbientIntensity": {
-        "value": 0.72
+        "value": 1
     },
     "uDiffuseIntensity": {
-        "value": 0.8099999999999999
+        "value": 0.9999999999999999
     },
     "uSpecularIntensity": {
-        "value": 0.040000000000000036
+        "value": 0.30000000000000004
     },
     "uShininess": {
-        "value": 150
+        "value": 300
     },
     "uOpacity": {
         "value": 1
@@ -39,7 +45,7 @@ export default {
         "value": "#ffffff"
     },
     "uSpecularColor": {
-        "value": "0xffffff"
+        "value": "#ffffff"
     },
     "uEmissiveColor": {
         "value": "0x000000"

@@ -163,6 +163,7 @@ export default class Machine {
 			uniforms: innerMaterialUniforms,
 			name: 'Inner Material',
 			defines: {
+				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
 		});

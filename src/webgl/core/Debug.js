@@ -34,7 +34,6 @@ export default class Debug {
 
 			this.ui.expanded = expanded // apply later for "this.ui.containerEl_" defined
 			this.ui.element.addEventListener('click', () => {
-				console.log('test')
 				localStorage.setItem('debugPaneExpanded', this.ui.expanded.toString());
 			})
 
