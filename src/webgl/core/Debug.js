@@ -15,9 +15,31 @@ export default class Debug {
 		this.active = window.location.hash.includes('#debug')
 
 		if (this.active) {
-			this.ui = new Pane({ title: '⚙️ Debug' })
+
+			// Create the debug pane with the title
+			this.ui = new Pane({
+				title: '⚙️ Debug',
+				expanded: true,
+			});
+
+			// Retrieve the expanded state from localStorage, default to false
+			let expanded = false;
+			const storedExpanded = localStorage.getItem('debugPaneExpanded');
+			if (storedExpanded !== null) {
+				expanded = storedExpanded === 'true'; // localStorage stores strings
+			} else {
+				// If not present, initialize it in localStorage
+				localStorage.setItem('debugPaneExpanded', 'false');
+			}
+
+			this.ui.expanded = expanded // apply later for "this.ui.containerEl_" defined
+			this.ui.element.addEventListener('click', () => {
+				console.log('test')
+				localStorage.setItem('debugPaneExpanded', this.ui.expanded.toString());
+			})
+
 			const uiContainer = this.ui.containerElem_
-			const uiBindContainer = uiContainer.querySelector("[style='height: auto;']")
+			const uiBindContainer = uiContainer.querySelector(".tp-rotv_c")
 			uiContainer.style.position = 'fixed'
 			uiContainer.style.userSelect = 'none'
 			uiBindContainer.style.maxHeight = '80vh'
@@ -74,21 +96,21 @@ export default class Debug {
 			input.click()
 		}
 
-		this.ui
-			.addBlade({
-				view: 'buttongrid',
-				size: [2, 1],
-				cells: (x, y) => ({
-					title: [['Import', 'Export']][y][x],
-				}),
-			})
-			.on('click', (event) => {
-				if (event.index[0] === 0) {
-					handleImport()
-					return
-				}
-				handleExport()
-			})
+		// this.ui
+		// 	.addBlade({
+		// 		view: 'buttongrid',
+		// 		size: [2, 1],
+		// 		cells: (x, y) => ({
+		// 			title: [['Import', 'Export']][y][x],
+		// 		}),
+		// 	})
+		// 	.on('click', (event) => {
+		// 		if (event.index[0] === 0) {
+		// 			handleImport()
+		// 			return
+		// 		}
+		// 		handleExport()
+		// 	})
 	}
 
 	setMoveEvent() {
