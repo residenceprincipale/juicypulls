@@ -137,6 +137,7 @@ export default class Machine {
 			name: 'Base Material',
 			defines: {
 				USE_ROUGHNESS: true,
+				USE_MATCAP: true,
 			},
 		});
 	}

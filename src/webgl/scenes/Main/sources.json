@@ -33,8 +33,9 @@
 	},
 	{
 		"name": "baseRoughness",
-		"path": "textures/casinoRoughness.png",
-		"flipY": false
+		"path": "textures/baseRoughness1.png",
+		"flipY": false,
+		"repeatWrapping": true
 	},
 	{
 		"name": "baseAO",
@@ -52,6 +53,10 @@
 	{
 		"name": "goldMatcap",
 		"path": "textures/goldMatcap.jpeg"
+	},
+	{
+		"name": "metalMatcap",
+		"path": "textures/matcaps/metal-matcap-1.jpeg"
 	},
 	{
 		"name": "collectButtonTexture",
