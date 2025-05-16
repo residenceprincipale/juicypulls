@@ -60,15 +60,26 @@ export default class SecondRoulette {
 		if (!this._flapsOpened) return
 		this._flapInTimeline = gsap.timeline();
 		this._flapInTimeline.to(this._topFlap.position, {
-			y: 0.4,
+			y: "-=0.07",
+			z: "+=0.02",
 			ease: "none",
-			duration: 0.4,
+			duration: 0.3,
 		})
+		this._flapInTimeline.to(this._topFlap.rotation, {
+			x: "+=0.65",
+			ease: "none",
+			duration: 0.2,
+		}, 0)
 		this._flapInTimeline.to(this._bottomFlap.position, {
-			y: 0.4,
+			y: "+=0.07",
 			ease: "none",
-			duration: 0.4,
-		})
+			duration: 0.3,
+		}, 0.05)
+		this._flapInTimeline.to(this._bottomFlap.rotation, {
+			z: "-=0.03",
+			ease: "none",
+			duration: 0.2,
+		}, 0.05)
 
 		this._flapsOpened = false
 	}
