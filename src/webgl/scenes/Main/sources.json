@@ -97,5 +97,39 @@
 	{
 		"name": "clothNormalTexture",
 		"path": "textures/normals.png"
+	},
+	{
+		"name": "secondRouletteModel",
+		"path": "models/second-wheel-model.glb"
+	},
+	{
+		"name": "secondRouletteAo",
+		"path": "textures/second-wheel/BASE_ROULETTE_AO.png",
+		"flipY": false
+	},
+	{
+		"name": "secondRouletteAlbedo",
+		"path": "textures/second-wheel/BASE_ROULETTE_Diffuse.png",
+		"flipY": false
+	},
+	{
+		"name": "secondRouletteRoughness",
+		"path": "textures/second-wheel/BASE_ROULETTE_Ro.png",
+		"flipY": false
+	},
+	{
+		"name": "secondRouletteNormal",
+		"path": "textures/second-wheel/BASE_ROULETTE_TN.png",
+		"flipY": false
+	},
+	{
+		"name": "flap-albedo",
+		"path": "textures/second-wheel/flap-albedo.jpg",
+		"flipY": false
+	},
+	{
+		"name": "flap-normal",
+		"path": "textures/second-wheel/flap-normal.jpg",
+		"flipY": false
 	}
 ]

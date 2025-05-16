@@ -69,6 +69,7 @@ Uniform Types in (`materialSettings.js`) file:
 | `lever` | Triggered when roulette lever sends an input (physical or debug-dev). |
 | `button` | Triggered when roulette button is hit, with button index in data. |
 | `button-light` | Triggered when button light state changes. |
+| `reset-buttons-light` | Triggered to reset all buttons light. |
 | `button-collect` | Triggered when "collect" button is hit. |
 | `remote` | Triggered when a remote button is hit (info in data). |
 | `update-rolling-points` | Updates current rolling points. |

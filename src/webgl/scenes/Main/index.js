@@ -14,6 +14,7 @@ import PhysicalDebug from '@/webgl/components/PhysicalDebug/index.js'
 import { Color } from 'three'
 import gsap from 'gsap'
 import MachineManager from '@/webgl/modules/MachineManager'
+import SecondRoulette from '@/webgl/components/SecondRoulette'
 
 export default class Main {
 	constructor() {
@@ -26,6 +27,7 @@ export default class Main {
 		this._scene.resources.on('ready', () => {
 
 			this._machine = new Machine()
+			this._secondRoulette = new SecondRoulette()
 			this._machineManager = new MachineManager({ machine: this._machine })
 
 			this._hands = new Hands()

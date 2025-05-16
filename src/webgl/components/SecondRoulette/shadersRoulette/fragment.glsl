@@ -13,23 +13,33 @@ uniform vec3 uDiffuseColor;
 uniform vec3 uSpecularColor;
 uniform vec3 uEmissiveColor;
 
-#ifdef USE_ALBEDO
-	uniform sampler2D uAlbedoMap;
-	uniform vec2 uAlbedoRepeat;
-	uniform float uAlbedoIntensity;
-#endif
-
-#ifdef USE_MATCAP
-	uniform sampler2D uMatcapMap;
-	uniform vec2 uMatcapOffset;
-	uniform float uMatcapIntensity;
-#endif
+uniform sampler2D uMatcapMap;
+uniform vec2 uMatcapOffset;
+uniform float uMatcapIntensity;
 
 #ifdef USE_ROUGHNESS
 	uniform sampler2D uRoughnessMap;
 	uniform vec2 uRoughnessRepeat;
 	uniform float uRoughnessIntensity;
 #endif
+
+// uniforms
+uniform float uRoughness;
+uniform float uWheelsSpacing;
+uniform float uWheelsOffset;
+uniform float uAOIntensity;
+uniform float uBaseRotationOffset;
+uniform float uRotation0;
+uniform float uRotation1;
+uniform float uRotation2;
+uniform float uRotation3;
+uniform float uRotation4;
+
+uniform sampler2D uAlbedoMap;
+uniform sampler2D uNormalMap;
+uniform vec2 uNormalRepeat;
+uniform vec2 uNormalScale;
+uniform sampler2D uAoMap;
 
 #include <common>
 #include <packing>
@@ -66,27 +76,8 @@ uniform vec3 uEmissiveColor;
 	#include <bumpmap_pars_fragment>
 #endif
 
-#ifdef USE_NORMAL
+#ifdef USE_NORMALMAP
 	#include <normalmap_pars_fragment>
-	uniform sampler2D uNormalMap;
-	uniform vec2 uNormalRepeat;
-	uniform vec2 uNormalScale;
-#endif
-
-#ifdef USE_MATCAP
-	vec3 matcap(float roughness) {
-		vec3 newNormal = normalize(vNormal);
-		vec3 viewDir = normalize(vViewPosition);
-		vec3 x = normalize(vec3(viewDir.z, 0.0, - viewDir.x));
-		vec3 y = cross(viewDir, x);
-		vec2 uv = vec2(dot(x, newNormal), dot(y, newNormal)) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
-		uv *= roughness;
-		uv.x += uMatcapOffset.x;
-		uv.y += uMatcapOffset.y;
-		vec3 final = texture2D(uMatcapMap, uv).rgb;
-		
-		return final;
-	}
 #endif
 
 mat3 getTangentFrame( vec3 eye_pos, vec3 surf_norm, vec2 uv ) {
@@ -109,6 +100,20 @@ mat3 getTangentFrame( vec3 eye_pos, vec3 surf_norm, vec2 uv ) {
 	return mat3( T * scale, B * scale, N );
 }
 
+vec3 matcap(float roughness) {
+  vec3 newNormal = normalize(vNormal);
+  vec3 viewDir = normalize(vViewPosition);
+  vec3 x = normalize(vec3(viewDir.z, 0.0, - viewDir.x));
+  vec3 y = cross(viewDir, x);
+  vec2 uv = vec2(dot(x, newNormal), dot(y, newNormal)) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
+  uv *= roughness;
+  uv.x += uMatcapOffset.x;
+  uv.y += uMatcapOffset.y;
+  vec3 final = texture2D(uMatcapMap, uv).rgb;
+  
+  return final;
+}
+
 vec2 rotateUV(vec2 uv, float rotation)
 {
     float mid = 0.5;
@@ -122,8 +127,21 @@ vec2 rotateUV(vec2 uv, float rotation)
 
 void main() {
 
-	vec4 diffuseColor = vec4(uDiffuseColor, uOpacity);
-	#include <clipping_planes_fragment>
+	vec2 wheelsUv = rotateUV(vUv, 1.5708);
+	float wheelWidth = 1.0 / uWheelsSpacing;
+
+	wheelsUv.y += uBaseRotationOffset;
+	wheelsUv.y -= uRotation0 * step(wheelWidth * 0.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 1.0);
+	wheelsUv.y -= uRotation1 * step(wheelWidth * 1.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 2.0);
+	wheelsUv.y -= uRotation2 * step(wheelWidth * 2.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 3.0);
+	wheelsUv.y -= uRotation3 * step(wheelWidth * 3.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 4.0);
+	wheelsUv.y -= uRotation4 * step(wheelWidth * 4.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 5.0);
+
+	wheelsUv.x = fract(wheelsUv.x * uWheelsSpacing) / uWheelsSpacing + uWheelsOffset;
+
+	vec3 albedo = texture2D( uAlbedoMap, wheelsUv ).rgb;
+
+	vec4 diffuseColor = vec4(albedo, uOpacity);
 
 	ReflectedLight reflectedLight = ReflectedLight(
 		vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0)
@@ -142,16 +160,11 @@ void main() {
 		#include <specularmap_fragment>
 	#endif
 
-	#ifdef USE_ALBEDO
-		vec3 albedo = texture2D( uAlbedoMap, vUv * uAlbedoRepeat ).rgb;
-		diffuseColor.rgb = mix(diffuseColor.rgb, albedo, uAlbedoIntensity);
-	#endif
-
 	vec3 normal = normalize(vNormal);
 
 	#ifdef USE_NORMAL
 		mat3 tbn = getTangentFrame(-vViewPosition, normal, vUv);
-		vec3 normalMap = texture2D(uNormalMap, vUv * uNormalRepeat).xyz * 2.0 - 1.0;
+		vec3 normalMap = texture2D(uNormalMap, wheelsUv * uNormalRepeat).xyz * 2.0 - 1.0;
 		normalMap.xy *= uNormalScale;
 		normal = normalize(tbn * normalMap);
 	#endif
@@ -159,7 +172,7 @@ void main() {
 	float roughness = 1.;
 
 	#ifdef USE_ROUGHNESS
-		roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity;
+	roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity;
 	#endif
 
 	// Lighting
@@ -197,7 +210,13 @@ void main() {
 		#endif
 	#endif
 
-	// ao - mix
+	// CUSTOM AO
+	vec2 vUvAo = vUv;
+	vUvAo.x *= 0.8;
+	vUvAo.x += 0.06;
+	vec3 aoMap = texture2D( uAoMap, vUvAo ).rgb;
+	ao *= (aoMap.g - 1.0) * uAOIntensity + 1.0;
+
 	vec3 aoColor = vec3(1.0);
 	aoColor = mix(aoColor, vec3(0.01, 0.0, 0.01), 1.0 - ao);
 
