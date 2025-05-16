@@ -78,7 +78,7 @@ export default class PhysicalDebug {
 				child.material = new MeshPhongMaterial({ color: new Color(0xff0000) })
 			} else if (child.name.includes('screen')) {
 				this._doubleScreenPlane = child
-				child.material = new MeshBasicMaterial({ color: new Color(0x000000) })
+				this._doubleScreenPlane.visible = false
 			}
 		})
 

@@ -8,6 +8,7 @@ import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
+import addTransformDebug from '@/webgl/utils/addTransformDebug'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
@@ -58,6 +59,7 @@ export default class SecondRoulette {
 	 */
 	animateFlapIn() {
 		if (!this._flapsOpened) return
+		this._flapOutTimeline?.kill()
 		this._flapInTimeline = gsap.timeline();
 		this._flapInTimeline.to(this._topFlap.position, {
 			y: "-=0.07",
@@ -86,6 +88,7 @@ export default class SecondRoulette {
 
 	animateFlapOut() {
 		if (this._flapsOpened) return
+		this._flapInTimeline?.kill()
 		this._flapOutTimeline = gsap.timeline();
 		this._flapOutTimeline.to(this._topFlap.position, {
 			y: "+=0.07",
@@ -106,8 +109,8 @@ export default class SecondRoulette {
 		this._flapOutTimeline.to(this._bottomFlap.rotation, {
 			z: "+=0.03",
 			ease: "none",
-			duration: 0.2,
-		}, 0.1)
+			duration: 0.1,
+		}, 0.2)
 
 		this._flapsOpened = true
 	}
@@ -159,7 +162,7 @@ export default class SecondRoulette {
 
 		// this._base.rotation.x = 0.3
 
-		this._model.position.y = 0.9
+		this._model.position.set(0.000, 0.754, -0.268)
 		this._scene.add(this._model)
 	}
 
@@ -257,9 +260,11 @@ export default class SecondRoulette {
 		// addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)
 		// addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
 
+		// Add transform controls for the model
+		addTransformDebug(folder, this._model)
+
 		folder.addButton({
 			title: 'Flap In',
-
 		}).on('click', () => {
 			this.animateFlapIn()
 		})
