@@ -125,11 +125,13 @@
 	{
 		"name": "flap-albedo",
 		"path": "textures/second-wheel/flap-albedo.jpg",
-		"flipY": false
+		"flipY": false,
+		"repeatWrapping": true
 	},
 	{
 		"name": "flap-normal",
 		"path": "textures/second-wheel/flap-normal.jpg",
-		"flipY": false
+		"flipY": false,
+		"repeatWrapping": true
 	}
 ]

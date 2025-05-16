@@ -7,8 +7,8 @@ export default {
     },
     "uRoughnessRepeat": {
         "value": {
-            "x": 2,
-            "y": 2
+            "x": 0.55,
+            "y": 0.8200000000000001
         }
     },
     "uRoughnessIntensity": {
@@ -24,10 +24,22 @@ export default {
         }
     },
     "uAlbedoIntensity": {
-        "value": 0.5
+        "value": 0.19999999999999998
     },
     "uNormalMap": {
         "value": "flap-normal"
+    },
+    "uNormalRepeat": {
+        "value": {
+            "x": 0.22999999999999998,
+            "y": 0.39999999999999997
+        }
+    },
+    "uNormalScale": {
+        "value": {
+            "x": 1,
+            "y": 1
+        }
     },
     "uMatcapMap": {
         "value": "metalMatcap"
@@ -45,7 +57,7 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 2
+        "value": 1.5
     },
     "uSpecularIntensity": {
         "value": 0.07000000000000003
@@ -60,7 +72,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#343434"
+        "value": "#515151"
     },
     "uSpecularColor": {
         "value": "0xffffff"
