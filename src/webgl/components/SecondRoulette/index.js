@@ -30,6 +30,7 @@ export default class SecondRoulette {
 		this._createFlapMaterial()
 		// this._createInnerMaterial()
 		// this._createInnerReflectionMaterial()
+
 		this._createModel()
 
 		this._createEventListeners()
@@ -55,6 +56,50 @@ export default class SecondRoulette {
 	/**
 	 * Public
 	 */
+	animateFlapIn() {
+		if (!this._flapsOpened) return
+		this._flapInTimeline = gsap.timeline();
+		this._flapInTimeline.to(this._topFlap.position, {
+			y: 0.4,
+			ease: "none",
+			duration: 0.4,
+		})
+		this._flapInTimeline.to(this._bottomFlap.position, {
+			y: 0.4,
+			ease: "none",
+			duration: 0.4,
+		})
+
+		this._flapsOpened = false
+	}
+
+	animateFlapOut() {
+		if (this._flapsOpened) return
+		this._flapOutTimeline = gsap.timeline();
+		this._flapOutTimeline.to(this._topFlap.position, {
+			y: "+=0.07",
+			z: "-=0.02",
+			ease: "none",
+			duration: 0.3,
+		})
+		this._flapOutTimeline.to(this._topFlap.rotation, {
+			x: "-=0.65",
+			ease: "none",
+			duration: 0.2,
+		}, 0)
+		this._flapOutTimeline.to(this._bottomFlap.position, {
+			y: "-=0.07",
+			ease: "none",
+			duration: 0.3,
+		}, 0.1)
+		this._flapOutTimeline.to(this._bottomFlap.rotation, {
+			z: "+=0.03",
+			ease: "none",
+			duration: 0.2,
+		}, 0.1)
+
+		this._flapsOpened = true
+	}
 
 	/**
 	 * Private
@@ -62,13 +107,12 @@ export default class SecondRoulette {
 	_createModel() {
 		this._model = this._resource.scene
 		this._model.name = 'second roulette'
-		this._scene.add(this._model)
-
 		// Array to store wheel meshes
 		this._wheels = [
 			{ rotation: null, isLocked: false },
 			{ rotation: null, isLocked: false },
 		]
+		this._flapsOpened = false
 		this._leds = []
 
 		this._model.traverse((child) => {
@@ -91,6 +135,8 @@ export default class SecondRoulette {
 			} else if (child.name.includes('VOLET_BAS')) {
 				this._bottomFlap = child
 				this._bottomFlap.material = this._flapMaterial
+			} else if (child.name.includes('base')) {
+				this._base = child
 			}
 		})
 
@@ -99,6 +145,11 @@ export default class SecondRoulette {
 			// this._innerReflectionMaterial.uniforms[`uRotation${index}`] = wheel.rotation
 			// wheel.rotation.value = (1.0 / this._segments) / 2
 		})
+
+		// this._base.rotation.x = 0.3
+
+		this._model.position.y = 0.9
+		this._scene.add(this._model)
 	}
 
 	_createBaseMaterial() {
@@ -194,5 +245,17 @@ export default class SecondRoulette {
 		addCustomMaterialDebug(folder, flapMaterialUniforms, this._resources, this._flapMaterial)
 		// addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)
 		// addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
+
+		folder.addButton({
+			title: 'Flap In',
+
+		}).on('click', () => {
+			this.animateFlapIn()
+		})
+		folder.addButton({
+			title: 'Flap Out',
+		}).on('click', () => {
+			this.animateFlapOut()
+		})
 	}
 }
