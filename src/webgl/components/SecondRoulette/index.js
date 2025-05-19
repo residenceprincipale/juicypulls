@@ -34,7 +34,7 @@ export default class SecondRoulette {
 
 		this._createModel()
 
-		this.animateFlapOut()
+		// this.animateFlapOut()
 
 		this._createEventListeners()
 
@@ -86,6 +86,8 @@ export default class SecondRoulette {
 		}, 0.05)
 
 		this._flapsOpened = false
+
+		return this._flapInTimeline;
 	}
 
 	animateFlapOut() {
@@ -115,6 +117,56 @@ export default class SecondRoulette {
 		}, 0.2)
 
 		this._flapsOpened = true
+
+		return this._flapOutTimeline;
+	}
+
+	animateIn() {
+		this._inTimeline = gsap.timeline();
+
+		// Drop animation with smoother ease
+		this._inTimeline.to(this._model.position, {
+			x: 0.003,
+			y: 0.082,
+			z: -0.148,
+			ease: "power2.out",
+			duration: 0.6,
+		});
+
+		// Initial rotation
+		this._base.rotation.x = -0.24;
+
+		// Single elastic swing that naturally oscillates and settles
+		this._inTimeline.to(this._base.rotation, {
+			x: 0.05,
+			ease: "elastic.out(1.2, 0.3)",
+			duration: 2.0,
+		}, 0.1);
+
+		this._attach.rotation.z = -0.04;
+
+		// Single elastic swing that naturally oscillates and settles
+		this._inTimeline.to(this._attach.rotation, {
+			z: 0,
+			ease: "elastic.out(1.2, 0.3)",
+			duration: 2.0,
+		}, 0.1);
+
+		return this._inTimeline;
+	}
+
+	animateOut() {
+		this._outTimeline = gsap.timeline();
+
+		this._outTimeline.to(this._model.position, {
+			x: 0.003,
+			y: 0.082,
+			z: -0.148,
+			ease: "power2.out",
+			duration: 0.6,
+		});
+
+		return this._outTimeline;
 	}
 
 	/**
@@ -153,6 +205,8 @@ export default class SecondRoulette {
 				this._bottomFlap.material = this._flapMaterial
 			} else if (child.name.includes('base')) {
 				this._base = child
+			} else if (child.name.includes('attach')) {
+				this._attach = child
 			} else if (child.name.includes('wheels')) {
 				child.material = this._rouletteMaterial;
 				this._leds.push(child)
@@ -166,7 +220,7 @@ export default class SecondRoulette {
 
 		// this._base.rotation.x = 0.3
 
-		this._model.position.set(0.000, 0.754, -0.268)
+		this._model.position.set(0.000, 0.754, -0.174)
 		this._scene.add(this._model)
 	}
 

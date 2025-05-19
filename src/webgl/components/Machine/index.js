@@ -98,10 +98,12 @@ export default class Machine {
 		this._innerBackTimeline?.kill()
 		this._innerBackTimeline = gsap.timeline();
 		this._innerBackTimeline.to(this._innerMachine.position, {
-			z: -0.6,
+			z: -0.45,
 			ease: "none",
 			duration: 1,
 		})
+
+		return this._innerBackTimeline
 	}
 
 	animateInnerMachineFront() {

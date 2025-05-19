@@ -23,9 +23,13 @@ export default class Hands {
 		this.animationNames = ['Rock', 'Paper', 'Scissors'];
 
 
+
+
 		this.setMaterial()
 		this.setRightModel()
 		this.setLeftModel()
+
+		this.hideHands()
 
 		if (this.debug.active) this.setDebug()
 	}
@@ -45,6 +49,20 @@ export default class Hands {
 	playFight() {
 		this.animationRight.playAnimation('CountDown')
 		this.animationLeft.playAnimation('CountDown')
+	}
+
+	hideHands() {
+		gsap.to(this.rightModel.rotation, {
+			x: 1.3,
+			y: 2.27,
+			ease: 'elastic.in',
+		})
+
+		gsap.to(this.leftModel.rotation, {
+			x: 1.75,
+			y: -2.83,
+			ease: 'elastic.in',
+		})
 	}
 
 	setupFight() {

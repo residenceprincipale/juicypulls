@@ -518,12 +518,11 @@ export default class MachineManager {
         }).on('click', () => {
             this._secondRouletteTimeline?.kill()
             this._secondRouletteTimeline = gsap.timeline();
-            this._secondRouletteTimeline.call(() => {
-                this._machine.animateInnerMachineBack()
-            })
-            this._secondRouletteTimeline.call(() => {
-                this._secondRoulette.animateIn()
-            })
+            this._secondRouletteTimeline.add(this._machine.animateInnerMachineBack())
+            this._secondRouletteTimeline.add(this._secondRoulette.animateIn())
+            this._secondRouletteTimeline.add(this._secondRoulette.animateFlapOut(), '>-2')
+
+            // KILL TES TWEENS
         });
 
         folder.addButton({

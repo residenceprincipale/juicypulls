@@ -8,7 +8,7 @@ export default {
     },
     "uAlbedoRepeat": {
         "value": {
-            "x": 0.5700000000000001,
+            "x": 0.63,
             "y": 1
         }
     },
@@ -43,10 +43,10 @@ export default {
         "value": 1.0099999999999998
     },
     "uWheelsSpacing": {
-        "value": 2.02
+        "value": 2.0799999999999996
     },
     "uWheelsOffset": {
-        "value": 1.25
+        "value": 1.11
     },
     "uBaseRotationOffset": {
         "value": -0.843
