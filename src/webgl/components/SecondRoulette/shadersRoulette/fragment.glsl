@@ -38,6 +38,7 @@ uniform float uRotation4;
 uniform sampler2D uAlbedoMap;
 uniform sampler2D uNormalMap;
 uniform vec2 uNormalRepeat;
+uniform vec2 uAlbedoRepeat;
 uniform vec2 uNormalScale;
 uniform sampler2D uAoMap;
 
@@ -133,13 +134,10 @@ void main() {
 	wheelsUv.y += uBaseRotationOffset;
 	wheelsUv.y -= uRotation0 * step(wheelWidth * 0.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 1.0);
 	wheelsUv.y -= uRotation1 * step(wheelWidth * 1.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 2.0);
-	wheelsUv.y -= uRotation2 * step(wheelWidth * 2.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 3.0);
-	wheelsUv.y -= uRotation3 * step(wheelWidth * 3.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 4.0);
-	wheelsUv.y -= uRotation4 * step(wheelWidth * 4.0, wheelsUv.x) * step(wheelsUv.x, wheelWidth * 5.0);
 
 	wheelsUv.x = fract(wheelsUv.x * uWheelsSpacing) / uWheelsSpacing + uWheelsOffset;
 
-	vec3 albedo = texture2D( uAlbedoMap, wheelsUv ).rgb;
+	vec3 albedo = texture2D( uAlbedoMap, wheelsUv * uAlbedoRepeat ).rgb;
 
 	vec4 diffuseColor = vec4(albedo, uOpacity);
 
@@ -214,13 +212,13 @@ void main() {
 	vec2 vUvAo = vUv;
 	vUvAo.x *= 0.8;
 	vUvAo.x += 0.06;
-	vec3 aoMap = texture2D( uAoMap, vUvAo ).rgb;
+	vec3 aoMap = texture2D( uAoMap, vUvAo * uAlbedoRepeat ).rgb;
 	ao *= (aoMap.g - 1.0) * uAOIntensity + 1.0;
 
 	vec3 aoColor = vec3(1.0);
 	aoColor = mix(aoColor, vec3(0.01, 0.0, 0.01), 1.0 - ao);
 
-	finalColor = finalColor * aoColor;
+	finalColor = finalColor;
 
 	// matcap
 	#ifdef USE_MATCAP

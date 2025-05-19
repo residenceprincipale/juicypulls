@@ -50,10 +50,6 @@ export default class Machine {
 		return this._rouletteMaterial;
 	}
 
-	get light() {
-		return this._light
-	}
-
 	get wheels() {
 		return this._wheels
 	}

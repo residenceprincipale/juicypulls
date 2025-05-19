@@ -20,7 +20,7 @@ export default class MachineManager {
 
         this._createEventListeners()
 
-        // if (this._debug.active) this._createDebug()
+        if (this._debug.active) this._createDebug()
     }
 
     /**
@@ -37,6 +37,10 @@ export default class MachineManager {
 
     /**
      * Public
+     */
+    spinSecondRoulette() {
+        this._spinSecondRouletteWheels();
+    }
 
     /**
      * Private
@@ -92,6 +96,30 @@ export default class MachineManager {
             "5jeton": 1000,
             "5couronne": 600,
             "unique": 1500 // Suite complète (différent symbole sur chaque roulette)
+        };
+
+        // Second roulette specific constants
+        this._secondRouletteNumWheels = 2;
+        this._secondRouletteSegments = 5;
+        this._secondRouletteResults = new Array(2).fill(0);
+        this._secondRouletteWheelEmojis = ["🔮", "🎭", "🎯", "⚡", "🎲"];
+        this._secondRouletteSymbolNames = [
+            'magic',   // 🔮
+            'mask',    // 🎭
+            'target',  // 🎯
+            'thunder', // ⚡
+            'dice'     // 🎲
+        ];
+        this._secondRouletteSymbolValues = {
+            "magic": 200,    // 🔮
+            "mask": 150,     // 🎭
+            "target": 300,   // 🎯
+            "thunder": 250,  // ⚡
+            "dice": 400      // 🎲
+        };
+        this._secondRouletteCombinationBonus = {
+            "match": 2.5,     // Multiplier when both wheels match
+            "specialMatch": 5 // Multiplier for specific combinations
         };
     }
 
@@ -263,6 +291,9 @@ export default class MachineManager {
         if (special) {
             console.log("Triggering Special Roulette Mechanics!");
             this._physicalDebug.printToRightScreen("Triggering Special Roulette Mechanics!");
+
+            // Trigger the second roulette
+            this._triggerSecondRoulette();
         }
 
         gsap.delayedCall(2, () => {
@@ -295,6 +326,142 @@ export default class MachineManager {
                 ease: 'power4.out'
             });
         });
+    }
+
+    _triggerSecondRoulette() {
+        // Transition to second roulette
+        gsap.timeline()
+            .call(() => {
+                this._machine.animateInnerMachineBack();
+            })
+            .call(() => {
+                this._secondRoulette.animateFlapOut();
+            })
+            .delay(1)
+            .call(() => {
+                this._spinSecondRouletteWheels();
+            });
+    }
+
+    _spinSecondRouletteWheels() {
+        this._secondRouletteResults = Array(this._secondRouletteNumWheels).fill(0).map(() =>
+            Math.floor(Math.random() * this._secondRouletteSegments)
+        );
+
+        console.log("Second Roulette Spin Result:",
+            this._secondRouletteResults.map(index => this._secondRouletteWheelEmojis[index]).join(" "));
+
+        if (this._physicalDebug) {
+            this._physicalDebug.printToRightScreen(
+                `Second Roulette: ${this._secondRouletteResults.map(index => this._secondRouletteWheelEmojis[index]).join(" ")}`
+            );
+        }
+
+        // Get the bonus points from second roulette
+        const secondRouletteBonus = this._getSecondRouletteCombination();
+
+        // Animate the wheels
+        this._secondRoulette.wheels.forEach((wheel, index) => {
+            gsap.killTweensOf(wheel.rotation);
+
+            const randomSegment = this._secondRouletteResults[index];
+            const segmentAngle = 1 / this._secondRouletteSegments;
+            const fullRotations = 5;
+            const rotationDegrees = wheel.rotation.value;
+            const previousRotationDegrees = rotationDegrees % 1;
+            const rotationToStopAngle = randomSegment * segmentAngle - previousRotationDegrees;
+            const targetRotation = rotationDegrees + (fullRotations + rotationToStopAngle);
+
+            gsap.to(wheel.rotation, {
+                value: targetRotation,
+                duration: 2 + index * 0.3,
+                ease: 'power4.out'
+            });
+        });
+
+        // After wheels stop, process the bonus and return to main machine
+        const secondRouletteTimeline = gsap.timeline()
+            .call(() => {
+                // Apply bonus to collected points
+                this._collectedPoints += secondRouletteBonus.points;
+
+                console.log(`Second Roulette Bonus: ${secondRouletteBonus.name}`);
+                console.log(`Bonus Points: ${secondRouletteBonus.points}`);
+
+                if (this._physicalDebug) {
+                    this._physicalDebug.printToRightScreen(`Bonus: ${secondRouletteBonus.name}`);
+                    this._physicalDebug.printToRightScreen(`Points: ${secondRouletteBonus.points}`);
+                }
+
+                // Update collected points display
+                socket.send({
+                    event: 'update-collected-points',
+                    data: {
+                        value: this._collectedPoints,
+                    },
+                    receiver: 'physical-debug',
+                });
+            })
+
+        secondRouletteTimeline.call(() => {
+            console.log("Animating flap in");
+            this._secondRoulette.animateFlapIn();
+        }, null, 6)
+
+        secondRouletteTimeline.call(() => {
+            this._machine.animateInnerMachineFront();
+        }, null, 8)
+    }
+
+    _getSecondRouletteCombination() {
+        // Convert result indices to symbol names
+        const symbols = this._secondRouletteResults.map(index =>
+            this._secondRouletteSymbolNames[index]
+        );
+
+        // Calculate base points from the symbols
+        let points = symbols.reduce((sum, symbol) =>
+            sum + this._secondRouletteSymbolValues[symbol], 0);
+
+        // Check if both wheels show the same symbol (matching pair)
+        const isMatch = symbols[0] === symbols[1];
+
+        // Check for special combinations
+        const specialCombos = {
+            "magic-thunder": "Magical Thunder",  // 🔮 + ⚡
+            "target-dice": "Lucky Shot",         // 🎯 + 🎲
+            "mask-target": "Perfect Disguise"    // 🎭 + 🎯
+        };
+
+        // Sort the symbols to check for special combos regardless of wheel order
+        const comboKey = [...symbols].sort().join('-');
+        const specialComboName = specialCombos[comboKey];
+
+        // Apply multipliers based on combinations
+        if (isMatch) {
+            // Both wheels show same symbol
+            points *= this._secondRouletteCombinationBonus.match;
+            return {
+                name: `Double ${symbols[0]} (${this._secondRouletteWheelEmojis[this._secondRouletteResults[0]]})`,
+                points: Math.round(points),
+                isSpecial: false
+            };
+        } else if (specialComboName) {
+            // Special combination
+            points *= this._secondRouletteCombinationBonus.specialMatch;
+            return {
+                name: specialComboName,
+                points: Math.round(points),
+                isSpecial: true
+            };
+        }
+
+        // Regular combination (no multiplier)
+        return {
+            name: "Mixed Symbols",
+            points: Math.round(points),
+            isSpecial: false
+        };
     }
 
     /**
@@ -359,6 +526,10 @@ export default class MachineManager {
             })
         });
 
-        addMaterialDebug(folder, this._rouletteMaterial)
+        folder.addButton({
+            title: 'Spin Second Roulette',
+        }).on('click', () => {
+            this._spinSecondRouletteWheels();
+        });
     }
 }

@@ -6,6 +6,12 @@ export default {
     "uAlbedoMap": {
         "value": "wheelAlbedo"
     },
+    "uAlbedoRepeat": {
+        "value": {
+            "x": 0.5700000000000001,
+            "y": 1
+        }
+    },
     "uAoMap": {
         "value": "roulettesAO"
     },
@@ -34,13 +40,13 @@ export default {
         }
     },
     "uRoughnessIntensity": {
-        "value": 0.9999999999999999
+        "value": 1.0099999999999998
     },
     "uWheelsSpacing": {
-        "value": 4.8
+        "value": 2.02
     },
     "uWheelsOffset": {
-        "value": 0.76
+        "value": 1.25
     },
     "uBaseRotationOffset": {
         "value": -0.843
@@ -50,18 +56,6 @@ export default {
         "debug": false
     },
     "uRotation1": {
-        "value": 0,
-        "debug": false
-    },
-    "uRotation2": {
-        "value": 0,
-        "debug": false
-    },
-    "uRotation3": {
-        "value": 0,
-        "debug": false
-    },
-    "uRotation4": {
         "value": 0,
         "debug": false
     },

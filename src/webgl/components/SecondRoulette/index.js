@@ -22,17 +22,19 @@ export default class SecondRoulette {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
-		// this._resource = this._resources.casino
 		this._resource = this._resources.items.secondRouletteModel
 
 		// this._createLights()
-		// this._createRouletteMaterial()
+		this._createRouletteMaterial()
 		this._createBaseMaterial()
 		this._createFlapMaterial()
 		// this._createInnerMaterial()
 		// this._createInnerReflectionMaterial()
 
+
 		this._createModel()
+
+		this.animateFlapOut()
 
 		this._createEventListeners()
 
@@ -151,13 +153,15 @@ export default class SecondRoulette {
 				this._bottomFlap.material = this._flapMaterial
 			} else if (child.name.includes('base')) {
 				this._base = child
+			} else if (child.name.includes('wheels')) {
+				child.material = this._rouletteMaterial;
+				this._leds.push(child)
 			}
 		})
 
 		this._wheels.forEach((wheel, index) => {
-			// wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
-			// this._innerReflectionMaterial.uniforms[`uRotation${index}`] = wheel.rotation
-			// wheel.rotation.value = (1.0 / this._segments) / 2
+			wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
+			wheel.rotation.value = 0
 		})
 
 		// this._base.rotation.x = 0.3
@@ -253,8 +257,7 @@ export default class SecondRoulette {
 			title: 'Second Roulette',
 			expanded: true,
 		})
-		// addMaterialDebug(folder, this._rouletteMaterial)
-		// addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
+		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 		addCustomMaterialDebug(folder, flapMaterialUniforms, this._resources, this._flapMaterial)
 		// addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)

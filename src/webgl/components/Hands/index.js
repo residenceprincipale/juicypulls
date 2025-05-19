@@ -27,10 +27,6 @@ export default class Hands {
 		this.setRightModel()
 		this.setLeftModel()
 
-		// this.animationRight.playAnimation('CountDown')
-
-		// this.animationLeft.playAnimation('CountDown')
-
 		if (this.debug.active) this.setDebug()
 	}
 
