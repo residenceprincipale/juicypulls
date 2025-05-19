@@ -8,13 +8,13 @@ import cloneGltf from '@/webgl/utils/GltfClone'
 import gsap from 'gsap'
 
 export default class Hands {
-	constructor() {
+	constructor(options = {}) {
 		this.experience = new Experience()
 		this.scene = this.experience.scene
 		this.resources = this.scene.resources
 		this.debug = this.experience.debug
 		this.time = this.experience.time
-		this.machine = this.experience.activeScene.machine
+		this.machine = options.machine
 
 
 		// Resource
@@ -35,7 +35,7 @@ export default class Hands {
 	}
 
 	setHandAnimation(i) {
-		this.rightAnimationName = this.animationNames[i - 2]
+		this.rightAnimationName = this.animationNames[i]
 		this.playFight()
 
 		gsap.delayedCall(4, () => {

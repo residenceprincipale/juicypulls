@@ -28,9 +28,9 @@ export default class Main {
 
 			this._machine = new Machine()
 			this._secondRoulette = new SecondRoulette()
-			this._machineManager = new MachineManager({ machine: this._machine })
+			this._hands = new Hands({ machine: this._machine })
+			this._machineManager = new MachineManager({ machine: this._machine, secondRoulette: this._secondRoulette, hands: this._hands })
 
-			this._hands = new Hands()
 			// this.cameraPlayer = new CameraPlayer()
 
 			if (window.location.hash === "#debug-dev") {

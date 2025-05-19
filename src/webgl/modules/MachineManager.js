@@ -12,7 +12,9 @@ export default class MachineManager {
         this._debug = this._experience.debug
 
         this._machine = options.machine
+        this._secondRoulette = options.secondRoulette
         this._physicalDebug = options.physicalDebug
+        this._hands = options.hands
 
         this._createConstants()
 
@@ -24,6 +26,14 @@ export default class MachineManager {
     /**
      * Getters & Setters
      */
+
+    get machine() {
+        return this._machine
+    }
+
+    get secondRoulette() {
+        return this._secondRoulette
+    }
 
     /**
      * Public
@@ -302,8 +312,12 @@ export default class MachineManager {
     }
 
     _buttonClickHandler(e) {
-        if (this._spinsLeft === 3) {
-
+        if (this._machine.isHandFighting) {
+            // remap index to 0, 1, 2 (exclude 3 or more)
+            if (e.index > 2) return;
+            this._hands.setHandAnimation(e.index % 3)
+        } else if (this._spinsLeft === 3) {
+            this._lockWheel(e.index)
         } else if (this._currentSpinIsDone) {
             this._lockWheel(e.index)
             socket.send({
@@ -331,6 +345,20 @@ export default class MachineManager {
             title: 'MachineManager',
             expanded: true,
         })
+
+        folder.addButton({
+            title: 'Second roulette',
+        }).on('click', () => {
+            this._secondRouletteTimeline?.kill()
+            this._secondRouletteTimeline = gsap.timeline();
+            this._secondRouletteTimeline.call(() => {
+                this._machine.animateInnerMachineBack()
+            })
+            this._secondRouletteTimeline.call(() => {
+                this._secondRoulette.animateIn()
+            })
+        });
+
         addMaterialDebug(folder, this._rouletteMaterial)
     }
 }

@@ -58,6 +58,10 @@ export default class Machine {
 		return this._wheels
 	}
 
+	get isHandFighting() {
+		return this._isHandFighting
+	}
+
 	/**
 	 * Public
 	 */
@@ -90,6 +94,28 @@ export default class Machine {
 			ease: "none",
 			duration: 0.8,
 			delay: 0.4
+		})
+	}
+
+	animateInnerMachineBack() {
+		this._isMachineBack = true
+		this._innerBackTimeline?.kill()
+		this._innerBackTimeline = gsap.timeline();
+		this._innerBackTimeline.to(this._innerMachine.position, {
+			z: -0.6,
+			ease: "none",
+			duration: 1,
+		})
+	}
+
+	animateInnerMachineFront() {
+		this._isMachineBack = false
+		this._innerFrontTimeline?.kill()
+		this._innerFrontTimeline = gsap.timeline();
+		this._innerFrontTimeline.to(this._innerMachine.position, {
+			z: 0,
+			ease: "none",
+			duration: 0.8,
 		})
 	}
 
