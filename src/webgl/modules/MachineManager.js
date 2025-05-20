@@ -18,6 +18,12 @@ const MAIN_ROULETTE_CONFIG = {
         "crane": "malus", // Crâne
         "oeuil": "special" // Œil
     },
+    occurrencePoints: {
+        "pair": 20,      // Points for a pair of any symbol (except cranium)
+        "triple": 40,    // Points for a triple of any symbol (except cranium)
+        "quadruple": 60, // Points for four of any symbol (except cranium)
+        "quintuple": 100 // Points for five of any symbol (except cranium)
+    },
     combinationPoints: {
         "5jeton": 1000,
         "5couronne": 600,
@@ -119,6 +125,18 @@ export default class MachineManager {
      * Main Roulette Logic
      */
     _spinWheels() {
+        // If user tries to spin with no spins left, auto-collect
+        if (this._spinsLeft <= 0) {
+            this._logMessage("No spins left! Collecting points automatically.")
+            this._collect()
+            return
+            // else if all wheels are locked
+        } else if (this._machine.wheels.every(wheel => wheel.isLocked)) {
+            this._logMessage("All wheels are locked! Collecting points automatically.")
+            this._collect()
+            return
+        }
+
         if (!this._currentSpinIsDone) return
 
         this._currentSpinIsDone = false
@@ -132,212 +150,136 @@ export default class MachineManager {
 
         this._logSpinResult(this._results, MAIN_ROULETTE_CONFIG.wheelEmojis)
 
-        // Calculate points from this spin
-        const spinResult = this._calculateMainRouletteResult()
-        const { points, combinationName, farkle, special } = spinResult
+        // Decrement spins first
+        this._spinsLeft -= 1
+        this._updateSpinsDisplay()
 
-        // Update game state
-        this._updateGameState(points, farkle)
+        // Check for triple cranium farkle
+        const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
+        if (counts["crane"] >= 3) {
+            // Farkle - clear points and update UI
+            this._logMessage("Farkle! Triple cranium - score of the round is lost.")
+            this._rollingPoints = 0
+            this._updatePointsDisplay()
+
+            // Note: Even on last spin, we don't auto-collect anymore
+        } else {
+            // Check for special roulette trigger (3+ eyes)
+            const special = counts["oeuil"] >= 3
+
+            // No auto-collect on last spin - user must manually collect
+
+            // Trigger special roulette if needed
+            if (special) {
+                this._logMessage("Triggering Special Roulette Mechanics!")
+                this._triggerSecondRoulette()
+            }
+        }
+
+        // if last spin then get points all wheels including the non locked ones but dont add then to the rolling points and if its zero new points then its farkle 
+        if (this._spinsLeft === 0) {
+            const points = this._getPoints({ isLastSpin: true })
+            if (this._rollingPoints - points <= 0) {
+                this._logMessage("Farkle! No points from last spin.")
+                this._rollingPoints = 0
+                this._updatePointsDisplay()
+
+                gsap.delayedCall(2, () => {
+                    this._collect()
+                })
+            }
+        }
 
         // Animate wheels
         this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
-        // Handle special cases
-        if (special) {
-            this._logMessage("Triggering Special Roulette Mechanics!")
-            this._triggerSecondRoulette()
-        }
-
-        // Update UI after spin completes
+        // Update UI when animation completes
         gsap.delayedCall(2, () => {
-            this._updatePointsDisplay()
             this._currentSpinIsDone = true
         })
     }
 
-    _calculateMainRouletteResult() {
-        const hasLockedWheels = this._machine.wheels.some(wheel => wheel.isLocked)
+    /**
+     * Points Calculation
+     */
+    _getPoints(options = { isLastSpin: false }) {
+        // This function calculates points considering ONLY locked wheels
+        // Get results for locked wheels only
+        const results = []
 
-        // If we have locked wheels and not first spin, calculate differently
-        if (hasLockedWheels && this._spinsLeft < this._maxSpins - 1) {
-            return this._calculateNewPoints()
-        } else {
-            return this._getCombination()
-        }
-    }
-
-    _getCombination() {
-        const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
-        let points = 0
-        let craniumCount = counts["crane"] || 0
-        let eyeCount = counts["oeuil"] || 0
-        let uniqueSymbols = Object.keys(counts).filter(symbol => counts[symbol] > 0).length
-
-        // Check for special cases first
-        if (craniumCount >= 3) {
-            return { name: "Farkle", points: 0, farkle: true, special: false }
-        }
-
-        if (craniumCount === 2) points -= 30
-        if (craniumCount === 1) points -= 10
-
-        // Check for unique symbol jackpot
-        if (uniqueSymbols === this._machine.wheels.length) {
-            return {
-                name: "Suite Complète",
-                points: MAIN_ROULETTE_CONFIG.combinationPoints["unique"],
-                farkle: false,
-                special: false
-            }
-        }
-
-        // Count normal points for jetons and couronnes
-        points += (counts["jeton"] || 0) * MAIN_ROULETTE_CONFIG.symbolValues["jeton"]
-        points += (counts["couronne"] || 0) * MAIN_ROULETTE_CONFIG.symbolValues["couronne"]
-
-        // Check for 5-symbol special jackpot
-        const specialPoints = ["jeton", "couronne"]
-        specialPoints.forEach(symbol => {
-            let comboKey = `5${symbol}`
-            if (counts[symbol] === 5 && MAIN_ROULETTE_CONFIG.combinationPoints[comboKey]) {
-                points = MAIN_ROULETTE_CONFIG.combinationPoints[comboKey]
-            }
-        })
-
-        // Handle special Eye mechanic
-        if (eyeCount >= 3) {
-            return { name: "Special Roulette", points: 0, farkle: false, special: true }
-        }
-
-        const isLastSpin = this._spinsLeft === 0
-        if (points <= 0 && isLastSpin) {
-            return { name: "Farkle", points: 0, farkle: true, special: false }
-        } else if (points <= 0) {
-            return { name: "No Points", points, farkle: false, special: false }
-        }
-
-        return { name: "Valid Combination", points, farkle: false, special: false }
-    }
-
-    _calculateNewPoints() {
-        // Create temporary arrays for unlocked positions
-        const unlockedIndices = []
-        let unlockedResults = []
-
-        // Find which wheel positions are not locked
         this._machine.wheels.forEach((wheel, index) => {
-            if (!wheel.isLocked) {
-                unlockedIndices.push(index)
-                unlockedResults.push(this._results[index])
+            if (options.isLastSpin) {
+                results.push(this._results[index])
+            } else if (wheel.isLocked) {
+                results.push(this._results[index])
             }
         })
 
-        if (unlockedResults.length === 0) {
-            return {
-                name: "All Wheels Locked",
-                points: 0,
-                farkle: false,
-                special: false
-            }
+        // If no wheels are locked, return 0 points
+        if (results.length === 0) {
+            return 0
         }
 
-        // Calculate counts for unlocked wheels only
+        // Count occurrences of symbols in locked wheels
         const counts = {}
         MAIN_ROULETTE_CONFIG.symbolNames.forEach(name => counts[name] = 0)
 
-        unlockedResults.forEach(index => {
+        results.forEach(index => {
             const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
             counts[symbolName] = (counts[symbolName] || 0) + 1
         })
 
-        // Calculate points based on unlocked symbols
+        // Calculate total points
         let points = 0
-        let craniumCount = counts["crane"] || 0
-        let eyeCount = counts["oeuil"] || 0
 
-        // Check for Farkle conditions on unlocked wheels
-        if (craniumCount >= 3 || (craniumCount > 0 && craniumCount >= unlockedResults.length)) {
-            return {
-                name: "Farkle on New Wheels",
-                points: 0,
-                farkle: true,
-                special: false
-            }
-        }
+        // 1. Calculate occurrence points (pairs, triples)
+        points += this._calculateOccurrencePoints(counts)
 
-        // Count points for unlocked jetons and couronnes
-        points += (counts["jeton"] || 0) * MAIN_ROULETTE_CONFIG.symbolValues["jeton"]
-        points += (counts["couronne"] || 0) * MAIN_ROULETTE_CONFIG.symbolValues["couronne"]
+        // 2. Calculate individual symbol points
+        points += this._calculateIndividualSymbolPoints(counts)
 
-        // Apply penalties for cranes
+        // 3. Apply cranium penalties
+        const craniumCount = counts["crane"] || 0
         if (craniumCount === 2) points -= 30
         if (craniumCount === 1) points -= 10
 
-        // Check for special Eye mechanic
-        if (eyeCount >= 3) {
-            return {
-                name: "Special Roulette",
-                points: 0,
-                farkle: false,
-                special: true
-            }
-        }
-
-        // Name the combination based on unlocked wheels
-        let name = "New Points"
-        if (points <= 0) name = "No New Points"
-
-        return {
-            name: name,
-            points: Math.max(0, points),  // Don't allow negative points
-            farkle: false,
-            special: eyeCount >= 3
-        }
+        // Don't allow negative points
+        return Math.max(0, points)
     }
 
-    _updateGameState(points, farkle) {
-        // Track previous rolling points before updating
-        const previousRollingPoints = this._rollingPoints
-        this._spinsLeft -= 1
-        this._currentSpinPoints = points
+    _calculateIndividualSymbolPoints(counts) {
+        // Calculate individual symbol points (not occurrence-based)
+        let points = 0
+        points += (counts["jeton"] || 0) * MAIN_ROULETTE_CONFIG.symbolValues["jeton"]
+        points += (counts["couronne"] || 0) * MAIN_ROULETTE_CONFIG.symbolValues["couronne"]
+        // Add points for other symbols if needed
 
-        if (farkle) {
-            this._logMessage("Farkle! Score of the round is lost.")
-            this._rollingPoints = 0
-            this._lockedPoints = 0
-        } else {
-            const hasLockedWheels = this._machine.wheels.some(wheel => wheel.isLocked)
+        return points
+    }
 
-            if (this._spinsLeft < this._maxSpins - 1) { // Not the first spin
-                if (hasLockedWheels) {
-                    // On last spin, check if new points were made
-                    if (this._spinsLeft === 0 && points <= 0) {
-                        this._logMessage("No new points on last spin! Farkle!")
-                        this._rollingPoints = 0
-                        this._lockedPoints = 0
-                    } else {
-                        // Keep previous locked points and add current spin points
-                        this._lockedPoints = previousRollingPoints
-                        this._rollingPoints = this._lockedPoints + points
-                    }
-                } else {
-                    // No locked wheels, just use current combination points
-                    this._rollingPoints = points
-                    this._lockedPoints = 0
-                }
-            } else {
-                // First spin, just use the points
-                this._rollingPoints = points
-                this._lockedPoints = 0
+    _calculateOccurrencePoints(counts) {
+        // Calculate points based on symbol occurrences (pairs, triples, etc.)
+        let occurrencePoints = 0
+
+        // Exclude crane from occurrence calculations
+        const validSymbols = Object.keys(counts).filter(symbol =>
+            symbol !== "crane" && counts[symbol] > 1
+        )
+
+        validSymbols.forEach(symbol => {
+            const count = counts[symbol]
+            if (count === 2) {
+                occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.pair
+            } else if (count === 3) {
+                occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.triple
+            } else if (count === 4) {
+                occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.quadruple
+            } else if (count === 5) {
+                occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.quintuple
             }
-        }
+        })
 
-        // If it's the last spin, collect automatically
-        if (this._spinsLeft === 0) {
-            this._collect()
-        }
-
-        this._updateSpinsDisplay()
+        return occurrencePoints
     }
 
     /**
@@ -529,22 +471,43 @@ export default class MachineManager {
     _lockWheel(index) {
         gsap.killTweensOf(this._machine.wheels[index].rotation)
 
-        if (!this._machine.wheels[index].isLocked) {
-            this._machine.wheels[index].isLocked = true
-            console.log(`Wheel ${index} locked. Current rolling points: ${this._rollingPoints}`)
+        // Toggle lock state
+        this._machine.wheels[index].isLocked = !this._machine.wheels[index].isLocked
+
+        // Log the lock/unlock action
+        if (this._machine.wheels[index].isLocked) {
+            this._logMessage(`Wheel ${index} locked`)
         } else {
-            this._machine.wheels[index].isLocked = false
-            console.log(`Wheel ${index} unlocked.`)
+            this._logMessage(`Wheel ${index} unlocked`)
         }
+
+        // Recalculate points based only on locked wheels
+        this._rollingPoints = this._getPoints()
+
+        // Log updated points
+        this._logMessage(`Updated rolling points: ${this._rollingPoints}`)
+
+        // Update UI
+        this._updatePointsDisplay()
+
+        // Update UI for locked wheel
+        socket.send({
+            event: 'button-light',
+            data: {
+                index: index,
+                state: this._machine.wheels[index].isLocked
+            },
+            receiver: 'physical-debug',
+        })
     }
 
     _collect() {
-        this._spinsLeft = 3
+        // Reset spins for next round
+        this._spinsLeft = this._maxSpins
         this._collectedPoints += this._rollingPoints
-        this._rollingPoints = 0
-        this._lockedPoints = 0
+        this._logMessage(`Collected ${this._rollingPoints} points!`)
 
-        this._logMessage(`Collected ${this._collectedPoints} points!`)
+        this._rollingPoints = 0
 
         // Unlock all wheels
         this._machine.wheels.forEach(wheel => {
@@ -593,17 +556,9 @@ export default class MachineManager {
             // remap index to 0, 1, 2 (exclude 3 or more)
             if (e.index > 2) return
             this._hands.setHandAnimation(e.index % 3)
-        } else if (this._spinsLeft === 3) {
+        } else if (this._spinsLeft < this._maxSpins && this._currentSpinIsDone) {
+            // Only allow locking wheels after first spin and when current spin is done
             this._lockWheel(e.index)
-        } else if (this._currentSpinIsDone) {
-            this._lockWheel(e.index)
-            socket.send({
-                event: 'button-light',
-                data: {
-                    index: e.index,
-                },
-                receiver: 'physical-debug',
-            })
         }
     }
 
