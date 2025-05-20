@@ -330,17 +330,15 @@ export default class MachineManager {
 
     _triggerSecondRoulette() {
         // Transition to second roulette
-        gsap.timeline()
-            .call(() => {
-                this._machine.animateInnerMachineBack();
-            })
-            .call(() => {
-                this._secondRoulette.animateFlapOut();
-            })
-            .delay(1)
-            .call(() => {
-                this._spinSecondRouletteWheels();
-            });
+        this._secondRouletteTimeline?.kill()
+        this._secondRouletteTimeline = gsap.timeline();
+        this._secondRouletteTimeline.add(this._machine.animateInnerMachineBack())
+        this._secondRouletteTimeline.add(this._secondRoulette.animateIn())
+        this._secondRouletteTimeline.add(this._secondRoulette.animateFlapOut(), '>-1')
+        this._secondRouletteTimeline.delay(1)
+        this._secondRouletteTimeline.call(() => {
+            this._spinSecondRouletteWheels();
+        });
     }
 
     _spinSecondRouletteWheels() {
@@ -403,14 +401,10 @@ export default class MachineManager {
                 });
             })
 
+        // Use the dedicated method for animating out the second roulette
         secondRouletteTimeline.call(() => {
-            console.log("Animating flap in");
-            this._secondRoulette.animateFlapIn();
+            this._animateSecondRouletteOut();
         }, null, 6)
-
-        secondRouletteTimeline.call(() => {
-            this._machine.animateInnerMachineFront();
-        }, null, 8)
     }
 
     _getSecondRouletteCombination() {
@@ -520,9 +514,13 @@ export default class MachineManager {
             this._secondRouletteTimeline = gsap.timeline();
             this._secondRouletteTimeline.add(this._machine.animateInnerMachineBack())
             this._secondRouletteTimeline.add(this._secondRoulette.animateIn())
-            this._secondRouletteTimeline.add(this._secondRoulette.animateFlapOut(), '>-2')
+            this._secondRouletteTimeline.add(this._secondRoulette.animateFlapOut(), '>-1')
+        });
 
-            // KILL TES TWEENS
+        folder.addButton({
+            title: 'Second roulette Out',
+        }).on('click', () => {
+            this._animateSecondRouletteOut();
         });
 
         folder.addButton({
@@ -530,5 +528,15 @@ export default class MachineManager {
         }).on('click', () => {
             this._spinSecondRouletteWheels();
         });
+    }
+
+    _animateSecondRouletteOut() {
+        this._secondRouletteTimeline?.kill()
+        this._secondRouletteTimeline = gsap.timeline();
+        // First animate flap in
+        this._secondRouletteTimeline.add(this._secondRoulette.animateFlapIn())
+        // Then animate the second roulette out with a slight delay
+        this._secondRouletteTimeline.add(this._secondRoulette.animateOut())
+        this._secondRouletteTimeline.add(this._machine.animateInnerMachineFront())
     }
 }

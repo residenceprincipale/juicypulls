@@ -122,6 +122,8 @@ export default class SecondRoulette {
 	}
 
 	animateIn() {
+		this._inTimeline?.kill()
+		this._outTimeline?.kill()
 		this._inTimeline = gsap.timeline();
 
 		// Drop animation with smoother ease
@@ -130,23 +132,22 @@ export default class SecondRoulette {
 			y: 0.082,
 			z: -0.148,
 			ease: "power2.out",
-			duration: 0.6,
+			duration: 0.45,
 		});
 
-		// Initial rotation
-		this._base.rotation.x = -0.24;
-
 		// Single elastic swing that naturally oscillates and settles
-		this._inTimeline.to(this._base.rotation, {
+		this._inTimeline.fromTo(this._base.rotation, {
+			x: -0.32
+		}, {
 			x: 0.05,
 			ease: "elastic.out(1.2, 0.3)",
-			duration: 2.0,
+			duration: 1.8,
 		}, 0.1);
 
-		this._attach.rotation.z = -0.04;
-
 		// Single elastic swing that naturally oscillates and settles
-		this._inTimeline.to(this._attach.rotation, {
+		this._inTimeline.fromTo(this._attach.rotation, {
+			z: -0.06
+		}, {
 			z: 0,
 			ease: "elastic.out(1.2, 0.3)",
 			duration: 2.0,
@@ -156,15 +157,30 @@ export default class SecondRoulette {
 	}
 
 	animateOut() {
+		this._inTimeline?.kill()
+		this._outTimeline?.kill()
 		this._outTimeline = gsap.timeline();
 
+		// Go back up animation with smoother ease
 		this._outTimeline.to(this._model.position, {
-			x: 0.003,
-			y: 0.082,
-			z: -0.148,
-			ease: "power2.out",
-			duration: 0.6,
+			x: 0.000,
+			y: 0.754,
+			z: -0.174,
+			ease: "power4.in",
+			duration: 0.5,
 		});
+
+		// Add rotation when going up
+		this._outTimeline.to(this._base.rotation, {
+			x: -0.1,
+			ease: "elastic.in(1.05, 0.4)",
+			duration: 0.7,
+		}, 0);
+		this._outTimeline.to(this._attach.rotation, {
+			z: -0.06,
+			ease: "power3.in",
+			duration: 0.4,
+		}, 0);
 
 		return this._outTimeline;
 	}

@@ -63,6 +63,7 @@ export default class Machine {
 	 */
 	animateInnerMachineOut() {
 		this._isHandFighting = true
+		this._innerOutTimeline?.kill()
 		this._innerOutTimeline = gsap.timeline();
 		this._innerOutTimeline.to(this._innerMachine.position, {
 			z: -0.6,
@@ -75,10 +76,13 @@ export default class Machine {
 			duration: 1,
 			delay: 0.5
 		})
+
+		return this._innerOutTimeline
 	}
 
 	animateInnerMachineIn() {
 		this._isHandFighting = false
+		this._innerInTimeline?.kill()
 		this._innerInTimeline = gsap.timeline();
 		this._innerInTimeline.to(this._innerMachine.position, {
 			y: 0,
@@ -91,6 +95,8 @@ export default class Machine {
 			duration: 0.8,
 			delay: 0.4
 		})
+
+		return this._innerInTimeline
 	}
 
 	animateInnerMachineBack() {
@@ -111,10 +117,12 @@ export default class Machine {
 		this._innerFrontTimeline?.kill()
 		this._innerFrontTimeline = gsap.timeline();
 		this._innerFrontTimeline.to(this._innerMachine.position, {
-			z: 0,
+			z: 0.07,
 			ease: "none",
 			duration: 0.8,
 		})
+
+		return this._innerFrontTimeline
 	}
 
 	/**
@@ -140,7 +148,6 @@ export default class Machine {
 			if (!child.isMesh) return
 			if (child.name.includes('gold-inner')) {
 				child.material = this._innerReflectionMaterial
-				console.log(child)
 			} else if (child.name.includes('slut-base')) {
 				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
