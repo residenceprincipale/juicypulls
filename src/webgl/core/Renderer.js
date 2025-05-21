@@ -13,7 +13,6 @@ export default class Renderer {
 		this.camera = this.experience.camera
 
 		this.setInstance()
-		// this.createPostProcessing()
 	}
 
 	setInstance() {

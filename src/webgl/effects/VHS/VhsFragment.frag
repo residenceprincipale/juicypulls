@@ -1,5 +1,5 @@
 const float range = 0.03;
-const float offsetIntensity = 0.3;
+const float offsetIntensity = 0.05;
 const float colorOffsetIntensity = .3;
 const float noiseQuality = 250.0;
 const float invNoiseQuality = 1.0 / noiseQuality;

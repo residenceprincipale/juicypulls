@@ -3,6 +3,7 @@ import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import Environment from 'components/Environment.js'
 import { AmbientLight, DirectionalLight } from 'three'
+import Mob from 'components/Mob/Mob.js'
 
 export default class Camera {
 	constructor() {
@@ -13,7 +14,9 @@ export default class Camera {
 
 		// Wait for resources
 		this.scene.resources.on('ready', () => {
+			this.experience.renderer.createPostProcessing()
 			this.environment = new Environment()
+			this.mob = new Mob()
 
 			this.scene.add(new DirectionalLight(0xffffff, 3))
 			this.scene.add(new AmbientLight())
@@ -41,5 +44,6 @@ export default class Camera {
 	update() {
 		if (this.snow) this.snow.update()
 		if (this.environment) this.environment.update()
+		if (this.mob) this.mob.update()
 	}
 }
