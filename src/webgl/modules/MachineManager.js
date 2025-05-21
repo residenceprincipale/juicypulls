@@ -19,7 +19,6 @@ const MAIN_ROULETTE_CONFIG = {
         "oeuil": "special" // Œil
     },
     occurrencePoints: {
-        "pair": 20,      // Points for a pair of any symbol (except cranium)
         "triple": 40,    // Points for a triple of any symbol (except cranium)
         "quadruple": 60, // Points for four of any symbol (except cranium)
         "quintuple": 100 // Points for five of any symbol (except cranium)
@@ -111,6 +110,7 @@ export default class MachineManager {
         this._spinsLeft = 3
         this._maxSpins = 3
         this._currentSpinIsDone = true
+        this._currentSpins = 0
 
         // Main roulette state
         this._results = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
@@ -126,12 +126,13 @@ export default class MachineManager {
      */
     _spinWheels() {
         // If user tries to spin with no spins left, auto-collect
-        if (this._spinsLeft <= 0) {
-            this._logMessage("No spins left! Collecting points automatically.")
-            this._collect()
-            return
-            // else if all wheels are locked
-        } else if (this._machine.wheels.every(wheel => wheel.isLocked)) {
+        // if (this._spinsLeft <= 0) {
+        //     // this._logMessage("No spins left! Collecting points automatically.")
+        //     // this._collect()
+        //     // return
+        //     // else if all wheels are locked
+        // } else 
+        if (this._machine.wheels.every(wheel => wheel.isLocked)) {
             this._logMessage("All wheels are locked! Collecting points automatically.")
             this._collect()
             return
@@ -151,8 +152,9 @@ export default class MachineManager {
         this._logSpinResult(this._results, MAIN_ROULETTE_CONFIG.wheelEmojis)
 
         // Decrement spins first
-        this._spinsLeft -= 1
-        this._updateSpinsDisplay()
+        // this._spinsLeft -= 1
+        // this._updateSpinsDisplay()
+        this._currentSpins += 1
 
         // Check for triple cranium farkle
         const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
@@ -160,6 +162,7 @@ export default class MachineManager {
             // Farkle - clear points and update UI
             this._logMessage("Farkle! Triple cranium - score of the round is lost.")
             this._rollingPoints = 0
+            this._currentSpins = 0
             this._updatePointsDisplay()
 
             // Note: Even on last spin, we don't auto-collect anymore
@@ -181,6 +184,7 @@ export default class MachineManager {
         const points = this._getPoints({ isLastSpin: true })
         if (this._rollingPoints - points >= 0) {
             this._logMessage("Farkle! No points from last spin.")
+            this._currentSpins = 0
             this._rollingPoints = 0
             this._updatePointsDisplay()
 
@@ -268,9 +272,10 @@ export default class MachineManager {
 
         validSymbols.forEach(symbol => {
             const count = counts[symbol]
-            if (count === 2) {
-                occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.pair
-            } else if (count === 3) {
+            // if (count === 2) {
+            //     occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.pair
+            // } else 
+            if (count === 3) {
                 occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.triple
             } else if (count === 4) {
                 occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.quadruple
@@ -503,7 +508,7 @@ export default class MachineManager {
 
     _collect() {
         // Reset spins for next round
-        this._spinsLeft = this._maxSpins
+        this._currentSpins = 0
         this._collectedPoints += this._rollingPoints
         this._logMessage(`Collected ${this._rollingPoints} points!`)
 
@@ -556,9 +561,10 @@ export default class MachineManager {
             // remap index to 0, 1, 2 (exclude 3 or more)
             if (e.index > 2) return
             this._hands.setHandAnimation(e.index % 3)
-        } else if (this._spinsLeft < this._maxSpins && this._currentSpinIsDone) {
+        } else if (this._currentSpins > 0 && this._currentSpinIsDone) {
             // Only allow locking wheels after first spin and when current spin is done
             this._lockWheel(e.index)
+            console.log('locking wheel', e.index)
         }
     }
 
