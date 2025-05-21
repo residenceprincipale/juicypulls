@@ -1,6 +1,20 @@
 import Experience from 'core/Experience.js'
-import { Scene, BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial } from 'three'
-import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+import {
+	Scene,
+	BoxGeometry,
+	Mesh,
+	ShaderMaterial,
+	Vector3,
+	MeshBasicMaterial,
+	Vector2,
+	RepeatWrapping,
+	MeshMatcapMaterial,
+	Color,
+	MeshStandardMaterial,
+	DirectionalLight,
+	MeshPhongMaterial,
+} from 'three'
+import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -94,8 +108,8 @@ export default class PhysicalDebug {
 			new MeshBasicMaterial({ color: 0xff0000 }), // Red
 			new MeshBasicMaterial({ color: 0x0000ff }), // Blue
 			new MeshBasicMaterial({ color: 0x008000 }), // Green
-			new MeshBasicMaterial({ color: 0xff00f0 })  // Orange
-		];
+			new MeshBasicMaterial({ color: 0xff00f0 }), // Orange
+		]
 
 		this._ledWhiteMaterial = new MeshBasicMaterial({ color: 0xffffff })
 	}
@@ -152,10 +166,14 @@ export default class PhysicalDebug {
 
 	_createInteraction() {
 		this._experience.interactionManager.addInteractiveObject(this._lever)
-		this._lever.addEventListener('click', (e) => { this._leverClickHandler() })
+		this._lever.addEventListener('click', (e) => {
+			this._leverClickHandler()
+		})
 
 		this._experience.interactionManager.addInteractiveObject(this._collectButton)
-		this._collectButton.addEventListener('click', (e) => { this._collectButtonClickHandler() });
+		this._collectButton.addEventListener('click', (e) => {
+			this._collectButtonClickHandler()
+		})
 
 		this._leds.forEach((led, i) => {
 			this._experience.interactionManager.addInteractiveObject(led)
@@ -168,6 +186,11 @@ export default class PhysicalDebug {
 					},
 					receiver: 'machine',
 				})
+
+				if (this._buttonLightsEnabled) {
+					led.material = this._ledMaterials[i]
+					led.isWhite = false
+				}
 			})
 		})
 	}
@@ -212,42 +235,50 @@ export default class PhysicalDebug {
 
 	_createEventListeners() {
 		window.addEventListener('resize', () => {
-			this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
-		});
+			this._css3dRenderer.setSize(window.innerWidth, window.innerHeight)
+		})
 
-		socket.on('update-collected-points', (e) => { this._updateCollectedPointsHandler(e) })
-		socket.on('update-rolling-points', (e) => { this._updateRollingPointsHandler(e) })
-		socket.on('update-spins', (e) => { this._updateSpinsHandler(e) })
-		socket.on('update-rounds', (e) => { this._updateRounds(e) })
-		socket.on('update-quota', (e) => { this._updateQuota(e) })
-		socket.on('button-light', (e) => { this._buttonLightHandler(e) })
-		socket.on('reset-buttons-light', (e) => { this._resetButtonsLightHandler(e) })
+		socket.on('update-collected-points', (e) => {
+			this._updateCollectedPointsHandler(e)
+		})
+		socket.on('update-rolling-points', (e) => {
+			this._updateRollingPointsHandler(e)
+		})
+		socket.on('update-spins', (e) => {
+			this._updateSpinsHandler(e)
+		})
+		socket.on('update-rounds', (e) => {
+			this._updateRounds(e)
+		})
+		socket.on('update-quota', (e) => {
+			this._updateQuota(e)
+		})
+		socket.on('button-lights-enabled', (e) => {
+			this._buttonLightsEnabledHandler(e)
+		})
+		socket.on('reset-buttons-light', (e) => {
+			this._resetButtonsLightHandler(e)
+		})
 	}
 
 	_updateCollectedPointsHandler(e) {
-		this._collectedElement.textContent = e.value;
+		this._collectedElement.textContent = e.value
 	}
 
 	_updateRollingPointsHandler(e) {
-		this._rollingElement.textContent = e.value;
-		console.log('rolling points', e.value);
+		this._rollingElement.textContent = e.value
 	}
 
 	_updateSpinsHandler(e) {
-		this._spinsElement.textContent = e.value;
+		this._spinsElement.textContent = e.value
 	}
 
-	_buttonLightHandler(e) {
-		const led = this._leds[e.index]
-		if (!led) return
-
-		led.isWhite = !led.isWhite
-
-		if (led.isWhite) {
+	_buttonLightsEnabledHandler(e) {
+		this._buttonLightsEnabled = e.value
+		this._leds.forEach((led, i) => {
 			led.material = this._ledWhiteMaterial
-		} else {
-			led.material = this._ledMaterials[e.index]
-		}
+			led.isWhite = true
+		})
 	}
 
 	_resetButtonsLightHandler() {
@@ -258,7 +289,7 @@ export default class PhysicalDebug {
 	}
 
 	update() {
-		if (this._css3dRenderer) this._css3dRenderer.render(this._css3dScene, this._experience.camera.instance);
+		if (this._css3dRenderer) this._css3dRenderer.render(this._css3dScene, this._experience.camera.instance)
 	}
 
 	_createDebug() {

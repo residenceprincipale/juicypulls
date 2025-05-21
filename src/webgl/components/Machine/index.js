@@ -1,9 +1,23 @@
 import Experience from 'core/Experience.js'
-import rouletteVertexShader from './shadersRoulette/vertex.glsl';
-import rouletteFragmentShader from './shadersRoulette/fragment.glsl';
-import innerReflectionVertexShader from './shadersInnerReflection/vertex.glsl';
-import innerReflectionFragmentShader from './shadersInnerReflection/fragment.glsl';
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
+import rouletteVertexShader from './shadersRoulette/vertex.glsl'
+import rouletteFragmentShader from './shadersRoulette/fragment.glsl'
+import innerReflectionVertexShader from './shadersInnerReflection/vertex.glsl'
+import innerReflectionFragmentShader from './shadersInnerReflection/fragment.glsl'
+import {
+	BoxGeometry,
+	Mesh,
+	ShaderMaterial,
+	Vector3,
+	MeshBasicMaterial,
+	Vector2,
+	RepeatWrapping,
+	MeshMatcapMaterial,
+	Color,
+	MeshStandardMaterial,
+	DirectionalLight,
+	MeshPhongMaterial,
+	DirectionalLightHelper,
+} from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -39,15 +53,15 @@ export default class Machine {
 	 * Getters & Setters
 	 */
 	get model() {
-		return this._model;
+		return this._model
 	}
 
 	get material() {
-		return this._material;
+		return this._material
 	}
 
 	get rouletteMaterial() {
-		return this._rouletteMaterial;
+		return this._rouletteMaterial
 	}
 
 	get wheels() {
@@ -64,17 +78,17 @@ export default class Machine {
 	animateInnerMachineOut() {
 		this._isHandFighting = true
 		this._innerOutTimeline?.kill()
-		this._innerOutTimeline = gsap.timeline();
+		this._innerOutTimeline = gsap.timeline()
 		this._innerOutTimeline.to(this._innerMachine.position, {
 			z: -0.6,
-			ease: "none",
+			ease: 'none',
 			duration: 1,
 		})
 		this._innerOutTimeline.to(this._innerMachine.position, {
 			y: -0.6,
-			ease: "none",
+			ease: 'none',
 			duration: 1,
-			delay: 0.5
+			delay: 0.5,
 		})
 
 		return this._innerOutTimeline
@@ -83,17 +97,17 @@ export default class Machine {
 	animateInnerMachineIn() {
 		this._isHandFighting = false
 		this._innerInTimeline?.kill()
-		this._innerInTimeline = gsap.timeline();
+		this._innerInTimeline = gsap.timeline()
 		this._innerInTimeline.to(this._innerMachine.position, {
 			y: 0,
-			ease: "none",
+			ease: 'none',
 			duration: 0.4,
 		})
 		this._innerInTimeline.to(this._innerMachine.position, {
 			z: 0,
-			ease: "none",
+			ease: 'none',
 			duration: 0.8,
-			delay: 0.4
+			delay: 0.4,
 		})
 
 		return this._innerInTimeline
@@ -102,10 +116,10 @@ export default class Machine {
 	animateInnerMachineBack() {
 		this._isMachineBack = true
 		this._innerBackTimeline?.kill()
-		this._innerBackTimeline = gsap.timeline();
+		this._innerBackTimeline = gsap.timeline()
 		this._innerBackTimeline.to(this._innerMachine.position, {
 			z: -0.45,
-			ease: "none",
+			ease: 'none',
 			duration: 1,
 		})
 
@@ -115,10 +129,10 @@ export default class Machine {
 	animateInnerMachineFront() {
 		this._isMachineBack = false
 		this._innerFrontTimeline?.kill()
-		this._innerFrontTimeline = gsap.timeline();
+		this._innerFrontTimeline = gsap.timeline()
 		this._innerFrontTimeline.to(this._innerMachine.position, {
 			z: 0.07,
-			ease: "none",
+			ease: 'none',
 			duration: 0.8,
 		})
 
@@ -151,7 +165,7 @@ export default class Machine {
 			} else if (child.name.includes('slut-base')) {
 				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
-				child.material = this._rouletteMaterial;
+				child.material = this._rouletteMaterial
 				this._leds.push(child)
 			} else if (child.name.includes('gold')) {
 				child.material = this._innerMaterial
@@ -170,15 +184,13 @@ export default class Machine {
 
 	_createBaseMaterial() {
 		this._baseMaterial = new PhongCustomMaterial({
-			// vertexShader: baseVertexShader,
-			// fragmentShader: baseFragmentShader,
 			uniforms: baseMaterialUniforms,
 			name: 'Base Material',
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
-		});
+		})
 	}
 
 	_createRouletteMaterial() {
@@ -191,22 +203,20 @@ export default class Machine {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
-		});
+		})
 	}
 
 	_createInnerReflectionMaterial() {
 		this._innerReflectionMaterial = new PhongCustomMaterial({
 			vertexShader: innerReflectionVertexShader,
 			fragmentShader: innerReflectionFragmentShader,
-			// vertexShader: rouletteVertexShader,
-			// fragmentShader: rouletteFragmentShader,
 			uniforms: innerReflectionMaterialUniforms,
 			name: 'Inner Reflection Material',
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
-		});
+		})
 	}
 
 	_createInnerMaterial() {
@@ -219,15 +229,13 @@ export default class Machine {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
-		});
+		})
 	}
 
 	/**
 	 * Events
 	 */
-	_createEventListeners() {
-
-	}
+	_createEventListeners() {}
 
 	/**
 	 * Debug

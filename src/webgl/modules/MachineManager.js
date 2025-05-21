@@ -19,23 +19,13 @@ const MAIN_ROULETTE_CONFIG = {
 		oeuil: 'special', // Œil
 	},
 	occurrencePoints: {
-		triple: 40, // Points for a triple of any symbol (except cranium)
-		quadruple: 60, // Points for four of any symbol (except cranium)
-		quintuple: 100, // Points for five of any symbol (except cranium)
+		triple: 100, // Points for a triple of any symbol (except cranium)
+		quadruple: 200, // Points for four of any symbol (except cranium)
+		quintuple: 500, // Points for five of any symbol (except cranium)
 	},
 	combinationPoints: {
 		'5jeton': 1000,
 		'5couronne': 600,
-		unique: 1500, // Suite complète (différent symbole sur chaque roulette)
-	},
-	basePoints: {
-		Quintuple: 50,
-		Carré: 40,
-		'Full House': 35,
-		Brelan: 25,
-		'Double Paire': 20,
-		Paire: 10,
-		'Carte haute': 5,
 	},
 }
 
@@ -91,26 +81,19 @@ export default class MachineManager {
 	}
 
 	/**
-	 * Public
-	 */
-	spinSecondRoulette() {
-		this._spinRouletteWheels(this._secondRoulette, SECOND_ROULETTE_CONFIG)
-	}
-
-	/**
 	 * Private - Initialization
 	 */
 	_initializeGameState() {
 		// Game state
-		this._currentSpinPoints = 0
 		this._rollingPoints = 0
 		this._lockedPoints = 0
 		this._collectedPoints = 0
 		this._round = 1
+		this._maxSpins = false
 		this._spinsLeft = 3
-		this._maxSpins = 3
 		this._currentSpinIsDone = true
 		this._currentSpins = 0
+		this._currentSpinPoints = 0
 
 		// Main roulette state
 		this._results = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
@@ -125,13 +108,6 @@ export default class MachineManager {
 	 * Main Roulette Logic
 	 */
 	_spinWheels() {
-		// If user tries to spin with no spins left, auto-collect
-		// if (this._spinsLeft <= 0) {
-		//     // this._logMessage("No spins left! Collecting points automatically.")
-		//     // this._collect()
-		//     // return
-		//     // else if all wheels are locked
-		// } else
 		if (this._machine.wheels.every((wheel) => wheel.isLocked)) {
 			this._logMessage('All wheels are locked! Collecting points automatically.')
 			this._collect()
@@ -151,26 +127,18 @@ export default class MachineManager {
 
 		this._logSpinResult(this._results, MAIN_ROULETTE_CONFIG.wheelEmojis)
 
-		// Decrement spins first
-		// this._spinsLeft -= 1
-		// this._updateSpinsDisplay()
+		// Increment spins first
 		this._currentSpins += 1
 
 		// Check for triple cranium farkle
 		const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
 		if (counts['crane'] >= 3) {
-			// Farkle - clear points and update UI
 			this._logMessage('Farkle! Triple cranium - score of the round is lost.')
 			this._rollingPoints = 0
 			this._currentSpins = 0
 			this._updatePointsDisplay()
-
-			// Note: Even on last spin, we don't auto-collect anymore
 		} else {
-			// Check for special roulette trigger (3+ eyes)
 			const special = counts['oeuil'] >= 3
-
-			// No auto-collect on last spin - user must manually collect
 
 			// Trigger special roulette if needed
 			if (special) {
@@ -179,9 +147,7 @@ export default class MachineManager {
 			}
 		}
 
-		// if last spin then get points all wheels including the non locked ones but dont add then to the rolling points and if its zero new points then its farkle
-		// if (this._spinsLeft === 0) {
-		const points = this._getPoints({ isLastSpin: true })
+		const points = this._getPoints({ lockedOnly: false })
 		if (this._rollingPoints - points >= 0) {
 			this._logMessage('Farkle! No points from last spin.')
 			this._currentSpins = 0
@@ -192,7 +158,6 @@ export default class MachineManager {
 				this._collect()
 			})
 		}
-		// }
 
 		// Animate wheels
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
@@ -200,23 +165,30 @@ export default class MachineManager {
 		// Update UI when animation completes
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
+
+			if (this._currentSpins > 0) {
+				socket.send({
+					event: 'button-lights-enabled',
+					data: {
+						value: true,
+					},
+					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				})
+			}
 		})
 	}
 
 	/**
 	 * Points Calculation
 	 */
-	_getPoints(options = { isLastSpin: false }) {
+	_getPoints(options = { lockedOnly: true }) {
 		// This function calculates points considering ONLY locked wheels
 		// Get results for locked wheels only
 		const results = []
 
 		this._machine.wheels.forEach((wheel, index) => {
-			if (options.isLastSpin) {
-				results.push(this._results[index])
-			} else if (wheel.isLocked) {
-				results.push(this._results[index])
-			}
+			if (options.lockedOnly && !wheel.isLocked) return
+			results.push(this._results[index])
 		})
 
 		// If no wheels are locked, return 0 points
@@ -270,9 +242,6 @@ export default class MachineManager {
 
 		validSymbols.forEach((symbol) => {
 			const count = counts[symbol]
-			// if (count === 2) {
-			//     occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.pair
-			// } else
 			if (count === 3) {
 				occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.triple
 			} else if (count === 4) {
@@ -289,7 +258,6 @@ export default class MachineManager {
 	 * Second Roulette Logic
 	 */
 	_triggerSecondRoulette() {
-		// Transition to second roulette
 		this._secondRouletteTimeline?.kill()
 		this._secondRouletteTimeline = gsap.timeline()
 		this._secondRouletteTimeline.add(this._machine.animateInnerMachineBack())
@@ -332,7 +300,7 @@ export default class MachineManager {
 				this._animateSecondRouletteOut()
 			},
 			null,
-			6,
+			6
 		)
 	}
 
@@ -419,8 +387,6 @@ export default class MachineManager {
 		const resultEmojis = results.map((index) => wheelEmojis[index]).join(' ')
 		const message = isSecondRoulette ? `Second Roulette Spin Result: ${resultEmojis}` : `Spin Result: ${resultEmojis}`
 
-		console.log(message)
-
 		if (this._physicalDebug) {
 			this._physicalDebug.printToRightScreen(message)
 		}
@@ -492,14 +458,14 @@ export default class MachineManager {
 		this._updatePointsDisplay()
 
 		// Update UI for locked wheel
-		socket.send({
-			event: 'button-light',
-			data: {
-				index: index,
-				state: this._machine.wheels[index].isLocked,
-			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-		})
+		// socket.send({
+		// 	event: 'button-light',
+		// 	data: {
+		// 		index: index,
+		// 		state: this._machine.wheels[index].isLocked,
+		// 	},
+		// 	receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+		// })
 	}
 
 	_collect() {
