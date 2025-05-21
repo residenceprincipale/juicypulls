@@ -179,7 +179,7 @@ export default class MachineManager {
         // if last spin then get points all wheels including the non locked ones but dont add then to the rolling points and if its zero new points then its farkle 
         if (this._spinsLeft === 0) {
             const points = this._getPoints({ isLastSpin: true })
-            if (this._rollingPoints - points <= 0) {
+            if (this._rollingPoints - points >= 0) {
                 this._logMessage("Farkle! No points from last spin.")
                 this._rollingPoints = 0
                 this._updatePointsDisplay()
