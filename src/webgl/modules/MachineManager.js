@@ -67,6 +67,8 @@ export default class MachineManager {
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
+
+		//test
 	}
 
 	/**
