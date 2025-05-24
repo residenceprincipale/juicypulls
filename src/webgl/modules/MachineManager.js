@@ -105,12 +105,29 @@ export default class MachineManager {
 
 		// Second roulette state
 		this._secondRouletteResults = new Array(SECOND_ROULETTE_CONFIG.numWheels).fill(0)
+
+		socket.send({
+			event: 'button-lights-enabled',
+			data: { value: false, index: -1 },
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+		})
 	}
 
 	/**
 	 * Main Roulette Logic
 	 */
 	_spinWheels() {
+		this._machine.wheels.forEach((wheel, index) => {
+			if (wheel.isLocked) {
+				wheel.isDisabled = true
+				console.log(`Wheel ${index} is blocked`)
+				socket.send({
+					event: 'button-lights-enabled',
+					data: { value: false, index: index },
+					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				})
+			}
+		})
 		if (this._machine.wheels.every((wheel) => wheel.isLocked)) {
 			this._logMessage('All wheels are locked! Collecting points automatically.')
 			this._collect()
@@ -154,6 +171,17 @@ export default class MachineManager {
 			this._rollingPoints = 0
 			this._currentSpins = 0
 			this._updatePointsDisplay()
+			gsap.delayedCall(2, () => {
+				socket.send({
+					event: 'button-lights-enabled',
+					data: { value: false, index: -1 },
+					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				})
+				this._machine.wheels.forEach((wheel) => {
+					wheel.isDisabled = true
+					wheel.isLocked = false
+				})
+			})
 		} else {
 			const special = counts['oeuil'] >= 3
 
@@ -167,12 +195,22 @@ export default class MachineManager {
 		const points = this._getPoints({ lockedOnly: false })
 		if (this._rollingPoints - points >= 0) {
 			this._logMessage('Farkle! No points from last spin.')
+			//TODO faire une fonction de reset
 			this._currentSpins = 0
 			this._rollingPoints = 0
 			this._updatePointsDisplay()
 
 			gsap.delayedCall(2, () => {
 				this._collect()
+				socket.send({
+					event: 'button-lights-enabled',
+					data: { value: false, index: -1 },
+					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				})
+				this._machine.wheels.forEach((wheel) => {
+					wheel.isDisabled = true
+					wheel.isLocked = false
+				})
 			})
 		}
 
@@ -183,13 +221,14 @@ export default class MachineManager {
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
 
-			if (this._currentSpins > 0) {
+			if (this._currentSpins === 1) {
 				socket.send({
 					event: 'button-lights-enabled',
-					data: {
-						value: true,
-					},
+					data: { value: true, index: -1 },
 					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				})
+				this._machine.wheels.forEach((wheel) => {
+					wheel.isDisabled = false
 				})
 			}
 		})
@@ -317,7 +356,7 @@ export default class MachineManager {
 				this._animateSecondRouletteOut()
 			},
 			null,
-			6
+			6,
 		)
 	}
 
@@ -466,6 +505,7 @@ export default class MachineManager {
 	 * Game Control
 	 */
 	_lockWheel(index) {
+		if (this._machine.wheels[index].isDisabled) return
 		gsap.killTweensOf(this._machine.wheels[index].rotation)
 
 		// Toggle lock state
@@ -503,23 +543,23 @@ export default class MachineManager {
 		this._currentSpins = 0
 		this._collectedPoints += this._rollingPoints
 		this._logMessage(`Collected ${this._rollingPoints} points!`)
-
+		socket.send({
+			event: 'button-lights-enabled',
+			data: { value: false, index: -1 },
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+		})
 		this._rollingPoints = 0
 
 		// Unlock all wheels
 		this._machine.wheels.forEach((wheel) => {
 			wheel.isLocked = false
+			wheel.isDisabled = true
 		})
 
 		// Update UI
 		this._updateCollectedPointsDisplay()
 		this._updatePointsDisplay()
 		this._updateSpinsDisplay()
-
-		socket.send({
-			event: 'reset-buttons-light',
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-		})
 	}
 
 	/**
@@ -562,7 +602,6 @@ export default class MachineManager {
 		} else if (this._currentSpins > 0 && this._currentSpinIsDone) {
 			// Only allow locking wheels after first spin and when current spin is done
 			this._lockWheel(e.index)
-			console.log('locking wheel', e.index)
 		}
 	}
 

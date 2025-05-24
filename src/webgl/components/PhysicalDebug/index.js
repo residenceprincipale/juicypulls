@@ -31,6 +31,7 @@ export default class PhysicalDebug {
 		this._resources = this._scene.resources
 		this._machine = this._experience.activeScene.machine
 		this._hands = this._experience.activeScene.hands
+		this._buttonLightsEnabled = Array(5).fill(false)
 
 		this._resource = this._resources.items.physicalPartsModel
 
@@ -187,9 +188,9 @@ export default class PhysicalDebug {
 					receiver: 'machine',
 				})
 
-				if (this._buttonLightsEnabled) {
-					led.material = this._ledMaterials[i]
-					led.isWhite = false
+				if (this._buttonLightsEnabled[i]) {
+					led.isWhite = !led.isWhite
+					led.material = led.isWhite ? this._ledWhiteMaterial : this._ledMaterials[i]
 				}
 			})
 		})
@@ -274,11 +275,18 @@ export default class PhysicalDebug {
 	}
 
 	_buttonLightsEnabledHandler(e) {
-		this._buttonLightsEnabled = e.value
-		this._leds.forEach((led, i) => {
-			led.material = this._ledWhiteMaterial
-			led.isWhite = true
-		})
+		const value = e.value
+		const index = e.index
+		console.log('button lights enabled', value, index)
+		if (index === -1) {
+			this._buttonLightsEnabled.fill(value)
+			this._leds.forEach((led, i) => {
+				led.material = this._ledWhiteMaterial
+				led.isWhite = true
+			})
+		} else {
+			this._buttonLightsEnabled[index] = value
+		}
 	}
 
 	_resetButtonsLightHandler() {
