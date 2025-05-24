@@ -244,8 +244,8 @@ export default class PhysicalDebug {
 		socket.on('update-rolling-points', (e) => {
 			this._updateRollingPointsHandler(e)
 		})
-		socket.on('update-spins', (e) => {
-			this._updateSpinsHandler(e)
+		socket.on('update-spin-tokens', (e) => {
+			this._updateSpinTokensHandler(e)
 		})
 		socket.on('update-rounds', (e) => {
 			this._updateRounds(e)
@@ -269,7 +269,7 @@ export default class PhysicalDebug {
 		this._rollingElement.textContent = e.value
 	}
 
-	_updateSpinsHandler(e) {
+	_updateSpinTokensHandler(e) {
 		this._spinsElement.textContent = e.value
 	}
 

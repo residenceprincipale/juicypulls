@@ -94,6 +94,7 @@ export default class MachineManager {
 		this._currentSpinIsDone = true
 		this._currentSpins = 0
 		this._currentSpinPoints = 0
+		this._spinTokens = 10 // Initialize spin tokens to 10
 
 		// Main roulette state
 		this._results = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
@@ -115,6 +116,20 @@ export default class MachineManager {
 		}
 
 		if (!this._currentSpinIsDone) return
+
+		// Only check and use spin tokens at the beginning of a new round
+		// (when currentSpins is 0, meaning it's the first spin after collect or farkle)
+		if (this._currentSpins === 0) {
+			// Check if player has spin tokens available
+			if (this._spinTokens <= 0) {
+				this._logMessage('No spin tokens left! Game over.')
+				return
+			}
+
+			// Decrement spin tokens only for the first spin of a round
+			this._spinTokens--
+			this._updateSpinTokensDisplay()
+		}
 
 		this._currentSpinIsDone = false
 		this._previousResults = [...this._results]
@@ -420,6 +435,19 @@ export default class MachineManager {
 			},
 			receiver: 'physical-debug',
 		})
+	}
+
+	_updateSpinTokensDisplay() {
+		socket.send({
+			event: 'update-spin-tokens',
+			data: {
+				value: this._spinTokens,
+			},
+			receiver: 'physical-debug',
+		})
+
+		// Also log to debug console
+		this._logMessage(`Spin tokens remaining: ${this._spinTokens}`)
 	}
 
 	_updateCollectedPointsDisplay() {
