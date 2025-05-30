@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { CameraHelper, PerspectiveCamera, Vector3 } from 'three'
 import InputManager from 'utils/InputManager.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
+import addTransformDebug from '../utils/addTransformDebug.js'
 
 export default class Camera {
 	constructor() {
@@ -163,6 +164,43 @@ export default class Camera {
 		this.instance.lookAt(this.options.target)
 	}
 
+	/**
+	 * Set the active camera by name
+	 * @param {string} cameraName - The name of the camera to activate ('sceneCamera', 'controlsCamera', 'fpsCamera')
+	 */
+	setCamera(cameraName) {
+		// Validate camera name
+		const validCameras = ['sceneCamera', 'controlsCamera', 'fpsCamera']
+		if (!validCameras.includes(cameraName)) {
+			console.warn(`Invalid camera name: ${cameraName}. Valid options are: ${validCameras.join(', ')}`)
+			return
+		}
+
+		const isSceneCamera = cameraName === 'sceneCamera'
+
+		// Initialize the camera if it's not the scene camera
+		if (!isSceneCamera) {
+			this[`set${cameraName.charAt(0).toUpperCase() + cameraName.slice(1)}`]()
+			this.#setCameraDebugPositionAndTarget(this[cameraName])
+		}
+
+		// Update camera helper visibility
+		if (this.sceneCamera.cameraHelper) {
+			this.sceneCamera.cameraHelper.visible = !isSceneCamera
+		}
+
+		// Enable/disable controls based on camera type
+		if (this.controlsCamera) {
+			this.controlsCamera.controls.enabled = cameraName === 'controlsCamera'
+		}
+
+		// Set the active camera instance
+		this.instance = this[cameraName]
+
+		// Update options to reflect current camera
+		this.options.currentCamera = cameraName
+	}
+
 	resize() {
 		this.instance.aspect = this.sizes.width / this.sizes.height
 		this.instance.updateProjectionMatrix()
@@ -187,6 +225,58 @@ export default class Camera {
 			if (this.sceneCamera.cameraHelper) this.sceneCamera.cameraHelper.update()
 		})
 
+		// Scene Camera Position Controls
+		const positionFolder = debugFolder.addFolder({
+			title: 'Scene Camera Position',
+			expanded: false,
+		})
+
+		positionFolder.addBinding(this.sceneCamera, 'position', {
+			x: { min: -20, max: 20, step: 0.01 },
+			y: { min: -20, max: 20, step: 0.01 },
+			z: { min: -20, max: 20, step: 0.01 }
+		})
+
+		positionFolder
+			.addButton({
+				title: 'Copy Position',
+			})
+			.on('click', () => {
+				const x = parseFloat(this.sceneCamera.position.x.toFixed(3))
+				const y = parseFloat(this.sceneCamera.position.y.toFixed(3))
+				const z = parseFloat(this.sceneCamera.position.z.toFixed(3))
+				const positionString = `${x},${y},${z}`
+				navigator.clipboard.writeText(positionString).then(() => {
+					console.log('Position copied to clipboard:', positionString)
+				})
+			})
+
+		// Scene Camera Rotation Controls
+		const rotationFolder = debugFolder.addFolder({
+			title: 'Scene Camera Rotation',
+			expanded: false,
+		})
+
+		rotationFolder.addBinding(this.sceneCamera, 'rotation', {
+			x: { min: -Math.PI, max: Math.PI, step: 0.01 },
+			y: { min: -Math.PI, max: Math.PI, step: 0.01 },
+			z: { min: -Math.PI, max: Math.PI, step: 0.01 }
+		})
+
+		rotationFolder
+			.addButton({
+				title: 'Copy Rotation',
+			})
+			.on('click', () => {
+				const x = parseFloat(this.sceneCamera.rotation.x.toFixed(3))
+				const y = parseFloat(this.sceneCamera.rotation.y.toFixed(3))
+				const z = parseFloat(this.sceneCamera.rotation.z.toFixed(3))
+				const rotationString = `${x},${y},${z}`
+				navigator.clipboard.writeText(rotationString).then(() => {
+					console.log('Rotation copied to clipboard:', rotationString)
+				})
+			})
+
 		debugFolder
 			.addBlade({
 				view: 'list',
@@ -199,16 +289,7 @@ export default class Camera {
 				value: this.instance.name,
 			})
 			.on('change', ({ value }) => {
-				const isSceneCamera = value === 'sceneCamera'
-
-				if (!isSceneCamera) {
-					this[`set${value.charAt(0).toUpperCase() + value.slice(1)}`]()
-					this.#setCameraDebugPositionAndTarget(this[value])
-				}
-
-				this.sceneCamera.cameraHelper.visible = !isSceneCamera
-				if (this.controlsCamera) this.controlsCamera.controls.enabled = value === 'controlsCamera'
-				this.instance = this[value]
+				this.setCamera(value)
 			})
 
 		debugFolder

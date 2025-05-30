@@ -185,7 +185,7 @@ export default class PhysicalDebug {
 					data: {
 						index: i,
 					},
-					receiver: 'machine',
+					receiver: ['machine', 'shooter'],
 				})
 
 				if (this._buttonLightsEnabled[i]) {
@@ -239,6 +239,46 @@ export default class PhysicalDebug {
 			// this._css3dRenderer.setSize(window.innerWidth, window.innerHeight)
 		})
 
+		// listen to f g h j k and send corresponding index button events to machine and shooter
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'f') {
+				socket.send({
+					event: 'button',
+					data: { index: 0 },
+					receiver: ['machine', 'shooter'],
+				})
+			} else if (e.key === 'g') {
+				socket.send({
+					event: 'button',
+					data: { index: 1 },
+					receiver: ['machine', 'shooter'],
+				})
+			} else if (e.key === 'h') {
+				socket.send({
+					event: 'button',
+					data: { index: 2 },
+					receiver: ['machine', 'shooter'],
+				})
+			} else if (e.key === 'j') {
+				socket.send({
+					event: 'button',
+					data: { index: 3 },
+					receiver: ['machine', 'shooter'],
+				})
+			} else if (e.key === 'k') {
+				socket.send({
+					event: 'button',
+					data: { index: 4 },
+					receiver: ['machine', 'shooter'],
+				})
+			} else if (e.key === 'Enter') {
+				this._collectButtonClickHandler()
+			} else if (e.key === ' ') {
+				e.preventDefault() // Prevent default space behavior (scrolling)
+				this._leverClickHandler()
+			}
+		})
+
 		socket.on('update-collected-points', (e) => {
 			this._updateCollectedPointsHandler(e)
 		})
@@ -271,7 +311,11 @@ export default class PhysicalDebug {
 	}
 
 	_updateSpinTokensHandler(e) {
-		this._spinsElement.textContent = e.value
+		if (e.value === '+1') {
+			this._spinsElement.textContent = parseInt(this._spinsElement.textContent) + 1
+		} else {
+			this._spinsElement.textContent = e.value
+		}
 	}
 
 	_buttonLightsEnabledHandler(e) {

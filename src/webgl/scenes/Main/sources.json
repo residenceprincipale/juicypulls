@@ -133,5 +133,42 @@
 		"path": "textures/second-wheel/flap-normal.jpg",
 		"flipY": false,
 		"repeatWrapping": true
+	},
+	{
+		"name": "environmentModel",
+		"path": "/models/environment.glb"
+	},
+	{
+		"name": "gunArmModel",
+		"path": "/models/gun-arm.glb"
+	},
+	{
+		"name": "gunArmAlbedo",
+		"path": "textures/gun/albedo-1.jpg"
+	},
+	{
+		"name": "gunArmRoughness",
+		"path": "textures/gun/roughness-1.jpg"
+	},
+	{
+		"name": "gunBerettaAlbedo",
+		"path": "textures/gun/beretta-color.png"
+	},
+	{
+		"name": "gunBerettaRoughness",
+		"path": "textures/gun/beretta-roughness.png"
+	},
+	{
+		"name": "gunBerettaNormal",
+		"path": "textures/gun/beretta-normal.png"
+	},
+	{
+		"name": "gunBerettaAo",
+		"path": "textures/gun/beretta-ao.png"
+	},
+	{
+		"name": "gunTarget",
+		"path": "textures/gun/cible.png",
+		"flipY": true
 	}
 ]

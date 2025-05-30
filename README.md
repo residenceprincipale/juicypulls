@@ -93,7 +93,7 @@ Uniform Types in (`materialSettings.js`) file:
 - Debounce 3D object interaction clicks.
 - Improve error feedback for missing texture paths.
 - Improve debug folder creation clarity (`debug.ui` vs `debug.panel`).
-- Enhance `addDebugMaterial()` to accept either a folder name or folder instance.
+- Improve camera system, should be more of a "per scene" setting setup
 
 ---
 

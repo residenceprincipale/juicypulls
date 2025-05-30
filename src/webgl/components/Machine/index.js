@@ -34,7 +34,6 @@ export default class Machine {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
-		this._resource = this._resources.casino
 		this._resource = this._resources.items.casinoModel
 
 		// this._createLights()
@@ -45,6 +44,8 @@ export default class Machine {
 		this._createModel()
 
 		this._createEventListeners()
+
+		// this.animateInnerMachineOut()
 
 		if (this._debug.active) this._createDebug()
 	}
@@ -76,18 +77,18 @@ export default class Machine {
 	 * Public
 	 */
 	animateInnerMachineOut() {
-		this._isHandFighting = true
+		// this._isHandFighting = true
 		this._innerOutTimeline?.kill()
 		this._innerOutTimeline = gsap.timeline()
 		this._innerOutTimeline.to(this._innerMachine.position, {
 			z: -0.6,
 			ease: 'none',
-			duration: 1,
+			duration: 0.4,
 		})
 		this._innerOutTimeline.to(this._innerMachine.position, {
 			y: -0.6,
 			ease: 'none',
-			duration: 1,
+			duration: 0.4,
 			delay: 0.5,
 		})
 
@@ -95,7 +96,7 @@ export default class Machine {
 	}
 
 	animateInnerMachineIn() {
-		this._isHandFighting = false
+		// this._isHandFighting = false
 		this._innerInTimeline?.kill()
 		this._innerInTimeline = gsap.timeline()
 		this._innerInTimeline.to(this._innerMachine.position, {
@@ -235,7 +236,7 @@ export default class Machine {
 	/**
 	 * Events
 	 */
-	_createEventListeners() {}
+	_createEventListeners() { }
 
 	/**
 	 * Debug

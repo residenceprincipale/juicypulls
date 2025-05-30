@@ -38,7 +38,19 @@ class FauxServer {
             const parsed = JSON.parse(message);
             const { event, data, receiver } = parsed;
 
-            if (receiver) {
+            if (Array.isArray(receiver)) {
+                // Handle array of receivers
+                for (const receiverName of receiver) {
+                    const target = this.clients.get(receiverName);
+                    if (target) {
+                        console.log('sending to %s', target.name);
+                        target.trigger(event, [data]);
+                    } else {
+                        console.warn(`[FauxServer] Receiver "${receiverName}" not found`);
+                    }
+                }
+            } else if (receiver) {
+                // Handle single receiver
                 const target = this.clients.get(receiver);
                 if (!target) {
                     senderSocket.trigger('message', [{

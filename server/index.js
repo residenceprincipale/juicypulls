@@ -49,20 +49,37 @@ function handleMessage(name, socket, message, isBinary) {
 	try {
 		const parsedMessage = JSON.parse(message)
 		console.log('received from %s', name, parsedMessage.event, parsedMessage.data)
-		const receiverName = parsedMessage.receiver
+		const receiver = parsedMessage.receiver
 
-		if (receiverName) {
-			if (receiverName === 'bulbs') {
+		if (Array.isArray(receiver)) {
+			// Handle array of receivers
+			for (const receiverName of receiver) {
+				if (receiverName === 'bulbs') {
+					arduino.write(parsedMessage.data)
+					console.log('sending to arduino')
+					continue
+				}
+				const receiverClient = clients.get(receiverName)
+				if (receiverClient) {
+					console.log('sending to %s', receiverName, parsedMessage.event, parsedMessage.data)
+					receiverClient.send(JSON.stringify(parsedMessage), { binary: isBinary })
+				} else {
+					console.warn(`Receiver "${receiverName}" not found`)
+				}
+			}
+		} else if (receiver) {
+			// Handle single receiver
+			if (receiver === 'bulbs') {
 				arduino.write(parsedMessage.data)
 				console.log('sending to arduino')
 				return
 			}
-			const receiverClient = clients.get(receiverName)
+			const receiverClient = clients.get(receiver)
 			if (!receiverClient) {
 				socket.send(JSON.stringify({ event: 'error', message: 'receiver not found' }))
 				return
 			}
-			console.log('sending to %s', receiverName, parsedMessage.event, parsedMessage.data)
+			console.log('sending to %s', receiver, parsedMessage.event, parsedMessage.data)
 			receiverClient.send(JSON.stringify(parsedMessage), { binary: isBinary })
 		} else {
 			console.log('No receiver specified, broadcasting...')

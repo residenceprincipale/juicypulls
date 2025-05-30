@@ -49,6 +49,7 @@ export default class Debug {
 			this.setMoveEvent()
 			this.setResizeEvent()
 			this.setResetButton()
+			this.restorePosition() // Restore saved position after UI setup
 
 			this.setDebugManager()
 
@@ -129,8 +130,17 @@ export default class Debug {
 			move = ({ clientX, clientY }) => {
 				hasMoved = true
 
-				container.style.right = `${this.experience.sizes.width - clientX - (clickTargetWidth - clickTargetX)}px`
-				container.style.top = `${clientY - clickTargetY}px`
+				const rightPos = this.experience.sizes.width - clientX - (clickTargetWidth - clickTargetX)
+				const topPos = clientY - clickTargetY
+
+				// Apply bounds checking
+				const boundedPosition = this.getBoundedPosition(rightPos, topPos)
+
+				container.style.right = `${boundedPosition.right}px`
+				container.style.top = `${boundedPosition.top}px`
+
+				// Save position to localStorage
+				this.savePosition(boundedPosition.right, boundedPosition.top)
 			}
 
 			document.addEventListener('mousemove', move)
@@ -148,6 +158,57 @@ export default class Debug {
 
 		titleElement.addEventListener('mousedown', handleMouseDown)
 		titleElement.addEventListener('mouseup', handleMouseUp)
+	}
+
+	getBoundedPosition(right, top) {
+		const container = this.ui.containerElem_
+		const containerRect = container.getBoundingClientRect()
+		const windowWidth = this.experience.sizes.width
+		const windowHeight = this.experience.sizes.height
+
+		// Minimum visible area (at least 50px of the pane should be visible)
+		const minVisibleWidth = 50
+		const minVisibleHeight = 30
+
+		// Bound the right position (prevent going too far right or left)
+		const maxRight = windowWidth - minVisibleWidth
+		const minRight = -(containerRect.width - minVisibleWidth)
+		const boundedRight = Math.max(minRight, Math.min(maxRight, right))
+
+		// Bound the top position (prevent going above screen or below screen)
+		const maxTop = windowHeight - minVisibleHeight
+		const minTop = 0
+		const boundedTop = Math.max(minTop, Math.min(maxTop, top))
+
+		return {
+			right: boundedRight,
+			top: boundedTop
+		}
+	}
+
+	savePosition(right, top) {
+		const position = { right, top }
+		localStorage.setItem('debugPanePosition', JSON.stringify(position))
+	}
+
+	restorePosition() {
+		const savedPosition = localStorage.getItem('debugPanePosition')
+		if (savedPosition) {
+			try {
+				const position = JSON.parse(savedPosition)
+				const container = this.ui.containerElem_
+
+				// Apply bounds checking to saved position in case screen size changed
+				const boundedPosition = this.getBoundedPosition(position.right, position.top)
+
+				container.style.right = `${boundedPosition.right}px`
+				container.style.top = `${boundedPosition.top}px`
+			} catch (error) {
+				console.warn('Failed to restore debug pane position:', error)
+				// If parsing fails, remove the corrupted data
+				localStorage.removeItem('debugPanePosition')
+			}
+		}
 	}
 
 	setResizeEvent() {

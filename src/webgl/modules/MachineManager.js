@@ -98,6 +98,14 @@ export default class MachineManager {
 		this._currentSpinPoints = 0
 		this._spinTokens = 10 // Initialize spin tokens to 10
 
+		socket.send({
+			event: 'update-spin-tokens',
+			data: {
+				value: this._spinTokens,
+			},
+			receiver: 'physical-debug',
+		})
+
 		// Main roulette state
 		this._results = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
 		this._previousResults = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
