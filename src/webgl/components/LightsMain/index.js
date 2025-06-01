@@ -94,7 +94,7 @@ export default class LightsMain {
     _createDebug() {
         this._debugFolder = this._debug.ui.addFolder({
             title: 'Lights',
-            expanded: true,
+            expanded: false,
         });
     }
 

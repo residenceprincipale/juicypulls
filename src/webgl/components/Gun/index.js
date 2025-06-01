@@ -70,9 +70,9 @@ export default class Gun {
     /**
      * Public Methods
      */
-    update() {
+    update({ deltaTime, elapsedTime }) {
         if (this._animation) {
-            this._animation.update(this._time.delta * 0.001)
+            this._animation.update(deltaTime * 0.001)
         }
     }
 
@@ -249,7 +249,7 @@ export default class Gun {
 
         const debugFolder = this._debug.ui.addFolder({
             title: 'Gun Arm',
-            expanded: true,
+            expanded: false,
         })
 
         // Material debug

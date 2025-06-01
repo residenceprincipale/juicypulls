@@ -29,8 +29,8 @@ export default class PhysicalDebug {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
-		this._machine = this._experience.activeScene.machine
-		this._hands = this._experience.activeScene.hands
+		this._machine = this._experience.sceneManager.machine
+		this._hands = this._experience.sceneManager.hands
 		this._buttonLightsEnabled = Array(5).fill(false)
 
 		this._resource = this._resources.items.physicalPartsModel

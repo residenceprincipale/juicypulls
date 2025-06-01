@@ -82,7 +82,7 @@ export default class BackgroundEnvironment {
             vertexShader: sampleVertexShader,
             fragmentShader: sampleFragmentShader,
             uniforms: sampleMaterialUniforms,
-            name: 'Sample Material',
+            name: 'Base Material',
             defines: {
                 USE_ROUGHNESS: true,
                 USE_MATCAP: true,
@@ -99,7 +99,7 @@ export default class BackgroundEnvironment {
 
         const debugFolder = this._debug.ui.addFolder({
             title: 'Background Environment',
-            expanded: true,
+            expanded: false,
         })
 
         // Material debug

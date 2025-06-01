@@ -30,7 +30,7 @@ export default class Experience {
 		this.debug = new Debug()
 		this.camera = new Camera()
 		this.interactionManager = new InteractionManager(this.camera.instance)
-		this.activeScene = new SceneManager()
+		this.sceneManager = new SceneManager()
 		this.renderer = new Renderer()
 
 		// Resize event
@@ -50,7 +50,7 @@ export default class Experience {
 	}
 
 	update() {
-		if (this.activeScene.update) this.activeScene.update()
+		if (this.sceneManager.update) this.sceneManager.update()
 		this.renderer.update()
 		this.debug.update()
 		this.interactionManager.update()

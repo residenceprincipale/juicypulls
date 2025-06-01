@@ -72,12 +72,12 @@ export default class ShooterManager {
         this._setupEventListeners()
         this._createTargetPool()
 
-        gsap.delayedCall(2, () => {
-            this._machine.animateInnerMachineOut()
-        })
-        gsap.delayedCall(3, () => {
-            this.startGame()
-        })
+        // gsap.delayedCall(2, () => {
+        //     this._machine.animateInnerMachineOut()
+        // })
+        // gsap.delayedCall(3, () => {
+        //     this.startGame()
+        // })
 
         if (this._debug.active) this._createDebug()
     }
@@ -266,11 +266,11 @@ export default class ShooterManager {
         this._handleShoot()
     }
 
-    update(deltaTime) {
+    update({ deltaTime, elapsedTime }) {
         if (!this._isGameActive) return
 
         // Update game timer
-        this._gameTimer -= 0.010
+        this._gameTimer -= deltaTime / 1000
 
         this._updateTimerUI()
 
@@ -552,7 +552,6 @@ export default class ShooterManager {
             data: {
                 value: '+1',
             },
-            receiver: 'physical-debug',
         })
 
         // Remove from active targets
@@ -586,7 +585,6 @@ export default class ShooterManager {
     _setupEventListeners() {
         // Socket event listeners for physical button controls
         socket.on('button', (e) => {
-            console.log('Shooter button pressed: ', e.index)
             this._handleButtonPress(e.index)
         })
     }

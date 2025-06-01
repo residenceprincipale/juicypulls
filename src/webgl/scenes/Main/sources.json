@@ -1,17 +1,5 @@
 [
 	{
-		"name": "environmentMapTexture",
-		"path": [
-			"textures/environmentMap/px.jpg",
-			"textures/environmentMap/nx.jpg",
-			"textures/environmentMap/py.jpg",
-			"textures/environmentMap/ny.jpg",
-			"textures/environmentMap/pz.jpg",
-			"textures/environmentMap/nz.jpg"
-		],
-		"colorSpace": "srgb"
-	},
-	{
 		"name": "grassColorTexture",
 		"path": "textures/dirt/color.ktx2"
 	},
@@ -21,7 +9,7 @@
 	},
 	{
 		"name": "wheelAlbedo",
-		"path": "textures/roue-4.jpg",
+		"path": "textures/roue-7.png",
 		"flipY": false,
 		"repeatWrapping": true
 	},
@@ -33,7 +21,7 @@
 	},
 	{
 		"name": "baseRoughness",
-		"path": "textures/baseRoughness1.png",
+		"path": "textures/baseRoughness1.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
@@ -44,7 +32,7 @@
 	},
 	{
 		"name": "roulettesAO",
-		"path": "textures/roulettesAO.png"
+		"path": "textures/roulettesAO.jpg"
 	},
 	{
 		"name": "glassMatcap",
@@ -104,22 +92,22 @@
 	},
 	{
 		"name": "secondRouletteAo",
-		"path": "textures/second-wheel/BASE_ROULETTE_AO.png",
+		"path": "textures/second-wheel/BASE_ROULETTE_AO.jpg",
 		"flipY": false
 	},
 	{
 		"name": "secondRouletteAlbedo",
-		"path": "textures/second-wheel/BASE_ROULETTE_Diffuse.png",
+		"path": "textures/second-wheel/BASE_ROULETTE_Diffuse.jpg",
 		"flipY": false
 	},
 	{
 		"name": "secondRouletteRoughness",
-		"path": "textures/second-wheel/BASE_ROULETTE_Ro.png",
+		"path": "textures/second-wheel/BASE_ROULETTE_Ro.jpg",
 		"flipY": false
 	},
 	{
 		"name": "secondRouletteNormal",
-		"path": "textures/second-wheel/BASE_ROULETTE_TN.png",
+		"path": "textures/second-wheel/BASE_ROULETTE_TN.jpg",
 		"flipY": false
 	},
 	{

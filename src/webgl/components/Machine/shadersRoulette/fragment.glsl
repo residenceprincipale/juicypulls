@@ -12,6 +12,7 @@ uniform vec3 uAmbientColor;
 uniform vec3 uDiffuseColor;
 uniform vec3 uSpecularColor;
 uniform vec3 uEmissiveColor;
+uniform vec3 uBackgroundColor;
 
 uniform sampler2D uMatcapMap;
 uniform vec2 uMatcapOffset;
@@ -139,7 +140,8 @@ void main() {
 
 	wheelsUv.x = fract(wheelsUv.x * uWheelsSpacing) / uWheelsSpacing + uWheelsOffset;
 
-	vec3 albedo = texture2D( uAlbedoMap, wheelsUv ).rgb;
+	vec4 albedoTexture = texture2D( uAlbedoMap, wheelsUv );
+	vec3 albedo = mix(uBackgroundColor, albedoTexture.rgb, albedoTexture.a);
 
 	vec4 diffuseColor = vec4(albedo, uOpacity);
 
@@ -172,7 +174,7 @@ void main() {
 	float roughness = 1.;
 
 	#ifdef USE_ROUGHNESS
-	roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity;
+	roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity * (1.0 - albedoTexture.a);
 	#endif
 
 	// Lighting
@@ -180,7 +182,7 @@ void main() {
 	material.diffuseColor = diffuseColor.rgb;
 	material.specularColor = uSpecularColor;
 	material.specularShininess = uShininess;
-	material.specularStrength = uSpecularIntensity * roughness;
+	material.specularStrength = uSpecularIntensity * roughness * (1.0 - albedoTexture.a);
 
 	#include <lights_fragment_begin>
 	#include <lights_fragment_maps>
@@ -232,7 +234,7 @@ void main() {
 		#endif
 
 		vec3 matcapColor = matcap(matcapRoughness);
-		finalColor *= clamp((matcapColor - 1.0) * uMatcapIntensity + 1.0, 0.0, 1.0);
+		finalColor *= clamp(((matcapColor - 1.0) * uMatcapIntensity + 1.0), 0.0, 1.0) * (1.0 - albedoTexture.a) + 1.0 * albedoTexture.a;
 	#endif
 
 	#ifdef USE_ENVMAP

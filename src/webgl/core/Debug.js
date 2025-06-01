@@ -9,6 +9,21 @@ import * as Tweakpane from 'tweakpane';
 
 addUndoRedoFeature(Tweakpane);
 
+/**
+ * Debug class with Tweakpane folder state persistence
+ * 
+ * Features:
+ * - Automatically saves and restores expanded/collapsed state of all Tweakpane folders
+ * - All folders default to collapsed (expanded: false) on first creation
+ * - Folder states are saved to localStorage and persist between page reloads
+ * - Supports nested folders with hierarchical path-based keys
+ * - Includes debug controls to view and clear saved states
+ * 
+ * Usage:
+ * - Folders will automatically have their states managed
+ * - Use "Show Folder States" button in Debug Feature Manager to see all tracked folders
+ * - Use "Clear Folder States" button to reset all folders to default state
+ */
 export default class Debug {
 	constructor() {
 		this.experience = new Experience()
@@ -21,6 +36,10 @@ export default class Debug {
 				title: '⚙️ Debug',
 				expanded: true,
 			});
+
+			// Initialize folder state management
+			this.folderStates = new Map()
+			this.initializeFolderStateManager()
 
 			// Retrieve the expanded state from localStorage, default to false
 			let expanded = false;
@@ -58,6 +77,174 @@ export default class Debug {
 		} else {
 			sessionStorage.removeItem('debugParams')
 		}
+	}
+
+	/**
+	 * Initialize folder state management system
+	 */
+	initializeFolderStateManager() {
+		// Load saved folder states from localStorage
+		const savedStates = localStorage.getItem('tweakpaneFolderStates')
+		let loadedStatesCount = 0
+
+		if (savedStates) {
+			try {
+				const statesData = JSON.parse(savedStates)
+				Object.entries(statesData).forEach(([key, value]) => {
+					this.folderStates.set(key, value)
+					loadedStatesCount++
+				})
+			} catch (error) {
+				console.warn('Failed to parse saved folder states:', error)
+				localStorage.removeItem('tweakpaneFolderStates')
+			}
+		}
+
+		console.log(`📁 Tweakpane folder state management initialized (${loadedStatesCount} saved states loaded)`)
+
+		// Override the addFolder method on the main UI
+		this.wrapAddFolderMethod(this.ui, 'root')
+	}
+
+	/**
+	 * Wrap the addFolder method for any folder/pane instance
+	 */
+	wrapAddFolderMethod(target, parentPath = '') {
+		const self = this
+
+		if (target.addFolder && !target.addFolder._tweakpaneWrapped) {
+			const originalAddFolder = target.addFolder.bind(target)
+
+			target.addFolder = function (params) {
+				// Generate unique key for this folder based on its hierarchy
+				const folderTitle = params.title || 'untitled'
+				const folderPath = parentPath ? `${parentPath}/${folderTitle}` : folderTitle
+				const folderKey = self.generateFolderKey(folderPath)
+
+				// Get saved state or use explicit setting, defaulting to false
+				const savedExpanded = self.folderStates.get(folderKey)
+				let expanded
+
+				if (savedExpanded !== undefined) {
+					// Use saved state if it exists
+					expanded = savedExpanded
+				} else if (params.expanded === true) {
+					// Respect explicit expanded: true on first creation
+					expanded = true
+				} else {
+					// Default to collapsed
+					expanded = false
+				}
+
+				// Override the expanded parameter
+				const folderParams = {
+					...params,
+					expanded: expanded
+				}
+
+				// Create the folder with the managed state
+				const folder = originalAddFolder(folderParams)
+
+				// Track this folder
+				self.trackFolder(folder, folderKey)
+
+				// Wrap addFolder method for this new folder instance to handle nested folders
+				self.wrapAddFolderMethod(folder, folderPath)
+
+				return folder
+			}
+
+			// Mark as wrapped to avoid double wrapping
+			target.addFolder._tweakpaneWrapped = true
+		}
+	}
+
+	/**
+	 * Wrap the addFolder method for folder instances to handle nested folders
+	 */
+	wrapFolderAddMethod() {
+		// This method is now replaced by the more robust wrapAddFolderMethod
+		// Keeping for backward compatibility but it's not used anymore
+	}
+
+	/**
+	 * Generate a unique key for a folder based on its title and hierarchy
+	 */
+	generateFolderKey(path) {
+		// Clean the path and make it a valid key
+		return path.toLowerCase()
+			.replace(/[^a-z0-9\/]/g, '_')
+			.replace(/\/+/g, '/')
+			.replace(/^\/|\/$/g, '')
+	}
+
+	/**
+	 * Track a folder and set up event listeners for state changes
+	 */
+	trackFolder(folder, folderKey) {
+		// Store initial state
+		this.folderStates.set(folderKey, folder.expanded)
+
+		// Listen for expand/collapse changes
+		if (folder.controller && folder.controller.foldable) {
+			folder.controller.foldable.emitter.on('change', () => {
+				this.folderStates.set(folderKey, folder.expanded)
+				this.saveFolderStates()
+			})
+		}
+
+		// Alternative approach: listen to the folder's expanded property directly
+		if (folder.expanded !== undefined) {
+			// Create a more robust event listener
+			const checkExpandedState = () => {
+				const currentState = folder.expanded
+				if (this.folderStates.get(folderKey) !== currentState) {
+					this.folderStates.set(folderKey, currentState)
+					this.saveFolderStates()
+				}
+			}
+
+			// Use MutationObserver to watch for DOM changes that indicate folder state changes
+			if (folder.element) {
+				const observer = new MutationObserver(() => {
+					// Small delay to ensure state has updated
+					setTimeout(checkExpandedState, 10)
+				})
+
+				observer.observe(folder.element, {
+					attributes: true,
+					attributeFilter: ['class'],
+					subtree: true
+				})
+			}
+		}
+	}
+
+	/**
+	 * Save all folder states to localStorage
+	 */
+	saveFolderStates() {
+		const statesObject = Object.fromEntries(this.folderStates)
+		localStorage.setItem('tweakpaneFolderStates', JSON.stringify(statesObject))
+	}
+
+	/**
+	 * Debug method to show all tracked folder states
+	 */
+	showFolderStates() {
+		console.log('📁 Tracked folder states:')
+		this.folderStates.forEach((expanded, key) => {
+			console.log(`  ${key}: ${expanded ? '🔽 expanded' : '▶️ collapsed'}`)
+		})
+	}
+
+	/**
+	 * Clear all saved folder states
+	 */
+	clearFolderStates() {
+		this.folderStates.clear()
+		localStorage.removeItem('tweakpaneFolderStates')
+		console.log('🗑️ Cleared all folder states')
 	}
 
 	setPlugins() {
@@ -336,6 +523,19 @@ export default class Debug {
 					if (this[`unset${key}`]) this[`unset${key}`]()
 				}
 			})
+		})
+
+		// Add folder state management controls
+		debugManager.addBlade({
+			view: 'separator',
+		})
+
+		debugManager.addButton({ title: 'Show Folder States' }).on('click', () => {
+			this.showFolderStates()
+		})
+
+		debugManager.addButton({ title: 'Clear Folder States' }).on('click', () => {
+			this.clearFolderStates()
 		})
 	}
 

@@ -8,8 +8,8 @@ socket.connect('machine')
 // Configuration constants moved outside the class
 const MAIN_ROULETTE_CONFIG = {
 	numWheels: 5,
-	segments: 5,
-	wheelEmojis: ['🔴', '👑', '💎', '💀', '7️⃣'].reverse(),
+	segments: 6,
+	wheelEmojis: ['🍋', '🍇', '🍊', '🍒', '💀', '7️⃣'].reverse(),
 	symbolNames: ['oeuil', 'crane', 'diamant', 'couronne', 'jeton'],
 	symbolValues: {
 		jeton: 100, // Jeton
@@ -534,16 +534,6 @@ export default class MachineManager {
 
 		// Update UI
 		this._updatePointsDisplay()
-
-		// Update UI for locked wheel
-		// socket.send({
-		// 	event: 'button-light',
-		// 	data: {
-		// 		index: index,
-		// 		state: this._machine.wheels[index].isLocked,
-		// 	},
-		// 	receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-		// })
 	}
 
 	_collect() {
@@ -596,6 +586,14 @@ export default class MachineManager {
 		socket.on('button-collect', (e) => {
 			this._buttonCollectClickHandler(e)
 		})
+		socket.on('update-spin-tokens', (e) => {
+			if (e.value === '+1') {
+				this._spinTokens = parseInt(this._spinTokens) + 1
+			} else {
+				this._spinTokens = e.value
+			}
+			this._updateSpinTokensDisplay()
+		})
 	}
 
 	_leverClickHandler(e) {
@@ -622,7 +620,7 @@ export default class MachineManager {
 	 */
 	_createDebug() {
 		const folder = this._debug.ui.addFolder({
-			title: 'MachineManager',
+			title: 'Machine Manager',
 			expanded: true,
 		})
 

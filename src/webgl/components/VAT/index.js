@@ -66,18 +66,31 @@ export default class VAT {
 
 				const { gltfLoader } = this.scene.resources.loaders
 
-				gltfLoader.load(url, (gltf) => {
-					this.scene.remove(this.model)
-					this.model = gltf.scene
-					this.scene.add(this.model)
-					this.model.position.y = 2
+				gltfLoader.load(
+					url,
+					(gltf) => {
+						this.scene.remove(this.model)
+						this.model = gltf.scene
+						this.scene.add(this.model)
+						this.model.position.y = 2
 
-					this.model.traverse((child) => {
-						if (child.isMesh) {
-							child.material = this.material
-						}
-					})
-				})
+						this.model.traverse((child) => {
+							if (child.isMesh) {
+								child.material = this.material
+							}
+						})
+						console.log('✅ Model loaded successfully via debug panel')
+					},
+					(progress) => {
+						console.log('📊 Model loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%')
+					},
+					(error) => {
+						console.group('❌ Debug Model Loading Error')
+						console.error('Failed to load model via debug panel')
+						console.error('Error details:', error)
+						console.groupEnd()
+					}
+				)
 			})
 		debugFolder
 			.addBinding({ file: '' }, 'file', {
@@ -90,9 +103,22 @@ export default class VAT {
 
 				const { exrLoader } = this.scene.resources.loaders
 
-				exrLoader.load(url, (texture) => {
-					this.material.uniforms.posTexture.value = texture
-				})
+				exrLoader.load(
+					url,
+					(texture) => {
+						this.material.uniforms.posTexture.value = texture
+						console.log('✅ Position texture loaded successfully via debug panel')
+					},
+					(progress) => {
+						console.log('📊 Position texture loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%')
+					},
+					(error) => {
+						console.group('❌ Debug Position Texture Loading Error')
+						console.error('Failed to load position texture via debug panel')
+						console.error('Error details:', error)
+						console.groupEnd()
+					}
+				)
 			})
 		debugFolder
 			.addBinding({ file: '' }, 'file', {
@@ -105,9 +131,22 @@ export default class VAT {
 
 				const { textureLoader } = this.scene.resources.loaders
 
-				textureLoader.load(url, (texture) => {
-					this.material.uniforms.normalTexture.value = texture
-				})
+				textureLoader.load(
+					url,
+					(texture) => {
+						this.material.uniforms.normalTexture.value = texture
+						console.log('✅ Normal texture loaded successfully via debug panel')
+					},
+					(progress) => {
+						console.log('📊 Normal texture loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%')
+					},
+					(error) => {
+						console.group('❌ Debug Normal Texture Loading Error')
+						console.error('Failed to load normal texture via debug panel')
+						console.error('Error details:', error)
+						console.groupEnd()
+					}
+				)
 			})
 	}
 
