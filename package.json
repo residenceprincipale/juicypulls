@@ -17,6 +17,7 @@
 		"gsap": "^3.12.7",
 		"postprocessing": "^6.37.2",
 		"recast-navigation": "^0.39.0",
+		"sass": "^1.89.1",
 		"three": "^0.172.0",
 		"tweakpane-undo-redo-plugin": "github:cosmicshelter/tweakpane-undo-redo-plugin",
 		"ws": "^8.18.0"

@@ -60,6 +60,7 @@ export default class Debug {
 			const uiBindContainer = uiContainer.querySelector(".tp-rotv_c")
 			uiContainer.style.position = 'fixed'
 			uiContainer.style.userSelect = 'none'
+			uiContainer.style.zIndex = '1000'
 			uiBindContainer.style.maxHeight = '80vh'
 			uiBindContainer.style.overflowY = 'auto'
 
