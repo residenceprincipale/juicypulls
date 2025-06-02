@@ -1,0 +1,30 @@
+[
+	{
+		"name": "ambientTexture",
+		"path": "/textures/score/ambient.webp"
+	},
+	{
+		"name": "barsTexture",
+		"path": "/textures/score/bars.webp"
+	},
+	{
+		"name": "bottomLeftTexture",
+		"path": "/textures/score/bottom-left.webp"
+	},
+	{
+		"name": "bottomRightTexture",
+		"path": "/textures/score/bottom-right.webp"
+	},
+	{
+		"name": "postprocessingTexture",
+		"path": "/textures/score/postprocessing.webp"
+	},
+	{
+		"name": "strokeTexture",
+		"path": "/textures/score/stroke.webp"
+	},
+	{
+		"name": "topTexture",
+		"path": "/textures/score/top.webp"
+	}
+]

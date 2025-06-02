@@ -1,17 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Threejs Starter</title>
-	<link rel="stylesheet" href="./style.css" />
-	<script type="module" src="./script.js" defer></script>
-</head>
-<body>
-<noscript>
-	<h1>Enable JavaScript to run this app.</h1>
-</noscript>
-<h1>Quota</h1>
-<canvas id="webgl" scene="score"></canvas>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Threejs Starter</title>
+		<link rel="stylesheet" href="style.scss" />
+		<script type="module" src="./script.js" defer></script>
+	</head>
+	<body>
+		<noscript>
+			<h1>Enable JavaScript to run this app.</h1>
+		</noscript>
+		<canvas id="webgl" scene="score"></canvas>
+		<div class="score">
+			<div class="bank-container"><div class="bank"><span class="label">Bank</span> <span class="value">0000</span></div></div>
+			<div class="current-container"><div class="current">0000</div></div>
+			<div class="tokens-container"><div class="tokens"><span class="value">0000</span> <span class="label">Jetons</span></div></div>
+			<div class="quota-container"><div class="quota"><span class="label">Quota</span> <span class="value">0000</span></div></div>
+		</div>
+	</body>
 </html>

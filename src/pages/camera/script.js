@@ -3,8 +3,6 @@ import Experience from 'core/Experience.js'
 import Socket from '@/scripts/Socket.js'
 import { init } from 'recast-navigation'
 
-init()
-
 const experience = new Experience(document.querySelector('canvas#webgl'))
 
 const socket = new Socket()
