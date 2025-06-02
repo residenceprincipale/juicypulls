@@ -41,6 +41,7 @@ export default class Machine {
 		this._createBaseMaterial()
 		this._createInnerMaterial()
 		this._createInnerReflectionMaterial()
+		this._createBloomMaterial()
 		this._createModel()
 
 		this._createEventListeners()
@@ -170,6 +171,9 @@ export default class Machine {
 				this._leds.push(child)
 			} else if (child.name.includes('gold')) {
 				child.material = this._innerMaterial
+			} else if (child.name.includes('led')) {
+				child.material = this._bloomMaterial
+				child.userData.renderBloom = true
 			}
 			if (child.name.includes('slut-base-inner')) {
 				this._innerMachine = child
@@ -233,6 +237,13 @@ export default class Machine {
 		})
 	}
 
+	_createBloomMaterial() {
+		const brightMaterial = new MeshBasicMaterial({
+			color: 0xffffff,
+		})
+
+		this._bloomMaterial = brightMaterial
+	}
 	/**
 	 * Events
 	 */

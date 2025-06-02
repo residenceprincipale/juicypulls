@@ -1,9 +1,5 @@
 [
 	{
-		"name": "grassColorTexture",
-		"path": "textures/dirt/color.ktx2"
-	},
-	{
 		"name": "grassNormalTexture",
 		"path": "textures/dirt/normal.jpg"
 	},
@@ -56,7 +52,7 @@
 	},
 	{
 		"name": "casinoModel",
-		"path": "models/roues-casino-v6.glb"
+		"path": "models/roues-casino-v7.glb"
 	},
 	{
 		"name": "handModel",
@@ -71,8 +67,8 @@
 		"path": "models/physical-parts.glb"
 	},
 	{
-		"name": "foxAudio",
-		"path": "audio/fox.mp3"
+		"name": "rouletteSpinningAudio",
+		"path": "audio/roulette-spinning.mp3"
 	},
 	{
 		"name": "clothModel",
@@ -132,27 +128,33 @@
 	},
 	{
 		"name": "gunArmAlbedo",
-		"path": "textures/gun/albedo-1.jpg"
+		"path": "textures/gun/albedo-arm.jpg",
+		"flipY": false
 	},
 	{
 		"name": "gunArmRoughness",
-		"path": "textures/gun/roughness-1.jpg"
+		"path": "textures/gun/roughness-arm.jpg",
+		"flipY": false
 	},
 	{
 		"name": "gunBerettaAlbedo",
-		"path": "textures/gun/beretta-color.png"
+		"path": "textures/gun/beretta-color.png",
+		"flipY": false
 	},
 	{
 		"name": "gunBerettaRoughness",
-		"path": "textures/gun/beretta-roughness.png"
+		"path": "textures/gun/beretta-roughness.png",
+		"flipY": false
 	},
 	{
 		"name": "gunBerettaNormal",
-		"path": "textures/gun/beretta-normal.png"
+		"path": "textures/gun/beretta-normal.png",
+		"flipY": false
 	},
 	{
 		"name": "gunBerettaAo",
-		"path": "textures/gun/beretta-ao.png"
+		"path": "textures/gun/beretta-ao.png",
+		"flipY": false
 	},
 	{
 		"name": "gunTarget",

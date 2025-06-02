@@ -156,9 +156,9 @@ export default class Gun {
     _createParentObject() {
         this._parentObject = new Object3D()
         this._parentObject.name = 'gun-parent'
-        this._parentObject.position.set(0.651, -0.103, 0.000)
-        this._parentObject.scale.set(2, 2, 2)
-        this._parentObject.rotation.set(3.142, -0.385, 3.142)
+        this._parentObject.position.set(0.691, -0.173, 0.000)
+        this._parentObject.scale.set(1.5, 1.5, 1.5)
+        this._parentObject.rotation.set(3.142, -0.085, 3.142)
         this._scene.add(this._parentObject)
     }
 

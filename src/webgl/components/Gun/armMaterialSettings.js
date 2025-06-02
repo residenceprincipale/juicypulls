@@ -9,7 +9,7 @@ export default {
         }
     },
     "uRoughnessIntensity": {
-        "value": 5
+        "value": 1
     },
     "uAlbedoMap": {
         "value": "gunArmAlbedo"

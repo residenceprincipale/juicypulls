@@ -41,6 +41,9 @@ export default class Main {
 		if (this._debug.active) this._debug.ui.addBlade({ view: 'separator' });
 
 		this._scene.resources.on('ready', () => {
+			// Initialize post-processing (including bloom)
+			this._experience.renderer.createPostProcessing()
+
 			// components
 			this._backgroundEnvironment = new BackgroundEnvironment()
 			this._gun = new Gun()
@@ -111,6 +114,11 @@ export default class Main {
 	startShooter() {
 		// animate machine out
 		// start shooter
+		this._machine.animateInnerMachineOut()
+
+		gsap.delayedCall(1.5, () => {
+			this._shooterManager.startGame()
+		})
 	}
 
 	endShooter() {

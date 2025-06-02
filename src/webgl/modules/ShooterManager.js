@@ -45,7 +45,7 @@ export default class ShooterManager {
         // Gun movement settings (simplified for crosshair following)
         this._gunRotationMultiplier = {
             x: 0.2, // How much gun rotates vertically based on crosshair
-            y: 0.4  // How much gun rotates horizontally based on crosshair
+            y: 0.25  // How much gun rotates horizontally based on crosshair
         }
 
         // Target management
@@ -71,13 +71,6 @@ export default class ShooterManager {
         this._createTimerUI()
         this._setupEventListeners()
         this._createTargetPool()
-
-        // gsap.delayedCall(2, () => {
-        //     this._machine.animateInnerMachineOut()
-        // })
-        // gsap.delayedCall(3, () => {
-        //     this.startGame()
-        // })
 
         if (this._debug.active) this._createDebug()
     }
