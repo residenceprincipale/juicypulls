@@ -1,5 +1,5 @@
 import WebSocket, { WebSocketServer } from 'ws'
-import { SerialPort } from 'serialport'
+import { SerialPort, ReadlineParser } from 'serialport'
 import os from 'os'
 
 const socketServer = new WebSocketServer({
@@ -8,17 +8,30 @@ const socketServer = new WebSocketServer({
 
 const clients = new Map()
 
-// const arduino = new SerialPort({ path: '/dev/cu.usbmodem101', baudRate: 9600 }, (error) => {
-// 	if (error) {
-// 		console.error('Error opening serial port:', error)
-// 	} else {
-// 		console.log('Serial port opened')
-// 	}
-// })
+const bulbsArduino = new SerialPort({ path: '/dev/cu.usbmodem8401', baudRate: 9600 }, (error) => {
+	if (error) {
+		console.error('Error opening serial port for bulbs:', error)
+	} else {
+		console.log('Serial port opened for bulbs')
+	}
+})
+
+const inputArduino = new SerialPort({ path: '/dev/cu.usbserial-59140062441', baudRate: 115200 }, (error) => {
+	if (error) {
+		console.error('Error opening input serial port:', error)
+	} else {
+		console.log('Input serial port opened')
+	}
+})
+const inputParser = inputArduino.pipe(new ReadlineParser({ delimiter: '\n' }))
+inputParser.on('data', (data) => {
+	console.log(data)
+	handleMessage('input-board', null, data, false)
+})
 
 socketServer.on('error', console.error)
 socketServer.on('listening', () => {
-	console.log(`listening on ws://${os.networkInterfaces().en0[1].address}:${socketServer.options.port}`)
+	console.log(`listening on ws://${os.networkInterfaces().en1[1].address}:${socketServer.options.port}`)
 })
 
 socketServer.on('connection', (socket, client) => {
@@ -55,8 +68,12 @@ function handleMessage(name, socket, message, isBinary) {
 			// Handle array of receivers
 			for (const receiverName of receiver) {
 				if (receiverName === 'bulbs') {
-					arduino.write(parsedMessage.data)
-					console.log('sending to arduino')
+					bulbsArduino.write(JSON.stringify(parsedMessage))
+					console.log('sending to bulbs arduino')
+					continue
+				} else if (receiverName === 'input-board') {
+					inputArduino.write(JSON.stringify(parsedMessage))
+					console.log('sending to input board')
 					continue
 				}
 				const receiverClient = clients.get(receiverName)
@@ -70,13 +87,17 @@ function handleMessage(name, socket, message, isBinary) {
 		} else if (receiver) {
 			// Handle single receiver
 			if (receiver === 'bulbs') {
-				arduino.write(parsedMessage.data)
-				console.log('sending to arduino')
+				bulbsArduino.write(JSON.stringify(parsedMessage))
+				console.log('sending to bulbs arduino')
+				return
+			} else if (receiver === 'input-board') {
+				inputArduino.write(JSON.stringify(parsedMessage))
+				console.log('sending to input board')
 				return
 			}
 			const receiverClient = clients.get(receiver)
 			if (!receiverClient) {
-				socket.send(JSON.stringify({ event: 'error', message: 'receiver not found' }))
+				if (socket) socket.send(JSON.stringify({ event: 'error', message: 'receiver not found' }))
 				return
 			}
 			console.log('sending to %s', receiver, parsedMessage.event, parsedMessage.data)
