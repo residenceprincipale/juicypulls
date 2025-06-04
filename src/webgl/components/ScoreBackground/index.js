@@ -140,7 +140,7 @@ export default class ScoreBackground {
 				uBottomLeftOpacity: { value: 0 },
 				uBottomRightOpacity: { value: 0 },
 				uPostprocessingOpacity: { value: 0 },
-				uStrokeOpacity: { value: 0 },
+				uStrokeOpacity: { value: 1 },
 				uTopOpacity: { value: 0 },
 			},
 			vertexShader: vertexShader,

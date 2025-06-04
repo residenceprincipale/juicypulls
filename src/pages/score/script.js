@@ -49,6 +49,11 @@ socket.on('update-rolling-points', ({ value }) => {
 	cloneAndBlur()
 })
 
+socket.on('update-collected-points', ({ value }) => {
+	bankValueElement.textContent = value.toString().padStart(4, '0')
+	cloneAndBlur()
+})
+
 socket.on('update-spin-tokens', ({ value }) => {
 	tokensValueElement.textContent = value.toString().padStart(4, '0')
 	splitCharacters(tokensValueElement)
