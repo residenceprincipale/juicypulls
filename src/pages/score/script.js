@@ -35,3 +35,7 @@ function splitCharacters(element) {
 		element.appendChild(span)
 	})
 }
+
+socket.on('update-rolling-points', ({ value }) => {
+	currentElement.textContent = value.toString().padStart(4, '0')
+})

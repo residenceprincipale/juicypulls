@@ -21,10 +21,9 @@ import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 import Socket from '@/scripts/Socket.js'
 
 const socket = new Socket()
-socket.connect('physical-debug')
-
 export default class PhysicalDebug {
 	constructor() {
+		socket.connect('physical-debug')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug

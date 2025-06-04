@@ -23,10 +23,10 @@ import ShooterManager from '@/webgl/modules/ShooterManager'
 import Socket from '@/scripts/Socket.js'
 
 const socket = new Socket()
-socket.connect('scene')
 
 export default class Main {
 	constructor() {
+		socket.connect('scene')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._scene.resources = new Resources(sources)
@@ -38,7 +38,7 @@ export default class Main {
 		this._camera.instance.position.set(0, 0.01, 1.45)
 		this._camera.instance.rotation.set(0, 0, 0)
 
-		if (this._debug.active) this._debug.ui.addBlade({ view: 'separator' });
+		if (this._debug.active) this._debug.ui.addBlade({ view: 'separator' })
 
 		this._scene.resources.on('ready', () => {
 			// Initialize post-processing (including bloom)
@@ -52,19 +52,23 @@ export default class Main {
 			this._secondRoulette = new SecondRoulette()
 			this._hands = new Hands({ machine: this._machine })
 
-			if (this._debug.active) this._debug.ui.addBlade({ view: 'separator' });
+			if (this._debug.active) this._debug.ui.addBlade({ view: 'separator' })
 
 			// managers
-			this._machineManager = new MachineManager({ machine: this._machine, secondRoulette: this._secondRoulette, hands: this._hands })
+			this._machineManager = new MachineManager({
+				machine: this._machine,
+				secondRoulette: this._secondRoulette,
+				hands: this._hands,
+			})
 			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine })
 
 			// this.cameraPlayer = new CameraPlayer()
 
-			if (window.location.hash === "#debug-dev") {
-				this._machine.isDebugDev = true;
-				console.log("Debug physical parts enabled!");
+			if (window.location.hash === '#debug-dev') {
+				this._machine.isDebugDev = true
+				console.log('Debug physical parts enabled!')
 				this._physicalDebug = new PhysicalDebug()
-				this._machineManager._physicalDebug = this._physicalDebug;
+				this._machineManager._physicalDebug = this._physicalDebug
 			}
 		})
 
@@ -73,9 +77,7 @@ export default class Main {
 		if (this._debug.active) this.setDebug()
 	}
 
-	reset() {
-
-	}
+	reset() {}
 
 	start() {
 		// animate screens flash
@@ -126,21 +128,16 @@ export default class Main {
 		// start round
 	}
 
-	endGame() {
-	}
+	endGame() {}
 
 	lose() {
 		if (this._machine) this._machine.animateInnerMachineOut()
 		if (this._hands) this._hands.setupFight()
 	}
 
-	loseFinal() {
+	loseFinal() {}
 
-	}
-
-	startSecondChance() {
-
-	}
+	startSecondChance() {}
 
 	update() {
 		const timeData = {
@@ -178,79 +175,105 @@ export default class Main {
 			title: 'Game Events',
 			expanded: false,
 		})
-		folder.addButton({
-			title: 'Start',
-		}).on('click', () => {
-			this.start()
-		})
+		folder
+			.addButton({
+				title: 'Start',
+			})
+			.on('click', () => {
+				this.start()
+			})
 
-		folder.addButton({
-			title: 'Start Tutorial',
-		}).on('click', () => {
-			this.startTutorial()
-		})
-		folder.addButton({
-			title: 'Display Combinations',
-		}).on('click', () => {
-			this.displayCombinations()
-		})
-		folder.addButton({
-			title: 'Display Score',
-		}).on('click', () => {
-			this.displayScore()
-		})
-		folder.addButton({
-			title: 'End Tutorial',
-		}).on('click', () => {
-			this.endTutorial()
-		})
+		folder
+			.addButton({
+				title: 'Start Tutorial',
+			})
+			.on('click', () => {
+				this.startTutorial()
+			})
+		folder
+			.addButton({
+				title: 'Display Combinations',
+			})
+			.on('click', () => {
+				this.displayCombinations()
+			})
+		folder
+			.addButton({
+				title: 'Display Score',
+			})
+			.on('click', () => {
+				this.displayScore()
+			})
+		folder
+			.addButton({
+				title: 'End Tutorial',
+			})
+			.on('click', () => {
+				this.endTutorial()
+			})
 
-		folder.addButton({
-			title: 'Start Round',
-		}).on('click', () => {
-			this.startRound()
-		})
-		folder.addButton({
-			title: 'Complete Round',
-		}).on('click', () => {
-			this.completeRound()
-		})
-		folder.addButton({
-			title: 'Start Shooter',
-		}).on('click', () => {
-			this.startShooter()
-		})
-		folder.addButton({
-			title: 'End Shooter',
-		}).on('click', () => {
-			this.endShooter()
-		})
-		folder.addButton({
-			title: 'Lose',
-		}).on('click', () => {
-			this.lose()
-		})
-		folder.addButton({
-			title: 'Start Second Chance',
-		}).on('click', () => {
-			this.startSecondChance()
-		})
-		folder.addButton({
-			title: 'Lose Final',
-		}).on('click', () => {
-			this.loseFinal()
-		})
-		folder.addButton({
-			title: 'End Game',
-		}).on('click', () => {
-			this.endGame()
-		})
-		folder.addButton({
-			title: 'Reset',
-		}).on('click', () => {
-			this.reset()
-		})
-
-
+		folder
+			.addButton({
+				title: 'Start Round',
+			})
+			.on('click', () => {
+				this.startRound()
+			})
+		folder
+			.addButton({
+				title: 'Complete Round',
+			})
+			.on('click', () => {
+				this.completeRound()
+			})
+		folder
+			.addButton({
+				title: 'Start Shooter',
+			})
+			.on('click', () => {
+				this.startShooter()
+			})
+		folder
+			.addButton({
+				title: 'End Shooter',
+			})
+			.on('click', () => {
+				this.endShooter()
+			})
+		folder
+			.addButton({
+				title: 'Lose',
+			})
+			.on('click', () => {
+				this.lose()
+			})
+		folder
+			.addButton({
+				title: 'Start Second Chance',
+			})
+			.on('click', () => {
+				this.startSecondChance()
+			})
+		folder
+			.addButton({
+				title: 'Lose Final',
+			})
+			.on('click', () => {
+				this.loseFinal()
+			})
+		folder
+			.addButton({
+				title: 'End Game',
+			})
+			.on('click', () => {
+				this.endGame()
+			})
+		folder
+			.addButton({
+				title: 'Reset',
+			})
+			.on('click', () => {
+				this.reset()
+			})
 	}
 }

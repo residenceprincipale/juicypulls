@@ -3,7 +3,6 @@ import gsap from 'gsap'
 import Socket from '@/scripts/Socket.js'
 
 const socket = new Socket()
-socket.connect('machine')
 
 // Configuration constants moved outside the class
 const MAIN_ROULETTE_CONFIG = {
@@ -54,6 +53,7 @@ const SECOND_ROULETTE_CONFIG = {
 
 export default class MachineManager {
 	constructor(options = {}) {
+		socket.connect('machine')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
@@ -472,7 +472,7 @@ export default class MachineManager {
 			data: {
 				value: this._rollingPoints,
 			},
-			receiver: 'physical-debug',
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
 		})
 	}
 
