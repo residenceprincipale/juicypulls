@@ -482,7 +482,7 @@ export default class MachineManager {
 			data: {
 				value: this._spinsLeft,
 			},
-			receiver: 'physical-debug',
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
 		})
 	}
 
@@ -492,7 +492,7 @@ export default class MachineManager {
 			data: {
 				value: this._spinTokens,
 			},
-			receiver: 'physical-debug',
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
 		})
 
 		// Also log to debug console
@@ -505,7 +505,7 @@ export default class MachineManager {
 			data: {
 				value: this._collectedPoints,
 			},
-			receiver: 'physical-debug',
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
 		})
 	}
 

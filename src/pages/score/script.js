@@ -13,17 +13,24 @@ const tokensElement = document.querySelector('.tokens')
 const tokensValueElement = tokensElement.querySelector('.value')
 const quotaElement = document.querySelector('.quota')
 const quotaValueElement = quotaElement.querySelector('.value')
+const bankElement = document.querySelector('.bank')
+const bankValueElement = bankElement.querySelector('.value')
+let lastScoreElement = null
 
-updateDOM()
-
-function updateDOM() {}
 splitCharacters(currentElement)
 splitCharacters(tokensValueElement)
 splitCharacters(quotaValueElement)
+cloneAndBlur()
 
-const scoreClone = scoreElement.cloneNode(true)
-scoreClone.classList.add('score-blur')
-scoreElement.parentNode.appendChild(scoreClone)
+function cloneAndBlur() {
+	if (lastScoreElement) {
+		lastScoreElement.remove()
+	}
+	const scoreClone = scoreElement.cloneNode(true)
+	scoreClone.classList.add('score-blur')
+	scoreElement.parentNode.appendChild(scoreClone)
+	lastScoreElement = scoreClone
+}
 
 function splitCharacters(element) {
 	const text = element.textContent
@@ -38,4 +45,12 @@ function splitCharacters(element) {
 
 socket.on('update-rolling-points', ({ value }) => {
 	currentElement.textContent = value.toString().padStart(4, '0')
+	splitCharacters(currentElement)
+	cloneAndBlur()
+})
+
+socket.on('update-collected-points', ({ value }) => {
+	console.log('update-collected-points', value)
+	bankValueElement.textContent = value.toString().padStart(4, '0')
+	cloneAndBlur()
 })
