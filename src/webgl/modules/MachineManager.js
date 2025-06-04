@@ -5,17 +5,17 @@ import Socket from '@/scripts/Socket.js'
 const socket = new Socket()
 
 // Configuration constants moved outside the class
-const MAIN_ROULETTE_CONFIG = {
+export const MAIN_ROULETTE_CONFIG = {
 	numWheels: 5,
 	segments: 6,
-	wheelEmojis: ['🍋', '🍇', '🍊', '🍒', '💀', '7️⃣'].reverse(),
-	symbolNames: ['oeuil', 'crane', 'diamant', 'couronne', 'jeton'],
+	wheelEmojis: ['🍋', '🍇', '🍊', '🍒', '💀', '7'].reverse(),
+	symbolNames: ['7', '💀', '🍋', '🍊', '🍇'],
 	symbolValues: {
-		jeton: 100, // Jeton
-		couronne: 50, // Couronne
-		diamant: 0, // Diamant
-		crane: 'malus', // Crâne
-		oeuil: 'special', // Œil
+		'🍇': 100, // 🍇
+		'🍊': 50, // 🍊
+		'🍋': 0, // 🍋
+		'💀': 'malus', // Crâne
+		7: 'special', // Œil
 	},
 	occurrencePoints: {
 		triple: 100, // Points for a triple of any symbol (except cranium)
@@ -23,8 +23,8 @@ const MAIN_ROULETTE_CONFIG = {
 		quintuple: 500, // Points for five of any symbol (except cranium)
 	},
 	combinationPoints: {
-		'5jeton': 1000,
-		'5couronne': 600,
+		'5🍇': 1000,
+		'5🍊': 600,
 	},
 }
 
@@ -174,7 +174,7 @@ export default class MachineManager {
 
 		// Check for triple cranium farkle
 		const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
-		if (counts['crane'] >= 3) {
+		if (counts['💀'] >= 3) {
 			this._logMessage('Farkle! Triple cranium - score of the round is lost.')
 			this._rollingPoints = 0
 			this._currentSpins = 0
@@ -191,7 +191,7 @@ export default class MachineManager {
 				})
 			})
 		} else {
-			const special = counts['oeuil'] >= 3
+			const special = counts['7'] >= 3
 
 			// Trigger special roulette if needed
 			if (special) {
@@ -279,7 +279,7 @@ export default class MachineManager {
 		points += this._calculateIndividualSymbolPoints(counts)
 
 		// 3. Apply cranium penalties
-		const craniumCount = counts['crane'] || 0
+		const craniumCount = counts['💀'] || 0
 		if (craniumCount === 2) points -= 30
 		if (craniumCount === 1) points -= 10
 
@@ -290,8 +290,8 @@ export default class MachineManager {
 	_calculateIndividualSymbolPoints(counts) {
 		// Calculate individual symbol points (not occurrence-based)
 		let points = 0
-		points += (counts['jeton'] || 0) * MAIN_ROULETTE_CONFIG.symbolValues['jeton']
-		points += (counts['couronne'] || 0) * MAIN_ROULETTE_CONFIG.symbolValues['couronne']
+		points += (counts['🍇'] || 0) * MAIN_ROULETTE_CONFIG.symbolValues['🍇']
+		points += (counts['🍊'] || 0) * MAIN_ROULETTE_CONFIG.symbolValues['🍊']
 		// Add points for other symbols if needed
 
 		return points
@@ -301,8 +301,8 @@ export default class MachineManager {
 		// Calculate points based on symbol occurrences (pairs, triples, etc.)
 		let occurrencePoints = 0
 
-		// Exclude crane from occurrence calculations
-		const validSymbols = Object.keys(counts).filter((symbol) => symbol !== 'crane' && counts[symbol] > 1)
+		// Exclude 💀 from occurrence calculations
+		const validSymbols = Object.keys(counts).filter((symbol) => symbol !== '💀' && counts[symbol] > 1)
 
 		validSymbols.forEach((symbol) => {
 			const count = counts[symbol]
