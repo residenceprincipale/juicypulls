@@ -9,11 +9,12 @@ export const MAIN_ROULETTE_CONFIG = {
 	numWheels: 5,
 	segments: 6,
 	wheelEmojis: ['🍋', '🍇', '🍊', '🍒', '💀', '7'].reverse(),
-	symbolNames: ['7', '💀', '🍋', '🍊', '🍇'],
+	symbolNames: ['7', '💀', '🍋', '🍊', '🍇', '🍒'],
 	symbolValues: {
 		'🍇': 100, // 🍇
 		'🍊': 50, // 🍊
 		'🍋': 0, // 🍋
+		'🍒': 0, // 🍒
 		'💀': 'malus', // Crâne
 		7: 'special', // Œil
 	},
