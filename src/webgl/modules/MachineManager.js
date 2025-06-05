@@ -9,7 +9,7 @@ export const MAIN_ROULETTE_CONFIG = {
 	numWheels: 5,
 	segments: 6,
 	wheelEmojis: ['🍋', '🍇', '🍊', '🍒', '💀', '7'].reverse(),
-	symbolNames: ['7', '💀', '🍋', '🍊', '🍇', '🍒'],
+	symbolNames: ['7', '💀', '🍒', '🍊', '🍇', '🍋'],
 	symbolValues: {
 		'🍇': 100, // 🍇
 		'🍊': 50, // 🍊
@@ -17,6 +17,10 @@ export const MAIN_ROULETTE_CONFIG = {
 		'🍒': 0, // 🍒
 		'💀': 'malus', // Crâne
 		7: 'special', // Œil
+	},
+	malusPoints: {
+		1: -100, // Two craniums
+		2: -200, // One cranium
 	},
 	occurrencePoints: {
 		triple: 100, // Points for a triple of any symbol (except cranium)
@@ -201,7 +205,8 @@ export default class MachineManager {
 			}
 		}
 
-		const points = this._getPoints({ lockedOnly: false })
+		const points = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
+		console.log(`Points from this spin: ${points}`)
 		if (this._rollingPoints - points >= 0) {
 			this._logMessage('Farkle! No points from last spin.')
 			//TODO faire une fonction de reset
@@ -229,6 +234,8 @@ export default class MachineManager {
 		// Update UI when animation completes
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
+			this._rollingPoints = this._getPoints().points || 0
+			this._updatePointsDisplay()
 
 			if (this._currentSpins === 1) {
 				socket.send({
@@ -252,8 +259,11 @@ export default class MachineManager {
 		const results = []
 
 		this._machine.wheels.forEach((wheel, index) => {
-			if (options.lockedOnly && !wheel.isLocked) return
-			results.push(this._results[index])
+			const isCranium = MAIN_ROULETTE_CONFIG.symbolNames[this._results[index]] === '💀'
+			const shouldAdd = isCranium || !options.lockedOnly || wheel.isLocked
+			if (shouldAdd) {
+				results.push(this._results[index])
+			}
 		})
 
 		// If no wheels are locked, return 0 points
@@ -280,12 +290,16 @@ export default class MachineManager {
 		points += this._calculateIndividualSymbolPoints(counts)
 
 		// 3. Apply cranium penalties
+		const pointsBeforeCranium = points
 		const craniumCount = counts['💀'] || 0
-		if (craniumCount === 2) points -= 30
-		if (craniumCount === 1) points -= 10
+		points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0
 
+		console.log(points)
 		// Don't allow negative points
-		return Math.max(0, points)
+		return {
+			points: Math.max(0, points),
+			pointsBeforeCranium,
+		}
 	}
 
 	_calculateIndividualSymbolPoints(counts) {
@@ -528,7 +542,7 @@ export default class MachineManager {
 		}
 
 		// Recalculate points based only on locked wheels
-		this._rollingPoints = this._getPoints()
+		this._rollingPoints = this._getPoints().points || 0
 
 		// Log updated points
 		this._logMessage(`Updated rolling points: ${this._rollingPoints}`)

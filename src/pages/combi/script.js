@@ -7,16 +7,21 @@ const experience = new Experience(document.querySelector('canvas#webgl'))
 const socket = new Socket()
 socket.connect('combi')
 
+console.log(MAIN_ROULETTE_CONFIG)
+
 //matrix 5*7
-const matrix = [
-	['-', 'x1', 'x3', 'x4', 'x5'],
-	['orange', '-', '50', '100', '500'],
-	['lime', '25', '100', '300', '800'],
-	['cherry', '50', '250', '450', '1000'],
-	['grapes', '75', '350', '550', '1400'],
-	['farkleIcon', '-100', 'farkle', 'farkle', 'farkle'],
-	['special', '-', 'jackpot', 'jackpot', 'jackpot'],
-]
+const matrix = [['-', 'x1', 'x3', 'x4', 'x5']]
+MAIN_ROULETTE_CONFIG.symbolNames.forEach((emoji) => {
+	const emojiValue = MAIN_ROULETTE_CONFIG.symbolValues[emoji]
+	const occurrencePoints = MAIN_ROULETTE_CONFIG.occurrencePoints
+	matrix.push([
+		emoji,
+		emojiValue,
+		emojiValue * 3 + occurrencePoints.triple,
+		emojiValue * 4 + occurrencePoints.quadruple,
+		emojiValue * 5 + occurrencePoints.quintuple,
+	])
+})
 const combiElement = document.querySelector('.combi')
 
 matrix.forEach((el) => {
@@ -27,5 +32,3 @@ matrix.forEach((el) => {
 		combiElement.appendChild(cellElement)
 	})
 })
-
-console.log(MAIN_ROULETTE_CONFIG)
