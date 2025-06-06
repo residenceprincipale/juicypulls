@@ -274,9 +274,23 @@ export default class MachineManager {
 		const counts = {}
 		MAIN_ROULETTE_CONFIG.symbolNames.forEach((name) => (counts[name] = 0))
 
+		socket.send({
+			event: 'reset-combi',
+			receiver: 'combi',
+		})
 		results.forEach((index) => {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
 			counts[symbolName] = (counts[symbolName] || 0) + 1
+			if (counts[symbolName] !== 0 && options.lockedOnly) {
+				socket.send({
+					event: 'update-combi',
+					data: {
+						symbol: symbolName,
+						value: `x${counts[symbolName] || 0}`,
+					},
+					receiver: 'combi',
+				})
+			}
 		})
 
 		// Calculate total points
@@ -303,9 +317,9 @@ export default class MachineManager {
 	_calculateIndividualSymbolPoints(counts) {
 		// Calculate individual symbol points (not occurrence-based)
 		let points = 0
-		points += (counts['🍇'] || 0) * MAIN_ROULETTE_CONFIG.symbolValues['🍇']
-		points += (counts['🍊'] || 0) * MAIN_ROULETTE_CONFIG.symbolValues['🍊']
-		// Add points for other symbols if needed
+		MAIN_ROULETTE_CONFIG.symbolNames.forEach((symbol) => {
+			points += (counts[symbol] || 0) * MAIN_ROULETTE_CONFIG.symbolValues[symbol] || 0
+		})
 
 		return points
 	}

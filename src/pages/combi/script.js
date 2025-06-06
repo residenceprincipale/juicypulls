@@ -102,16 +102,23 @@ function resetCombi() {
 }
 
 function updateCombi({ symbol, value }) {
+	// x2 est équivalent à x1
+	if (value === 'x2') value = 'x1'
 	const symbolIndex = symbolOrder.indexOf(symbol)
 	const multiplierIndex = multiplierOrder.indexOf(value)
 	if (symbolIndex === -1 || multiplierIndex === -1) {
 		console.warn('Invalid symbol or value:', symbol, value)
 		return
 	}
+	combiElement
+		.querySelectorAll(`.combi__item[data-row="${symbolIndex + 1}"].combi__item--active`)
+		.forEach((cell) => cell.classList.remove('combi__item--active'))
 	const cellElement = combiElement.querySelector(
 		`.combi__item[data-row="${symbolIndex + 1}"][data-column="${multiplierIndex + 1}"]`,
 	)
-	if (cellElement) cellElement.classList.add('combi__item--active')
+	if (cellElement) {
+		cellElement.classList.add('combi__item--active')
+	}
 	cloneAndBlur()
 }
 

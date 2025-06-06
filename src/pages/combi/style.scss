@@ -38,7 +38,7 @@ body {
 	height: 120px;
 	//overflow: hidden;
 	position: relative;
-	transition: 1s;
+	//transition: 0.5s;
 }
 .combi__item-img {
 	background-image: url('/textures/roue-7.png');
@@ -61,7 +61,7 @@ body {
 	position: absolute;
 	inset: 0;
 	border: 4px solid white;
-	transition: 1s;
+	//transition: 0.5s;
 }
 
 .combi-blur {
@@ -70,19 +70,37 @@ body {
 }
 
 .combi__item--active {
-	animation: combi-item-active 1s steps(2) infinite alternate;
+	animation: combi-item-active 0.5s steps(2) infinite alternate;
 	color: yellow;
 	.combi__item-border {
 		border-color: yellow;
-		outline: 4px solid yellow;
+		outline: 2px solid yellow;
 	}
 }
 
 @keyframes combi-item-active {
 	0% {
 		opacity: 1;
+		scale: 1.05;
 	}
 	100% {
+		scale: 1;
 		opacity: 0.75;
+	}
+}
+
+.combi__item[data-row='6'] + .combi__item--active {
+	color: aqua;
+	.combi__item-border {
+		border-color: aqua;
+		outline: 2px solid aqua;
+	}
+}
+
+.combi__item[data-row='5'] + .combi__item--active {
+	color: red;
+	.combi__item-border {
+		border-color: red;
+		outline: 2px solid red;
 	}
 }
