@@ -31,7 +31,8 @@ inputParser.on('data', (data) => {
 
 socketServer.on('error', console.error)
 socketServer.on('listening', () => {
-	console.log(`listening on ws://${os.networkInterfaces().en1[1].address}:${socketServer.options.port}`)
+	const address = os.networkInterfaces().en1 || os.networkInterfaces().en0
+	console.log(`listening on ws://${address[1].address}:${socketServer.options.port}`)
 })
 
 socketServer.on('connection', (socket, client) => {

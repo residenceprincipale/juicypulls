@@ -16,7 +16,7 @@ export const MAIN_ROULETTE_CONFIG = {
 		'🍋': 0, // 🍋
 		'🍒': 0, // 🍒
 		'💀': 'malus', // Crâne
-		7: 'special', // Œil
+		7: 'jackpot', // Œil
 	},
 	malusPoints: {
 		1: -100, // Two craniums
@@ -206,7 +206,6 @@ export default class MachineManager {
 		}
 
 		const points = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
-		console.log(`Points from this spin: ${points}`)
 		if (this._rollingPoints - points >= 0) {
 			this._logMessage('Farkle! No points from last spin.')
 			//TODO faire une fonction de reset
@@ -294,7 +293,6 @@ export default class MachineManager {
 		const craniumCount = counts['💀'] || 0
 		points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0
 
-		console.log(points)
 		// Don't allow negative points
 		return {
 			points: Math.max(0, points),

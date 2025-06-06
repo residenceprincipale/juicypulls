@@ -2,33 +2,119 @@ import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
 import { MAIN_ROULETTE_CONFIG } from 'webgl/modules/MachineManager.js'
 
-const experience = new Experience(document.querySelector('canvas#webgl'))
+const CANVAS_SELECTOR = 'canvas#webgl'
+const COMBI_SELECTOR = '.combi'
 
+const experience = new Experience(document.querySelector(CANVAS_SELECTOR))
 const socket = new Socket()
 socket.connect('combi')
 
-console.log(MAIN_ROULETTE_CONFIG)
+const emojiBackgrounds = {
+	'🍒': '58.5%',
+	'🍊': '41%',
+	'🍇': '22.5%',
+	'🍋': '4%',
+	'💀': '78%',
+	7: '97%',
+}
 
-//matrix 5*7
-const matrix = [['-', 'x1', 'x3', 'x4', 'x5']]
-MAIN_ROULETTE_CONFIG.symbolNames.forEach((emoji) => {
-	const emojiValue = MAIN_ROULETTE_CONFIG.symbolValues[emoji]
-	const occurrencePoints = MAIN_ROULETTE_CONFIG.occurrencePoints
-	matrix.push([
-		emoji,
-		emojiValue,
-		emojiValue * 3 + occurrencePoints.triple,
-		emojiValue * 4 + occurrencePoints.quadruple,
-		emojiValue * 5 + occurrencePoints.quintuple,
-	])
-})
-const combiElement = document.querySelector('.combi')
+const multiplierOrder = ['x1', 'x3', 'x4', 'x5']
+const symbolOrder = MAIN_ROULETTE_CONFIG.symbolNames
 
-matrix.forEach((el) => {
-	el.forEach((cell) => {
-		const cellElement = document.createElement('div')
-		cellElement.classList.add('combi__item')
-		cellElement.textContent = cell
-		combiElement.appendChild(cellElement)
+function buildMatrix() {
+	const matrix = [['-', ...multiplierOrder]]
+	MAIN_ROULETTE_CONFIG.symbolNames.reverse().forEach((emoji) => {
+		const emojiValue = MAIN_ROULETTE_CONFIG.symbolValues[emoji]
+		const { triple, quadruple, quintuple } = MAIN_ROULETTE_CONFIG.occurrencePoints
+		const malusPoints = MAIN_ROULETTE_CONFIG.malusPoints
+		if (emojiValue === 'malus') {
+			matrix.push([emoji, malusPoints[1], 'FARKLE', 'FARKLE', 'FARKLE'])
+		} else if (emojiValue === 'jackpot') {
+			matrix.push([emoji, '-', 'JACKPOT', 'JACKPOT', 'JACKPOT'])
+		} else {
+			matrix.push([
+				emoji,
+				emojiValue > 0 ? emojiValue : '-',
+				emojiValue * 3 + triple,
+				emojiValue * 4 + quadruple,
+				emojiValue * 5 + quintuple,
+			])
+		}
 	})
-})
+	return matrix
+}
+
+function createCell(cell, yIndex, xIndex) {
+	const cellElement = document.createElement('div')
+	cellElement.classList.add('combi__item')
+	cellElement.dataset.row = yIndex
+	cellElement.dataset.column = xIndex
+	cellElement.dataset.content = cell
+
+	const borderElement = document.createElement('div')
+	borderElement.classList.add('combi__item-border')
+	cellElement.appendChild(borderElement)
+
+	if (Object.prototype.hasOwnProperty.call(emojiBackgrounds, cell)) {
+		const img = document.createElement('div')
+		img.classList.add('combi__item-img')
+		img.style.backgroundPositionY = emojiBackgrounds[cell]
+		cellElement.appendChild(img)
+	} else {
+		const textElement = document.createElement('div')
+		textElement.classList.add('combi__item-text')
+		textElement.innerHTML = `<span>${cell}</span>`
+		cellElement.appendChild(textElement)
+		const scaleFactor = Math.min(3 / textElement.textContent.length, 1)
+		textElement.style.transform = `scaleX(${scaleFactor})`
+	}
+	return cellElement
+}
+
+function renderMatrix(matrix, combiElement) {
+	matrix.forEach((row, yIndex) => {
+		row.forEach((cell, xIndex) => {
+			const cellElement = createCell(cell, yIndex, xIndex)
+			combiElement.appendChild(cellElement)
+		})
+	})
+}
+
+const combiElement = document.querySelector(COMBI_SELECTOR)
+const matrix = buildMatrix()
+renderMatrix(matrix, combiElement)
+
+let lastCombiElement = null
+
+function cloneAndBlur() {
+	if (lastCombiElement) lastCombiElement.remove()
+	const combiClone = combiElement.cloneNode(true)
+	combiClone.classList.add('combi-blur')
+	combiElement.parentNode.appendChild(combiClone)
+	lastCombiElement = combiClone
+}
+
+function resetCombi() {
+	combiElement.querySelectorAll('.combi__item--active').forEach((cell) => {
+		cell.classList.remove('combi__item--active')
+	})
+	cloneAndBlur()
+}
+
+function updateCombi({ symbol, value }) {
+	const symbolIndex = symbolOrder.indexOf(symbol)
+	const multiplierIndex = multiplierOrder.indexOf(value)
+	if (symbolIndex === -1 || multiplierIndex === -1) {
+		console.warn('Invalid symbol or value:', symbol, value)
+		return
+	}
+	const cellElement = combiElement.querySelector(
+		`.combi__item[data-row="${symbolIndex + 1}"][data-column="${multiplierIndex + 1}"]`,
+	)
+	if (cellElement) cellElement.classList.add('combi__item--active')
+	cloneAndBlur()
+}
+
+cloneAndBlur()
+socket.on('update-combi', updateCombi)
+socket.on('reset-combi', resetCombi)

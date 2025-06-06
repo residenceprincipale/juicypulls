@@ -16,6 +16,7 @@
 body {
 	background: black;
 	height: 100vh;
+	font-family: 'League Gothic';
 }
 
 .combi {
@@ -26,10 +27,62 @@ body {
 	top: 100px;
 	left: 280px;
 	padding: 32px 64px;
+	gap: 8px;
+	scale: 0.9;
+	transform-origin: top left;
+	width: 800px;
 }
 
 .combi__item {
-	border: 3px solid white;
-	width: 140px;
+	width: 120px;
 	height: 120px;
+	//overflow: hidden;
+	position: relative;
+	transition: 1s;
+}
+.combi__item-img {
+	background-image: url('/textures/roue-7.png');
+	position: absolute;
+	inset: 0;
+	background-position-x: 91.5%;
+	background-size: 990px;
+}
+
+.combi__item-text {
+	font-size: 100px;
+	line-height: 120px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.combi__item-border {
+	position: absolute;
+	inset: 0;
+	border: 4px solid white;
+	transition: 1s;
+}
+
+.combi-blur {
+	filter: blur(20px);
+	z-index: -1;
+}
+
+.combi__item--active {
+	animation: combi-item-active 1s steps(2) infinite alternate;
+	color: yellow;
+	.combi__item-border {
+		border-color: yellow;
+		outline: 4px solid yellow;
+	}
+}
+
+@keyframes combi-item-active {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0.75;
+	}
 }
