@@ -134,6 +134,14 @@
 		"repeatWrapping": true
 	},
 	{
+		"name": "secondRouletteInnerAlbedo",
+		"path": "textures/second-wheel/inner-albedo.webp",
+		"flipY": false,
+		"repeatWrapping": true,
+		"colorSpace": "srgb"
+	},
+
+	{
 		"name": "environmentModel",
 		"path": "/models/environment.glb"
 	},

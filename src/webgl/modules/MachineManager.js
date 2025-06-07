@@ -35,15 +35,15 @@ export const MAIN_ROULETTE_CONFIG = {
 
 const SECOND_ROULETTE_CONFIG = {
 	numWheels: 2,
-	segments: 5,
-	wheelEmojis: ['🔮', '🎭', '🎯', '⚡', '🎲'],
-	symbolNames: ['magic', 'mask', 'target', 'thunder', 'dice'],
+	segments: 4,
+	wheelEmojis1: ['+100', '-100', 'token', 'multiplier'].reverse(),
+	wheelEmojis2: ['x1', 'x2', 'x3', 'x4'].reverse(),
+	symbolNames: ['magic', 'mask', 'target', 'thunder'],
 	symbolValues: {
 		magic: 200, // 🔮
 		mask: 150, // 🎭
 		target: 300, // 🎯
 		thunder: 250, // ⚡
-		dice: 400, // 🎲
 	},
 	combinationBonus: {
 		match: 2.5, // Multiplier when both wheels match
@@ -103,12 +103,13 @@ export default class MachineManager {
 		this._currentSpinPoints = 0
 		this._spinTokens = 10 // Initialize spin tokens to 10
 
-		socket.send({
-			event: 'update-spin-tokens',
-			data: {
-				value: this._spinTokens,
-			},
-			receiver: 'physical-debug',
+		socket.on('open', () => {
+			socket.send({
+				event: 'update-spin-tokens',
+				data: {
+					value: this._spinTokens,
+				},
+			})
 		})
 
 		// Main roulette state
@@ -159,8 +160,7 @@ export default class MachineManager {
 			}
 
 			// Decrement spin tokens only for the first spin of a round
-			this._spinTokens--
-			this._updateSpinTokensDisplay()
+			socket.send({ event: 'update-spin-tokens', data: { value: -1 } })
 		}
 
 		this._currentSpinIsDone = false
@@ -202,6 +202,20 @@ export default class MachineManager {
 			if (special) {
 				this._logMessage('Triggering Special Roulette Mechanics!')
 				this._triggerSecondRoulette()
+				this._rollingPoints = 0
+				this._currentSpins = 0
+				this._updatePointsDisplay()
+				gsap.delayedCall(2, () => {
+					socket.send({
+						event: 'button-lights-enabled',
+						data: { value: false, index: -1 },
+						receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+					})
+					this._machine.wheels.forEach((wheel) => {
+						wheel.isDisabled = true
+						wheel.isLocked = false
+					})
+				})
 			}
 		}
 
@@ -360,89 +374,64 @@ export default class MachineManager {
 		})
 	}
 
-	_spinSecondRouletteWheels() {
+	async _spinSecondRouletteWheels() {
 		this._secondRouletteResults = Array(SECOND_ROULETTE_CONFIG.numWheels)
 			.fill(0)
 			.map(() => Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments))
 
-		this._logSpinResult(this._secondRouletteResults, SECOND_ROULETTE_CONFIG.wheelEmojis, true)
-
-		// Get the bonus points from second roulette
-		const secondRouletteBonus = this._getSecondRouletteCombination()
-
 		// Animate the wheels
-		this._animateWheelSpin(this._secondRoulette.wheels, this._secondRouletteResults, SECOND_ROULETTE_CONFIG.segments)
+		await this._animateWheelSpin(
+			this._secondRoulette.wheels,
+			this._secondRouletteResults,
+			SECOND_ROULETTE_CONFIG.segments,
+			3,
+		)
+		this._getSecondRouletteCombination()
 
-		// After wheels stop, process the bonus and return to main machine
-		const secondRouletteTimeline = gsap.timeline().call(() => {
-			// Apply bonus to collected points
-			this._collectedPoints += secondRouletteBonus.points
-
-			this._logMessage(`Second Roulette Bonus: ${secondRouletteBonus.name}`)
-			this._logMessage(`Bonus Points: ${secondRouletteBonus.points}`)
-
-			// Update collected points display
-			this._updateCollectedPointsDisplay()
-		})
-
-		// Use the dedicated method for animating out the second roulette
+		const secondRouletteTimeline = gsap.timeline()
 		secondRouletteTimeline.call(
 			() => {
 				this._animateSecondRouletteOut()
 			},
 			null,
-			6,
+			1,
 		)
 	}
 
 	_getSecondRouletteCombination() {
-		// Convert result indices to symbol names
-		const symbols = this._secondRouletteResults.map((index) => SECOND_ROULETTE_CONFIG.symbolNames[index])
+		//do actions depending on the combination of the two wheels
+		const firstWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis1[this._secondRouletteResults[0]]
+		const secondWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis2[this._secondRouletteResults[1]]
 
-		// Calculate base points from the symbols
-		let points = symbols.reduce((sum, symbol) => sum + SECOND_ROULETTE_CONFIG.symbolValues[symbol], 0)
-
-		// Check if both wheels show the same symbol (matching pair)
-		const isMatch = symbols[0] === symbols[1]
-
-		// Sort the symbols to check for special combos regardless of wheel order
-		const comboKey = [...symbols].sort().join('-')
-		const specialComboName = SECOND_ROULETTE_CONFIG.specialCombos[comboKey]
-
-		// Apply multipliers based on combinations
-		if (isMatch) {
-			// Both wheels show same symbol
-			points *= SECOND_ROULETTE_CONFIG.combinationBonus.match
-			return {
-				name: `Double ${symbols[0]} (${SECOND_ROULETTE_CONFIG.wheelEmojis[this._secondRouletteResults[0]]})`,
-				points: Math.round(points),
-				isSpecial: false,
+		switch (firstWheelSymbol) {
+			case 'multiplier': {
+				socket.send({ event: 'bulbs', data: secondWheelSymbol, receiver: 'bulbs' })
+				break
 			}
-		} else if (specialComboName) {
-			// Special combination
-			points *= SECOND_ROULETTE_CONFIG.combinationBonus.specialMatch
-			return {
-				name: specialComboName,
-				points: Math.round(points),
-				isSpecial: true,
+			case 'token': {
+				socket.send({
+					event: 'update-spin-tokens',
+					data: { value: `+${secondWheelSymbol.replace('x', '')}` },
+				})
+				break
 			}
-		}
-
-		// Regular combination (no multiplier)
-		return {
-			name: 'Mixed Symbols',
-			points: Math.round(points),
-			isSpecial: false,
+			case '+100':
+			case '-100':
+				const points =
+					parseInt(firstWheelSymbol.replace('+', '').replace('-', '')) * (firstWheelSymbol.startsWith('+') ? 1 : -1)
+				this._collectedPoints = Math.max(0, this._collectedPoints + points * (secondWheelSymbol.replace('x', '') || 1))
+				this._updateCollectedPointsDisplay()
+				break
 		}
 	}
 
 	/**
 	 * Common Utilities
 	 */
-	_animateWheelSpin(wheels, results, numSegments) {
-		wheels.forEach((wheel, index) => {
+	async _animateWheelSpin(wheels, results, numSegments, delayStep = 0.3) {
+		const animations = wheels.map((wheel, index) => {
 			gsap.killTweensOf(wheel.rotation)
-			if (wheel.isLocked) return
+			if (wheel.isLocked) return Promise.resolve()
 
 			const randomSegment = results[index]
 			const segmentAngle = 1 / numSegments
@@ -452,12 +441,16 @@ export default class MachineManager {
 			const rotationToStopAngle = randomSegment * segmentAngle - previousRotationDegrees
 			const targetRotation = rotationDegrees + (fullRotations + rotationToStopAngle)
 
-			gsap.to(wheel.rotation, {
-				value: targetRotation,
-				duration: 2 + index * 0.3,
-				ease: 'power4.out',
+			return new Promise((resolve) => {
+				gsap.to(wheel.rotation, {
+					value: targetRotation,
+					duration: 2 + index * delayStep,
+					ease: 'power4.out',
+					onComplete: resolve,
+				})
 			})
 		})
+		await Promise.all(animations)
 	}
 
 	_countOccurrences(results, symbolNames) {
@@ -519,7 +512,6 @@ export default class MachineManager {
 			data: {
 				value: this._spinTokens,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
 		})
 
 		// Also log to debug console
@@ -613,13 +605,18 @@ export default class MachineManager {
 		socket.on('button-collect', (e) => {
 			this._buttonCollectClickHandler(e)
 		})
-		socket.on('update-spin-tokens', (e) => {
-			if (e.value === '+1') {
-				this._spinTokens = parseInt(this._spinTokens) + 1
+		socket.on('update-spin-tokens', ({ value }) => {
+			const stringValue = value.toString()
+			if (stringValue.startsWith('+')) {
+				const increment = parseInt(stringValue.slice(1), 10)
+				this._spinTokens = parseInt(this._spinTokens) + (isNaN(increment) ? 1 : increment)
+			} else if (stringValue.startsWith('-')) {
+				const decrement = parseInt(stringValue.slice(1), 10)
+				this._spinTokens = parseInt(this._spinTokens) - (isNaN(decrement) ? 1 : decrement)
+				if (this._spinTokens < 0) this._spinTokens = 0 // Prevent negative tokens
 			} else {
-				this._spinTokens = e.value
+				this._spinTokens = value
 			}
-			this._updateSpinTokensDisplay()
 		})
 	}
 

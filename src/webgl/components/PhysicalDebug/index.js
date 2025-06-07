@@ -290,11 +290,19 @@ export default class PhysicalDebug {
 		this._rollingElement.textContent = e.value
 	}
 
-	_updateSpinTokensHandler(e) {
-		if (e.value === '+1') {
-			this._spinsElement.textContent = parseInt(this._spinsElement.textContent) + 1
+	_updateSpinTokensHandler({ value }) {
+		const stringValue = value.toString()
+
+		if (stringValue.startsWith('+')) {
+			const increment = parseInt(stringValue.slice(1), 10)
+			this._spinsElement.textContent = parseInt(this._spinsElement.textContent) + (isNaN(increment) ? 1 : increment)
+		} else if (stringValue.startsWith('-')) {
+			const decrement = parseInt(stringValue.slice(1), 10)
+			let newValue = parseInt(this._spinsElement.textContent) - (isNaN(decrement) ? 1 : decrement)
+			if (newValue < 0) newValue = 0
+			this._spinsElement.textContent = newValue
 		} else {
-			this._spinsElement.textContent = e.value
+			this._spinsElement.textContent = value
 		}
 	}
 
