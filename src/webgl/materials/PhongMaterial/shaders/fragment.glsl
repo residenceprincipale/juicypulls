@@ -31,6 +31,12 @@ uniform vec3 uEmissiveColor;
 	uniform float uRoughnessIntensity;
 #endif
 
+#ifdef USE_AO
+	uniform sampler2D uAOMap;
+	uniform vec2 uAOMapRepeat;
+	uniform float uAOMapIntensity;
+#endif
+
 #include <common>
 #include <packing>
 #include <dithering_pars_fragment>
@@ -51,10 +57,6 @@ uniform vec3 uEmissiveColor;
 
 #ifdef USE_SPECULARMAP
 	#include <specularmap_pars_fragment>
-#endif
-
-#ifdef USE_AOMAP
-	#include <aomap_pars_fragment>
 #endif
 
 #ifdef USE_ENVMAP
@@ -178,7 +180,7 @@ void main() {
 	// ao
 	float ao = 1.;
 
-	#ifdef USE_AO_MAP
+	#ifdef USE_AO
 		vec4 aoMap = texture2D(uAOMap, vUv * uAOMapRepeat);
 		ao *= (aoMap.g - 1.0) * uAOMapIntensity + 1.0;
 	#endif
@@ -220,7 +222,7 @@ void main() {
 		#include <envmap_fragment>
 	#endif
 
-	gl_FragColor = clamp(vec4(finalColor.rgb, diffuseColor.a), 0., 1.);
+	gl_FragColor = clamp(vec4(finalColor, diffuseColor.a), 0., 1.);
 	
 	#include <tonemapping_fragment>
 	#include <colorspace_fragment>

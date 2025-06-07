@@ -26,7 +26,7 @@ import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
 import baseMaterialUniforms from './baseMaterialSettings.js'
-import innerMaterialUniforms from './innerMaterialSettings.js'
+import goldMaterialUniforms from './goldMaterialSettings.js'
 import innerReflectionMaterialUniforms from './innerReflectionMaterialSettings.js'
 export default class Machine {
 	constructor() {
@@ -34,12 +34,12 @@ export default class Machine {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
-		this._resource = this._resources.items.casinoModel
+		this._resource = this._resources.items.rouletteModel
 
 		// this._createLights()
 		this._createRouletteMaterial()
 		this._createBaseMaterial()
-		this._createInnerMaterial()
+		this._createGoldMaterial()
 		this._createInnerReflectionMaterial()
 		this._createBloomMaterial()
 		this._createModel()
@@ -147,7 +147,7 @@ export default class Machine {
 
 	_createModel() {
 		this._model = this._resource.scene
-		this._model.name = 'casino machine'
+		this._model.name = 'machine'
 		this._scene.add(this._model)
 
 		// Array to store wheel meshes
@@ -164,18 +164,20 @@ export default class Machine {
 			if (!child.isMesh) return
 			if (child.name.includes('gold-inner')) {
 				child.material = this._innerReflectionMaterial
-			} else if (child.name.includes('slut-base')) {
+			} else if (child.name.includes('metal')) {
 				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
 				child.material = this._rouletteMaterial
-				this._leds.push(child)
-			} else if (child.name.includes('gold')) {
-				child.material = this._innerMaterial
-			} else if (child.name.includes('led')) {
+			}
+			if (child.name.includes('gold') || child.name.includes('logo')) {
+				child.material = this._goldMaterial
+				// child.userData.renderBloom = true
+			}
+			if (child.name.includes('led')) {
 				child.material = this._bloomMaterial
 				child.userData.renderBloom = true
 			}
-			if (child.name.includes('slut-base-inner')) {
+			if (child.name.includes('inner-wheels')) {
 				this._innerMachine = child
 			}
 		})
@@ -194,6 +196,7 @@ export default class Machine {
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
+				USE_AO: true,
 			},
 		})
 	}
@@ -224,15 +227,14 @@ export default class Machine {
 		})
 	}
 
-	_createInnerMaterial() {
-		this._innerMaterial = new PhongCustomMaterial({
-			// vertexShader: innerVertexShader,
-			// fragmentShader: innerFragmentShader,
-			uniforms: innerMaterialUniforms,
-			name: 'Inner Material',
+	_createGoldMaterial() {
+		this._goldMaterial = new PhongCustomMaterial({
+			uniforms: goldMaterialUniforms,
+			name: 'Gold Material',
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
+				USE_AO: true,
 			},
 		})
 	}
@@ -260,7 +262,7 @@ export default class Machine {
 		// addMaterialDebug(folder, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
-		addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)
+		addCustomMaterialDebug(folder, goldMaterialUniforms, this._resources, this._goldMaterial)
 		addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
 	}
 }

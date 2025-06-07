@@ -140,10 +140,10 @@ void main() {
 	if (wheelsUv.x >= wheelWidth * 0.0 && wheelsUv.x < wheelWidth * 1.0) {
 		wheelsUv.y -= uRotation0;
 	}
-	else if (wheelsUv.x >= wheelWidth * 1.0 && wheelsUv.x < wheelWidth * 2.0) {
+	if (wheelsUv.x >= wheelWidth * 1.0 && wheelsUv.x < wheelWidth * 2.0) {
 		wheelsUv.y -= uRotation1;
 	}
-	else if (wheelsUv.x >= wheelWidth * 2.0 && wheelsUv.x < wheelWidth * 3.0) {
+	if (wheelsUv.x >= wheelWidth * 2.0 && wheelsUv.x < wheelWidth * 3.0) {
 		wheelsUv.y -= uRotation2;
 	}
 	else if (wheelsUv.x >= wheelWidth * 3.0 && wheelsUv.x < wheelWidth * 4.0) {

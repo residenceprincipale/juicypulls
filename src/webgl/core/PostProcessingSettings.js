@@ -5,10 +5,10 @@ export default class PostProcessingSettings {
                 bloom: {
                     enabled: true,
                     type: 'SELECTIVE', // 'LUMINOSITY', 'SELECTIVE', 'TEXTURE'
-                    strength: 1.5,
-                    radius: 0.4,
-                    threshold: 0.85,
-                    smoothWidth: 1.0,
+                    strength: 2.61,
+                    radius: 0.59,
+                    threshold: 0,
+                    smoothWidth: 0.67,
                     resolution: { x: 256, y: 256 },
                 }
                 // Example for selective bloom:
@@ -43,11 +43,6 @@ export default class PostProcessingSettings {
     }
 
     updateSetting(sceneName, effectName, property, value) {
-        const scene = this.sceneSettings[sceneName?.toLowerCase()]
-        if (!scene || !scene[effectName]) return false
-
-        scene[effectName][property] = value
-        return true
     }
 
     getBloomSettings(sceneName) {

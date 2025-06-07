@@ -441,7 +441,7 @@ class CustomUnrealBloomPass extends Pass {
     _renderSelective(renderer) {
         renderer.setRenderTarget(this._renderTargetBright);
         renderer.setScissor(0, 0, this._width / this._dpr, this._height / this._dpr);
-        // renderer.clear();
+        renderer.clear();
         renderer.setScissor(this._renderTargetBright.scissor);
 
         this._scene.traverse((object) => {

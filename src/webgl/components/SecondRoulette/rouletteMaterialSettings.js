@@ -13,7 +13,7 @@ export default {
         }
     },
     "uAoMap": {
-        "value": "roulettesAO"
+        "value": "rouletteAO"
     },
     "uAOIntensity": {
         "value": 0.5

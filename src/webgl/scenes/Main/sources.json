@@ -22,13 +22,20 @@
 		"repeatWrapping": true
 	},
 	{
-		"name": "baseAO",
-		"path": "textures/casinoAO.png",
+		"name": "metalRoughness",
+		"path": "textures/metal-roughness.jpg",
+		"flipY": false,
+		"repeatWrapping": true
+	},
+	{
+		"name": "wheelsAO",
+		"path": "textures/wheels-ao.jpg",
 		"flipY": false
 	},
 	{
-		"name": "roulettesAO",
-		"path": "textures/roulettesAO.jpg"
+		"name": "rouletteAO",
+		"path": "textures/roulette-ao-2.jpg",
+		"flipY": false
 	},
 	{
 		"name": "glassMatcap",
@@ -36,11 +43,19 @@
 	},
 	{
 		"name": "goldMatcap",
-		"path": "textures/goldMatcap.jpeg"
+		"path": "textures/matcaps/gold-1.png"
 	},
 	{
 		"name": "metalMatcap",
+		"path": "textures/matcaps/metal-matcap-3.jpeg"
+	},
+	{
+		"name": "metalMatcap-1",
 		"path": "textures/matcaps/metal-matcap-1.jpeg"
+	},
+	{
+		"name": "metalMatcapShiny",
+		"path": "textures/matcaps/metal-shiny.png"
 	},
 	{
 		"name": "collectButtonTexture",
@@ -51,8 +66,8 @@
 		"path": "models/Fox/glTF/Fox.gltf"
 	},
 	{
-		"name": "casinoModel",
-		"path": "models/roues-casino-v7.glb"
+		"name": "rouletteModel",
+		"path": "models/roulette-v1.glb"
 	},
 	{
 		"name": "handModel",

@@ -1,7 +1,7 @@
 export default {
     "name": "lightRight",
     "visible": {
-        "value": true
+        "value": false
     },
     "castShadow": {
         "value": false

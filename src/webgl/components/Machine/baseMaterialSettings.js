@@ -3,46 +3,52 @@ export default {
         "value": 0
     },
     "uRoughnessMap": {
-        "value": "baseRoughness"
+        "value": "metalRoughness"
     },
     "uRoughnessRepeat": {
         "value": {
-            "x": 2,
-            "y": 2
+            "x": 5,
+            "y": 5
         }
     },
     "uRoughnessIntensity": {
-        "value": 3
+        "value": 0.36999999999999994
     },
-    "uAoMap": {
-        "value": "baseAO"
+    "uAOMap": {
+        "value": "rouletteAO"
     },
-    "uAOIntensity": {
+    "uAOMapIntensity": {
         "value": 1
     },
+    "uAOMapRepeat": {
+        "value": {
+            "x": 1,
+            "y": 1
+        }
+    },
     "uMatcapMap": {
-        "value": "metalMatcap"
+        "value": "metalMatcapShiny"
     },
     "uMatcapOffset": {
         "value": {
-            "x": 0,
+            "x": 0.08,
             "y": 0
         }
     },
     "uMatcapIntensity": {
-        "value": 0.72
+        "value": 2.09
     },
     "uAmbientIntensity": {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 2
+        "value": 0.30999999999999994
     },
     "uSpecularIntensity": {
-        "value": 0.07000000000000003
+        "value": 0.09000000000000002
     },
     "uShininess": {
-        "value": 150
+        "value": 300
     },
     "uOpacity": {
         "value": 1
@@ -51,7 +57,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#343434"
+        "value": "#ababab"
     },
     "uSpecularColor": {
         "value": "0xffffff"

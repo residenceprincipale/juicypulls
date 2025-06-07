@@ -34,7 +34,7 @@ export default class Main {
 		this._lights = new LightsMain()
 
 		this._camera = this._experience.camera
-		this._camera.setCamera('sceneCamera')
+		// this._camera.setCamera('sceneCamera')
 		this._camera.instance.position.set(0, 0.01, 1.45)
 		this._camera.instance.rotation.set(0, 0, 0)
 
@@ -77,7 +77,7 @@ export default class Main {
 		if (this._debug.active) this.setDebug()
 	}
 
-	reset() {}
+	reset() { }
 
 	start() {
 		// animate screens flash
@@ -128,16 +128,16 @@ export default class Main {
 		// start round
 	}
 
-	endGame() {}
+	endGame() { }
 
 	lose() {
 		if (this._machine) this._machine.animateInnerMachineOut()
 		if (this._hands) this._hands.setupFight()
 	}
 
-	loseFinal() {}
+	loseFinal() { }
 
-	startSecondChance() {}
+	startSecondChance() { }
 
 	update() {
 		const timeData = {

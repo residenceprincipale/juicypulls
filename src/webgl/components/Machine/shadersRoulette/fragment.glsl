@@ -37,6 +37,7 @@ uniform float uRotation3;
 uniform float uRotation4;
 
 uniform sampler2D uAlbedoMap;
+uniform float uAlbedoIntensity;
 uniform sampler2D uNormalMap;
 uniform vec2 uNormalRepeat;
 uniform vec2 uNormalScale;
@@ -141,7 +142,7 @@ void main() {
 	wheelsUv.x = fract(wheelsUv.x * uWheelsSpacing) / uWheelsSpacing + uWheelsOffset;
 
 	vec4 albedoTexture = texture2D( uAlbedoMap, wheelsUv );
-	vec3 albedo = mix(uBackgroundColor, albedoTexture.rgb, albedoTexture.a);
+	vec3 albedo = mix(uBackgroundColor, albedoTexture.rgb * uAlbedoIntensity, albedoTexture.a) ;
 
 	vec4 diffuseColor = vec4(albedo, uOpacity);
 
