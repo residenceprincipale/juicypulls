@@ -240,44 +240,25 @@ export default class PhysicalDebug {
 
 		// listen to f g h j k and send corresponding index button events to machine and shooter
 		window.addEventListener('keydown', (e) => {
-			if (e.key === 'f') {
+			const keyToIndex = { f: 0, g: 1, h: 2, j: 3, k: 4 }
+			if (e.key in keyToIndex) {
+				const index = keyToIndex[e.key]
+				if (this._buttonLightsEnabled[index]) {
+					this._leds[index].isWhite = !this._leds[index].isWhite
+					this._leds[index].material = this._leds[index].isWhite ? this._ledWhiteMaterial : this._ledMaterials[index]
+				}
 				socket.send({
 					event: 'button',
-					data: { index: 0 },
-					receiver: ['machine', 'shooter'],
-				})
-			} else if (e.key === 'g') {
-				socket.send({
-					event: 'button',
-					data: { index: 1 },
-					receiver: ['machine', 'shooter'],
-				})
-			} else if (e.key === 'h') {
-				socket.send({
-					event: 'button',
-					data: { index: 2 },
-					receiver: ['machine', 'shooter'],
-				})
-			} else if (e.key === 'j') {
-				socket.send({
-					event: 'button',
-					data: { index: 3 },
-					receiver: ['machine', 'shooter'],
-				})
-			} else if (e.key === 'k') {
-				socket.send({
-					event: 'button',
-					data: { index: 4 },
+					data: { index },
 					receiver: ['machine', 'shooter'],
 				})
 			} else if (e.key === 'Enter') {
 				this._collectButtonClickHandler()
 			} else if (e.key === ' ') {
-				e.preventDefault() // Prevent default space behavior (scrolling)
+				e.preventDefault() // Empêche le scroll par défaut de la barre d'espace
 				this._leverClickHandler()
 			}
 		})
-
 		socket.on('update-collected-points', (e) => {
 			this._updateCollectedPointsHandler(e)
 		})
@@ -317,13 +298,10 @@ export default class PhysicalDebug {
 		}
 	}
 
-	_buttonLightsEnabledHandler(e) {
-		const value = e.value
-		const index = e.index
-		console.log('button lights enabled', value, index)
+	_buttonLightsEnabledHandler({ value, index }) {
 		if (index === -1) {
 			this._buttonLightsEnabled.fill(value)
-			this._leds.forEach((led, i) => {
+			this._leds.forEach((led) => {
 				led.material = this._ledWhiteMaterial
 				led.isWhite = true
 			})
