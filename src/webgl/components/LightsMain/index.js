@@ -6,6 +6,8 @@ import settingsLight1 from './lightSettings-1.js';
 import settingsLight2 from './lightSettings-2.js';
 import settingsLight3 from './lightSettings-3.js';
 
+import gsap from 'gsap';
+
 export default class LightsMain {
     constructor() {
         this._experience = new Experience();
@@ -36,6 +38,129 @@ export default class LightsMain {
 
     get lightRight() {
         return this._lightRight;
+    }
+
+    /**
+     * Public
+     */
+    turnOff({ immediate = false } = {}) {
+        const timeline = gsap.timeline()
+
+        if (immediate) {
+            timeline
+                .to([this._lightTop, this._lightLeft, this._lightRight], {
+                    duration: 0,
+                    intensity: 0,
+                    ease: "none"
+                })
+        } else {
+            timeline
+                // Main light struggles and flickers before dying
+                .to(this._lightTop, {
+                    duration: 0.05,
+                    intensity: this._lightSettings[0].intensity.value * 0.7,
+                    ease: "power2.out"
+                })
+                .to(this._lightTop, {
+                    duration: 0.03,
+                    intensity: this._lightSettings[0].intensity.value * 0.9,
+                    ease: "power1.in"
+                })
+                .to(this._lightTop, {
+                    duration: 1.0,
+                    intensity: 0,
+                    ease: "expo.out"
+                }, 0.08)
+                // Left light dies more suddenly but with a slight hesitation
+                .to(this._lightLeft, {
+                    duration: 0.08,
+                    intensity: this._lightSettings[1].intensity.value * 0.3,
+                    ease: "power2.in"
+                }, 0.1)
+                .to(this._lightLeft, {
+                    duration: 0.4,
+                    intensity: 0,
+                    ease: "power3.out"
+                }, 0.18)
+                // Right light fades out organically
+                .to(this._lightRight, {
+                    duration: 0.6,
+                    intensity: 0,
+                    ease: "sine.out"
+                }, 0.12)
+        }
+
+        return timeline
+    }
+
+    turnOn({ immediate = false } = {}) {
+        const timeline = gsap.timeline()
+
+        if (immediate) {
+            timeline
+                .to(this._lightTop, {
+                    duration: 0,
+                    intensity: this._lightSettings[0].intensity.value,
+                    ease: "none"
+                })
+                .to(this._lightLeft, {
+                    duration: 0,
+                    intensity: this._lightSettings[1].intensity.value,
+                    ease: "none"
+                }, 0)
+                .to(this._lightRight, {
+                    duration: 0,
+                    intensity: this._lightSettings[2].intensity.value,
+                    ease: "none"
+                }, 0)
+        } else {
+            // Add organic variation and flickering startup
+            const startupDelay1 = Math.random() * 0.15
+            const startupDelay2 = 0.3 + Math.random() * 0.2
+            const startupDelay3 = 0.5 + Math.random() * 0.25
+
+            timeline
+                // Main light struggles to start, flickers a bit
+                .to(this._lightTop, {
+                    duration: 0.05,
+                    intensity: this._lightSettings[0].intensity.value * 0.2,
+                    ease: "power2.in"
+                }, startupDelay1)
+                .to(this._lightTop, {
+                    duration: 0.03,
+                    intensity: this._lightSettings[0].intensity.value * 0.1,
+                    ease: "power1.out"
+                })
+                .to(this._lightTop, {
+                    duration: 0.08,
+                    intensity: this._lightSettings[0].intensity.value * 0.6,
+                    ease: "power1.in"
+                })
+                .to(this._lightTop, {
+                    duration: 0.4,
+                    intensity: this._lightSettings[0].intensity.value,
+                    ease: "back.out(1.2)"
+                })
+                // Left light comes on more hesitantly
+                .to(this._lightLeft, {
+                    duration: 0.6,
+                    intensity: this._lightSettings[1].intensity.value,
+                    ease: "expo.out"
+                }, startupDelay2)
+                // Right light has a smooth but delayed startup
+                .to(this._lightRight, {
+                    duration: 0.05,
+                    intensity: this._lightSettings[2].intensity.value * 0.3,
+                    ease: "power1.in"
+                }, startupDelay3)
+                .to(this._lightRight, {
+                    duration: 0.45,
+                    intensity: this._lightSettings[2].intensity.value,
+                    ease: "sine.out"
+                })
+        }
+
+        return timeline
     }
 
     /**

@@ -16,7 +16,7 @@ export default {
         "value": "0xffffff"
     },
     "helper": {
-        "value": true
+        "value": false
     },
     "transformControl": {
         "value": false

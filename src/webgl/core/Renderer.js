@@ -311,4 +311,39 @@ export default class Renderer {
 		// Recreate post-processing to handle composer changes
 		this.createPostProcessing()
 	}
+
+	// Method to update camera references in postprocessing
+	updateCameraReferences() {
+		if (!this.activeComposer) return
+
+		// Update Three.js composer camera references
+		if (this.threeComposer && this.threeComposer.passes) {
+			this.threeComposer.passes.forEach(pass => {
+				if (pass.camera) {
+					pass.camera = this.camera.instance
+				}
+			})
+		}
+
+		// Update postprocessing composer camera references
+		if (this.composer && this.composer.passes) {
+			this.composer.passes.forEach(pass => {
+				if (pass.camera) {
+					pass.camera = this.camera.instance
+				}
+			})
+		}
+
+		// Update bloom pass camera reference
+		if (this.bloomPass && this.bloomPass._camera) {
+			this.bloomPass._camera = this.camera.instance
+		}
+
+		// Update transition pass camera reference
+		if (this.transitionPass && this.transitionPass.camera) {
+			this.transitionPass.camera = this.camera.instance
+		}
+
+		console.log('Updated camera references in postprocessing')
+	}
 }

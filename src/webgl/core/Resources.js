@@ -23,10 +23,8 @@ export default class Resources extends EventEmitter {
 		this.items = {}
 		this.toLoad = this.sources.length
 		this.loaded = 0
-		this.errors = []
 
 		if (this.toLoad === 0) {
-			console.warn('No resources to load.')
 			this.trigger('ready')
 			return
 		}
@@ -84,14 +82,8 @@ export default class Resources extends EventEmitter {
 	}
 
 	startLoading() {
-		if (this.debug.active && this.debug.debugParams.ResourceLog) {
-			console.group('🖼️ Resources')
-			console.debug('⏳ Loading resources...')
-			this.totalStartTime = performance.now()
-		}
 		// Load each source
 		for (const source of this.sources) {
-			source.startTime = performance.now()
 			if (source.path instanceof Array) {
 				this.loaders.cubeTextureLoader.load(
 					source.path,
@@ -115,9 +107,7 @@ export default class Resources extends EventEmitter {
 						(file) => {
 							this.sourceLoaded(source, file)
 						},
-						(progress) => {
-							this.sourceProgress(source, progress)
-						},
+						undefined,
 						(error) => {
 							this.sourceError(source, error)
 						},
@@ -129,9 +119,7 @@ export default class Resources extends EventEmitter {
 						(file) => {
 							this.sourceLoaded(source, file)
 						},
-						(progress) => {
-							this.sourceProgress(source, progress)
-						},
+						undefined,
 						(error) => {
 							this.sourceError(source, error)
 						},
@@ -144,9 +132,7 @@ export default class Resources extends EventEmitter {
 						(file) => {
 							this.sourceLoaded(source, file)
 						},
-						(progress) => {
-							this.sourceProgress(source, progress)
-						},
+						undefined,
 						(error) => {
 							this.sourceError(source, error)
 						},
@@ -161,9 +147,7 @@ export default class Resources extends EventEmitter {
 						(file) => {
 							this.sourceLoaded(source, file)
 						},
-						(progress) => {
-							this.sourceProgress(source, progress)
-						},
+						undefined,
 						(error) => {
 							this.sourceError(source, error)
 						},
@@ -175,9 +159,7 @@ export default class Resources extends EventEmitter {
 						(file) => {
 							this.sourceLoaded(source, file)
 						},
-						(progress) => {
-							this.sourceProgress(source, progress)
-						},
+						undefined,
 						(error) => {
 							this.sourceError(source, error)
 						},
@@ -217,13 +199,6 @@ export default class Resources extends EventEmitter {
 					})
 					break
 			}
-		}
-	}
-
-	sourceProgress(source, progress) {
-		if (this.debug.active && this.debug.debugParams.ResourceLog && progress.lengthComputable) {
-			const percentage = Math.round((progress.loaded / progress.total) * 100)
-			console.debug(`📊 ${source.name}: ${percentage}% loaded (${progress.loaded}/${progress.total} bytes)`)
 		}
 	}
 
@@ -282,13 +257,11 @@ export default class Resources extends EventEmitter {
 	}
 
 	sourceLoaded(source, file) {
-		const { name, path, type, startTime, ...rest } = source
+		const { name, path, type, ...rest } = source
 		Object.assign(file, rest)
 		this.items[source.name] = file
 		file.name = source.name
 		this.loaded++
-		source.endTime = performance.now()
-		source.loadTime = Math.floor(source.endTime - source.startTime)
 
 		if (source.flipY !== undefined && source.flipY) {
 			file.flipY = source.flipY

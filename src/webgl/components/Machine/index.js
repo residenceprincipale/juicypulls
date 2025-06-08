@@ -27,6 +27,7 @@ import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
 import baseMaterialUniforms from './baseMaterialSettings.js'
 import goldMaterialUniforms from './goldMaterialSettings.js'
+import goldLogoMaterialUniforms from './goldLogoMaterialSettings.js'
 import innerReflectionMaterialUniforms from './innerReflectionMaterialSettings.js'
 export default class Machine {
 	constructor() {
@@ -40,7 +41,8 @@ export default class Machine {
 		this._createRouletteMaterial()
 		this._createBaseMaterial()
 		this._createGoldMaterial()
-		this._createInnerReflectionMaterial()
+		this._createGoldLogoMaterial()
+		// this._createInnerReflectionMaterial()
 		this._createBloomMaterial()
 		this._createModel()
 
@@ -77,12 +79,21 @@ export default class Machine {
 	/**
 	 * Public
 	 */
+	hide() {
+		this._model.visible = false
+	}
+
+	show() {
+		this._model.visible = true
+	}
+
 	animateInnerMachineOut() {
 		// this._isHandFighting = true
 		this._innerOutTimeline?.kill()
 		this._innerOutTimeline = gsap.timeline()
+		this._innerOutTimeline.add(this.turnOffLeds(), 0)
 		this._innerOutTimeline.to(this._innerMachine.position, {
-			z: -0.6,
+			z: -0.4,
 			ease: 'none',
 			duration: 0.4,
 		})
@@ -141,6 +152,118 @@ export default class Machine {
 		return this._innerFrontTimeline
 	}
 
+	turnOffLeds() {
+		const timeline = gsap.timeline()
+		timeline.to(this._innerLeds.material, {
+			opacity: 0,
+			duration: 0.1,
+			ease: 'none',
+		})
+		timeline.to(this._outerLeds.material, {
+			opacity: 0,
+			duration: 0.1,
+			ease: 'none',
+		})
+		timeline.to(this._separatorsLeds.material, {
+			opacity: 0,
+			duration: 0.1,
+			ease: 'none',
+		})
+
+		return timeline
+	}
+
+	turnOffInnerLeds() {
+		const timeline = gsap.timeline()
+		timeline.to(this._innerLeds.material, {
+			opacity: 0,
+			duration: 0.1,
+			ease: 'none',
+		})
+		timeline.to(this._separatorsLeds.material, {
+			opacity: 0,
+			duration: 0.1,
+			ease: 'none',
+		})
+
+		return timeline
+	}
+
+	turnOnLeds() {
+		const timeline = gsap.timeline()
+		// Simple flicker effect for all LEDs
+		timeline
+			.to(this._innerLeds.material, {
+				opacity: 0.3,
+				duration: 0.05,
+				ease: 'power1.in',
+			})
+			.to(this._innerLeds.material, {
+				opacity: 0.8,
+				duration: 0.03,
+				ease: 'power1.out',
+			})
+			.to(this._innerLeds.material, {
+				opacity: 1,
+				duration: 0.1,
+				ease: 'power1.out',
+			})
+			.to(this._outerLeds.material, {
+				opacity: 0.4,
+				duration: 0.04,
+				ease: 'power1.in',
+			}, 0.02)
+			.to(this._outerLeds.material, {
+				opacity: 1,
+				duration: 0.12,
+				ease: 'power1.out',
+			})
+			.to(this._separatorsLeds.material, {
+				opacity: 0.2,
+				duration: 0.03,
+				ease: 'power1.in',
+			}, 0.04)
+			.to(this._separatorsLeds.material, {
+				opacity: 1,
+				duration: 0.08,
+				ease: 'power1.out',
+			})
+
+		return timeline
+	}
+
+	turnOnInnerLeds() {
+		const timeline = gsap.timeline()
+		// Simple flicker effect for inner LEDs
+		timeline
+			.to(this._innerLeds.material, {
+				opacity: 0.2,
+				duration: 0.04,
+				ease: 'power1.in',
+			})
+			.to(this._innerLeds.material, {
+				opacity: 0.7,
+				duration: 0.02,
+				ease: 'power1.out',
+			})
+			.to(this._innerLeds.material, {
+				opacity: 1,
+				duration: 0.08,
+				ease: 'power1.out',
+			})
+			.to(this._separatorsLeds.material, {
+				opacity: 0.3,
+				duration: 0.03,
+				ease: 'power1.in',
+			}, 0.02)
+			.to(this._separatorsLeds.material, {
+				opacity: 1,
+				duration: 0.1,
+				ease: 'power1.out',
+			})
+
+		return timeline
+	}
 	/**
 	 * Private
 	 */
@@ -162,29 +285,40 @@ export default class Machine {
 
 		this._model.traverse((child) => {
 			if (!child.isMesh) return
-			if (child.name.includes('gold-inner')) {
-				child.material = this._innerReflectionMaterial
-			} else if (child.name.includes('metal')) {
+			if (child.name.includes('metal') || child.name.includes('inside')) {
 				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
 				child.material = this._rouletteMaterial
 			}
-			if (child.name.includes('gold') || child.name.includes('logo')) {
+			if (child.name.includes('gold')) {
 				child.material = this._goldMaterial
-				// child.userData.renderBloom = true
+			}
+			if (child.name.includes('logo')) {
+				child.material = this._goldLogoMaterial
+				this._logoMesh = child
+			}
+			if (child.name.includes('inner-wheels-metal')) {
+				this._innerMachine = child
 			}
 			if (child.name.includes('led')) {
-				child.material = this._bloomMaterial
+				child.material = this._bloomMaterial.clone()
 				child.userData.renderBloom = true
+				this._leds.push(child)
 			}
-			if (child.name.includes('inner-wheels')) {
-				this._innerMachine = child
+			if (child.name === 'leds-inner-wheels') {
+				this._innerLeds = child
+			}
+			if (child.name === 'leds-outer-machine') {
+				this._outerLeds = child
+			}
+			if (child.name === 'leds-separators') {
+				this._separatorsLeds = child
 			}
 		})
 
 		this._wheels.forEach((wheel, index) => {
 			wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
-			this._innerReflectionMaterial.uniforms[`uRotation${index}`] = wheel.rotation
+			// this._innerReflectionMaterial.uniforms[`uRotation${index}`] = wheel.rotation
 			// wheel.rotation.value = (1.0 / this._segments) / 2
 		})
 	}
@@ -239,9 +373,23 @@ export default class Machine {
 		})
 	}
 
+	_createGoldLogoMaterial() {
+		this._goldLogoMaterial = new PhongCustomMaterial({
+			uniforms: goldLogoMaterialUniforms,
+			name: 'Gold Logo Material',
+			defines: {
+				USE_ROUGHNESS: true,
+				USE_MATCAP: true,
+				USE_AO: true,
+			},
+		})
+	}
+
 	_createBloomMaterial() {
 		const brightMaterial = new MeshBasicMaterial({
 			color: 0xffffff,
+			opacity: 1,
+			transparent: true,
 		})
 
 		this._bloomMaterial = brightMaterial
@@ -259,10 +407,24 @@ export default class Machine {
 			title: 'Machine',
 			expanded: true,
 		})
+
+		folder.addButton({
+			title: 'Animate Out'
+		}).on('click', () => {
+			this.animateInnerMachineOut()
+		})
+
+		folder.addButton({
+			title: 'Animate In'
+		}).on('click', () => {
+			this.animateInnerMachineIn()
+		})
+
 		// addMaterialDebug(folder, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 		addCustomMaterialDebug(folder, goldMaterialUniforms, this._resources, this._goldMaterial)
-		addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
+		addCustomMaterialDebug(folder, goldLogoMaterialUniforms, this._resources, this._goldLogoMaterial)
+		// addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
 	}
 }

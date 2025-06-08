@@ -59,6 +59,14 @@ export default class SecondRoulette {
 	/**
 	 * Public
 	 */
+	hide() {
+		this._model.visible = false
+	}
+
+	show() {
+		this._model.visible = true
+	}
+
 	animateFlapIn() {
 		if (!this._flapsOpened) return
 		this._flapOutTimeline?.kill()

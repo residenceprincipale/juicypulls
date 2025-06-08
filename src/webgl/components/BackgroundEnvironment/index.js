@@ -52,9 +52,19 @@ export default class BackgroundEnvironment {
     }
 
     /**
+     * Public
+     */
+    hide() {
+        this._model.visible = false
+    }
+
+    show() {
+        this._model.visible = true
+    }
+
+    /**
      * Private
      */
-
     _createModel() {
         // If you have a specific model resource, use it
         // this._model = this._resource.scene

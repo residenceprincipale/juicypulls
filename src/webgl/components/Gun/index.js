@@ -70,6 +70,14 @@ export default class Gun {
     /**
      * Public Methods
      */
+    hide() {
+        this._model.visible = false
+    }
+
+    show() {
+        this._model.visible = true
+    }
+
     update({ deltaTime, elapsedTime }) {
         if (this._animation) {
             this._animation.update(deltaTime * 0.001)

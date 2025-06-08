@@ -19,8 +19,8 @@ export default class Camera {
 		 */
 		this.options = {
 			fov: 35,
-			frustum: { min: 1, max: 100 },
-			position: new Vector3(2, 1, 3),
+			frustum: { min: 0.1, max: 100 },
+			position: new Vector3(0, 0.01, 1.36),
 			target: new Vector3(0, 0, 0),
 			currentCamera: 'sceneCamera',
 		}
@@ -171,6 +171,7 @@ export default class Camera {
 	setCamera(cameraName) {
 		// Validate camera name
 		const validCameras = ['sceneCamera', 'controlsCamera', 'fpsCamera']
+		console.log(cameraName)
 		if (!validCameras.includes(cameraName)) {
 			console.warn(`Invalid camera name: ${cameraName}. Valid options are: ${validCameras.join(', ')}`)
 			return
@@ -199,6 +200,11 @@ export default class Camera {
 
 		// Update options to reflect current camera
 		this.options.currentCamera = cameraName
+
+		// Update camera references in renderer's postprocessing
+		if (this.experience.renderer && this.experience.renderer.updateCameraReferences) {
+			this.experience.renderer.updateCameraReferences()
+		}
 	}
 
 	resize() {

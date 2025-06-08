@@ -19,6 +19,8 @@ import BackgroundEnvironment from '@/webgl/components/BackgroundEnvironment/inde
 import Gun from '@/webgl/components/Gun/index.js'
 import Target from '@/webgl/components/Target/index.js'
 import ShooterManager from '@/webgl/modules/ShooterManager'
+import TutorialManager from '@/webgl/modules/TutorialManager'
+import Logo from '@/webgl/components/Logo/index.js'
 
 import Socket from '@/scripts/Socket.js'
 
@@ -32,22 +34,19 @@ export default class Main {
 		this._scene.resources = new Resources(sources)
 		this._debug = this._experience.debug
 		this._lights = new LightsMain()
-
 		this._camera = this._experience.camera
-		// this._camera.setCamera('sceneCamera')
-		this._camera.instance.position.set(0, 0.01, 1.45)
-		this._camera.instance.rotation.set(0, 0, 0)
+
+		this._scene.background = new Color(0x000000)
 
 		if (this._debug.active) this._debug.ui.addBlade({ view: 'separator' })
 
 		this._scene.resources.on('ready', () => {
-			// Initialize post-processing (including bloom)
 			this._experience.renderer.createPostProcessing()
 
-			// components
 			this._backgroundEnvironment = new BackgroundEnvironment()
 			this._gun = new Gun()
 			this._target = new Target()
+			if (this._debug.active) this._logo = new Logo()
 			this._machine = new Machine()
 			this._secondRoulette = new SecondRoulette()
 			this._hands = new Hands({ machine: this._machine })
@@ -61,32 +60,60 @@ export default class Main {
 				hands: this._hands,
 			})
 			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine })
+			this._tutorialManager = new TutorialManager()
 
-			// this.cameraPlayer = new CameraPlayer()
-
-			if (window.location.hash === '#debug-dev') {
+			if (window.location.hash.includes('debug')) {
 				this._machine.isDebugDev = true
-				console.log('Debug physical parts enabled!')
 				this._physicalDebug = new PhysicalDebug()
 				this._machineManager._physicalDebug = this._physicalDebug
 			}
+			this._createEventListeners()
+
+			if (this._debug.active) this.setDebug()
+
+			if (this._debug.active) this.startSkipIntro()
+			else this.start()
 		})
-
-		this._createEventListeners()
-
-		if (this._debug.active) this.setDebug()
 	}
 
-	reset() { }
+	reset() {
+		// if (this._logo) this._logo.reset()
+	}
 
 	start() {
-		// animate screens flash
-		// light up machine
+		// this._lights.turnOff()
+		this._machine.turnOffLeds()
+		this._machine.hide()
+		this._hands.hide()
+		this._backgroundEnvironment.hide()
+		this._gun.hide()
+		this._logo.show()
+
+		this._tutorialInputPressed = false
+	}
+
+	startSkipIntro() {
+		this._logo.hide()
 	}
 
 	startTutorial() {
-		// play rigged machine animation
-		// display ui panel
+		this._logo.hide()
+
+		gsap.delayedCall(1.5, () => {
+			this._lights.turnOff({ immediate: true })
+			this._machine.show()
+			this._backgroundEnvironment.show()
+		})
+
+		gsap.delayedCall(2.5, () => {
+			this._lights.turnOn()
+		})
+
+		gsap.delayedCall(3.5, () => {
+			this._machine.turnOnLeds()
+
+			this._tutorialManager.start()
+		})
 	}
 
 	nextStepTutorial() {
@@ -154,23 +181,25 @@ export default class Main {
 
 	_createEventListeners() {
 		socket.on('reset', this.reset.bind(this))
-		socket.on('start', this.start.bind(this))
-		socket.on('start-tutorial', this.startTutorial.bind(this))
 		socket.on('display-combinations', this.displayCombinations.bind(this))
 		socket.on('display-score', this.displayScore.bind(this))
 		socket.on('end-tutorial', this.endTutorial.bind(this))
 		socket.on('start-round', this.startRound.bind(this))
 		socket.on('complete-round', this.completeRound.bind(this))
 		socket.on('start-shooter', this.startShooter.bind(this))
+
+		// listen to any button input event from socket
+		socket.on('button', this.handleButtonInput.bind(this))
+	}
+
+	handleButtonInput(button) {
+		if (!this._tutorialInputPressed) {
+			this._tutorialInputPressed = true
+			this.startTutorial()
+		}
 	}
 
 	setDebug() {
-		// this._debug.ui.addButton({
-		// 	title: 'Bagarre',
-		// }).on('click', () => {
-		// 	this.lose()
-		// });
-
 		const folder = this._debug.ui.addFolder({
 			title: 'Game Events',
 			expanded: false,

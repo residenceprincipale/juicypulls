@@ -68,6 +68,7 @@ export default class PhysicalDebug {
 		this._model = this._resource.scene
 		this._model.name = 'physical machine parts'
 		this._scene.add(this._model)
+		this._model.visible = false
 
 		this._leds = []
 
@@ -184,7 +185,7 @@ export default class PhysicalDebug {
 					data: {
 						index: i,
 					},
-					receiver: ['machine', 'shooter'],
+					// receiver: ['machine', 'shooter'],
 				})
 
 				if (this._buttonLightsEnabled[i]) {
@@ -250,7 +251,7 @@ export default class PhysicalDebug {
 				socket.send({
 					event: 'button',
 					data: { index },
-					receiver: ['machine', 'shooter'],
+					// receiver: ['machine', 'shooter'],
 				})
 			} else if (e.key === 'Enter') {
 				this._collectButtonClickHandler()

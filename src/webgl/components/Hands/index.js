@@ -34,6 +34,16 @@ export default class Hands {
 		if (this.debug.active) this.setDebug()
 	}
 
+	hide() {
+		this.rightModel.visible = false
+		this.leftModel.visible = false
+	}
+
+	show() {
+		this.rightModel.visible = true
+		this.leftModel.visible = true
+	}
+
 	setHandAnimation(i) {
 		this.rightAnimationName = this.animationNames[i]
 		this.playFight()

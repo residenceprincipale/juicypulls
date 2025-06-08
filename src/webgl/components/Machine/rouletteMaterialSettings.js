@@ -4,7 +4,7 @@ export default {
         "debug": false
     },
     "uBackgroundColor": {
-        "value": "#fffdfb"
+        "value": "#cec8c3"
     },
     "uAlbedoMap": {
         "value": "wheelAlbedo"
@@ -16,7 +16,7 @@ export default {
         "value": "wheelsAO"
     },
     "uAOIntensity": {
-        "value": 1.5
+        "value": 1.42
     },
     "uMatcapMap": {
         "value": "glassMatcap"
@@ -28,7 +28,7 @@ export default {
         }
     },
     "uMatcapIntensity": {
-        "value": 0.35000000000000003
+        "value": 0.41000000000000003
     },
     "uRoughnessMap": {
         "value": "baseRoughness"
@@ -40,7 +40,7 @@ export default {
         }
     },
     "uRoughnessIntensity": {
-        "value": 0.7899999999999999
+        "value": 1.27
     },
     "uWheelsSpacing": {
         "value": 4.74
@@ -75,13 +75,13 @@ export default {
         "value": 1
     },
     "uDiffuseIntensity": {
-        "value": 1.7999999999999998
+        "value": 1.9999999999999998
     },
     "uSpecularIntensity": {
         "value": 0.75
     },
     "uShininess": {
-        "value": 250
+        "value": 300
     },
     "uOpacity": {
         "value": 1

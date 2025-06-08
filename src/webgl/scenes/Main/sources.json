@@ -7,7 +7,8 @@
 		"name": "wheelAlbedo",
 		"path": "textures/roue-7.png",
 		"flipY": false,
-		"repeatWrapping": true
+		"repeatWrapping": true,
+		"colorSpace": "srgb"
 	},
 	{
 		"name": "wheelNormal",
@@ -34,7 +35,12 @@
 	},
 	{
 		"name": "rouletteAO",
-		"path": "textures/roulette-ao-2.jpg",
+		"path": "textures/roulette-ao-4.jpg",
+		"flipY": false
+	},
+	{
+		"name": "logoAO",
+		"path": "textures/logo-ao.jpg",
 		"flipY": false
 	},
 	{
@@ -67,7 +73,7 @@
 	},
 	{
 		"name": "rouletteModel",
-		"path": "models/roulette-v1.glb"
+		"path": "models/roulette-v3.glb"
 	},
 	{
 		"name": "handModel",
