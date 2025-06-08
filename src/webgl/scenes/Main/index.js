@@ -46,7 +46,7 @@ export default class Main {
 			this._backgroundEnvironment = new BackgroundEnvironment()
 			this._gun = new Gun()
 			this._target = new Target()
-			if (this._debug.active) this._logo = new Logo()
+			this._logo = new Logo()
 			this._machine = new Machine()
 			this._secondRoulette = new SecondRoulette()
 			this._hands = new Hands({ machine: this._machine })
@@ -60,9 +60,8 @@ export default class Main {
 				hands: this._hands,
 			})
 			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine })
-			this._tutorialManager = new TutorialManager()
 
-			if (window.location.hash.includes('debug')) {
+			if (this._debug.active) {
 				this._machine.isDebugDev = true
 				this._physicalDebug = new PhysicalDebug()
 				this._machineManager._physicalDebug = this._physicalDebug
@@ -71,8 +70,12 @@ export default class Main {
 
 			if (this._debug.active) this.setDebug()
 
-			if (this._debug.active) this.startSkipIntro()
-			else this.start()
+			if (this._debug.tutorialActive || !this._debug.active) {
+				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager })
+				this.start()
+			} else {
+				this.startSkipIntro()
+			}
 		})
 	}
 

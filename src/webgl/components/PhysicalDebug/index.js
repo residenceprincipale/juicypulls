@@ -212,7 +212,7 @@ export default class PhysicalDebug {
 		gsap.delayedCall(0.15, () => {
 			socket.send({
 				event: 'lever',
-				receiver: 'machine', // add physical non-debug too
+				// receiver: 'machine', // add physical non-debug too
 			})
 		})
 

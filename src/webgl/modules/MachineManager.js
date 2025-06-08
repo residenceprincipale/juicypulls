@@ -85,6 +85,45 @@ export default class MachineManager {
 		return this._secondRoulette
 	}
 
+	get isLeverLocked() {
+		return this._isLeverLocked
+	}
+
+	set isLeverLocked(value) {
+		this._isLeverLocked = value
+	}
+
+	get isPlayingTutorial() {
+		return this._isPlayingTutorial
+	}
+
+	set isPlayingTutorial(value) {
+		this._isPlayingTutorial = value
+	}
+
+	get firstSpinDone() {
+		return this._firstSpinDone
+	}
+
+	set firstSpinDone(value) {
+		this._firstSpinDone = value
+	}
+
+	get currentSpins() {
+		return this._currentSpins
+	}
+
+	set currentSpins(value) {
+		this._currentSpins = value
+	}
+
+	/**
+	 * Public
+	 */
+	spinWheels(riggedCombination = null) {
+		this._spinWheels(riggedCombination = null)
+	}
+
 	/**
 	 * Private - Initialization
 	 */
@@ -125,9 +164,6 @@ export default class MachineManager {
 		})
 	}
 
-	/**
-	 * Main Roulette Logic
-	 */
 	_spinWheels(riggedCombination = null) {
 		this._machine.wheels.forEach((wheel, index) => {
 			if (wheel.isLocked) {
@@ -610,10 +646,6 @@ export default class MachineManager {
 	 * Events
 	 */
 	_createEventListeners() {
-		socket.on('start-tutorial', (e) => {
-			this._isPlayingTutorial = true
-			this._firstSpinDone = false
-		})
 		socket.on('lever', (e) => {
 			this._leverClickHandler(e)
 		})
@@ -639,13 +671,9 @@ export default class MachineManager {
 	}
 
 	_leverClickHandler(e) {
-		if (this._isPlayingTutorial && !this._firstSpinDone) {
-			// this._firstSpinDone = true
-			// this._tutorialManager.nextStep()
-			this._spinWheels([0, 1, 1, 2, 3])
-		} else {
-			this._spinWheels()
-		}
+		if (this._isLeverLocked) return
+
+		this._spinWheels()
 	}
 
 	_buttonClickHandler(e) {
@@ -702,26 +730,10 @@ export default class MachineManager {
 
 		folder
 			.addButton({
-				title: 'Rigged Spin (5 Grapes)',
-			})
-			.on('click', () => {
-				this._spinWheels([0, 0, 0, 0, 0]) // Quintuple grapes
-			})
-
-		folder
-			.addButton({
-				title: 'Rigged Spin (Triple 7s)',
-			})
-			.on('click', () => {
-				this._spinWheels([5, 5, 5, 1, 2]) // Triple 7s + mixed
-			})
-
-		folder
-			.addButton({
 				title: 'Rigged Spin (Farkle)',
 			})
 			.on('click', () => {
-				this._spinWheels([4, 4, 4, 0, 1]) // Triple cranium (farkle)
+				this._spinWheels([1, 1, 1, 0, 1]) // Triple cranium (farkle)
 			})
 	}
 }

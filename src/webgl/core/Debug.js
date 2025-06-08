@@ -28,6 +28,7 @@ export default class Debug {
 	constructor() {
 		this.experience = new Experience()
 		this.active = window.location.hash.includes('#debug')
+		this.tutorialActive = window.location.hash.includes('tutorial')
 
 		if (this.active) {
 
