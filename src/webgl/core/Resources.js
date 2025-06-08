@@ -1,11 +1,12 @@
 import EventEmitter from 'core/EventEmitter.js'
-import { AudioLoader, CubeTexture, CubeTextureLoader, Object3D, Texture, TextureLoader, WebGLRenderer, RepeatWrapping } from 'three'
+import { CubeTexture, CubeTextureLoader, Object3D, Texture, TextureLoader, WebGLRenderer, RepeatWrapping } from 'three'
 import Experience from 'core/Experience.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader'
+import { Howl } from 'howler'
 
 export default class Resources extends EventEmitter {
 	constructor(sources) {
@@ -17,7 +18,7 @@ export default class Resources extends EventEmitter {
 		this.sources = sources
 
 		/**
-		 * @type {{[name: string]: Texture | CubeTexture | Object3D | AudioBuffer}}
+		 * @type {{[name: string]: Texture | CubeTexture | Object3D | {src: string, type: string}}}
 		 */
 		this.items = {}
 		this.toLoad = this.sources.length
@@ -78,7 +79,6 @@ export default class Resources extends EventEmitter {
 		this.loaders.ktx2Loader.detectSupport(new WebGLRenderer())
 		this.loaders.textureLoader = new TextureLoader()
 		this.loaders.cubeTextureLoader = new CubeTextureLoader()
-		this.loaders.audioLoader = new AudioLoader()
 		this.loaders.fbxLoader = new FBXLoader()
 		this.loaders.exrLoader = new EXRLoader()
 	}
@@ -101,7 +101,7 @@ export default class Resources extends EventEmitter {
 					undefined, // progress callback (not supported for cube textures)
 					(error) => {
 						this.sourceError(source, error)
-					}
+					},
 				)
 				continue
 			}
@@ -120,7 +120,7 @@ export default class Resources extends EventEmitter {
 						},
 						(error) => {
 							this.sourceError(source, error)
-						}
+						},
 					)
 					break
 				case 'fbx':
@@ -134,7 +134,7 @@ export default class Resources extends EventEmitter {
 						},
 						(error) => {
 							this.sourceError(source, error)
-						}
+						},
 					)
 					break
 				//textures
@@ -149,7 +149,7 @@ export default class Resources extends EventEmitter {
 						},
 						(error) => {
 							this.sourceError(source, error)
-						}
+						},
 					)
 					break
 				case 'png':
@@ -166,7 +166,7 @@ export default class Resources extends EventEmitter {
 						},
 						(error) => {
 							this.sourceError(source, error)
-						}
+						},
 					)
 					break
 				case 'ktx2':
@@ -180,7 +180,7 @@ export default class Resources extends EventEmitter {
 						},
 						(error) => {
 							this.sourceError(source, error)
-						}
+						},
 					)
 					break
 				case 'cubeTexture':
@@ -192,25 +192,20 @@ export default class Resources extends EventEmitter {
 						undefined, // progress callback (not supported for cube textures)
 						(error) => {
 							this.sourceError(source, error)
-						}
+						},
 					)
 					break
 				//audio
 				case 'mp3':
 				case 'ogg':
 				case 'wav':
-					this.loaders.audioLoader.load(
-						source.path,
-						(file) => {
-							this.sourceLoaded(source, file)
-						},
-						(progress) => {
-							this.sourceProgress(source, progress)
-						},
-						(error) => {
-							this.sourceError(source, error)
-						}
-					)
+					const audio = new Howl({
+						src: [source.path],
+						loop: source.loop || false,
+						volume: source.volume || 1,
+						autoplay: source.autoplay || false,
+					})
+					this.sourceLoaded(source, audio)
 					break
 				default:
 					const errorMsg = `${source.path} is not a valid source type`
@@ -218,7 +213,7 @@ export default class Resources extends EventEmitter {
 					this.errors.push({
 						source: source,
 						error: errorMsg,
-						timestamp: new Date().toISOString()
+						timestamp: new Date().toISOString(),
 					})
 					break
 			}
@@ -244,7 +239,7 @@ export default class Resources extends EventEmitter {
 			path: source.path,
 			name: source.name,
 			loadTime: source.loadTime,
-			timestamp: new Date().toISOString()
+			timestamp: new Date().toISOString(),
 		}
 
 		this.errors.push(errorDetails)
@@ -299,15 +294,15 @@ export default class Resources extends EventEmitter {
 			file.flipY = source.flipY
 		}
 		if (source.repeatWrapping !== undefined && source.repeatWrapping) {
-			file.wrapS = RepeatWrapping;
-			file.wrapT = RepeatWrapping;
+			file.wrapS = RepeatWrapping
+			file.wrapT = RepeatWrapping
 		}
 
 		if (this.debug.active && this.debug.debugParams.ResourceLog)
 			console.debug(
 				`%c🖼️ ${source.name}%c loaded in ${source.loadTime}ms. (${this.loaded}/${this.toLoad})`,
 				'font-weight: bold',
-				'font-weight: normal'
+				'font-weight: normal',
 			)
 		if (this.loadingScreenElement) {
 			this.loadingBarElement.style.transform = `scaleX(${this.loaded / this.toLoad})`
@@ -330,7 +325,7 @@ export default class Resources extends EventEmitter {
 
 			if (this.errors.length > 0) {
 				console.warn(`⚠️  ${this.errors.length} assets failed to load:`)
-				this.errors.forEach(error => {
+				this.errors.forEach((error) => {
 					console.warn(`   - ${error.source.name} (${error.source.path})`)
 				})
 			}
@@ -344,7 +339,7 @@ export default class Resources extends EventEmitter {
 		this.trigger('ready', {
 			loadedCount: this.toLoad - this.errors.length,
 			totalCount: this.toLoad,
-			errors: this.errors
+			errors: this.errors,
 		})
 	}
 

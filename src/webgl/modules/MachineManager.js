@@ -72,8 +72,6 @@ export default class MachineManager {
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
-
-		//test
 	}
 
 	/**
@@ -185,6 +183,7 @@ export default class MachineManager {
 			this._currentSpins = 0
 			this._updatePointsDisplay()
 			gsap.delayedCall(2, () => {
+				this._scene.resources.items.farkleAudio.play()
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: -1 },
@@ -219,8 +218,9 @@ export default class MachineManager {
 			}
 		}
 
-		const points = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
-		if (this._rollingPoints - points >= 0) {
+		const noLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
+		const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
+		if (lockedPoint - noLockedPoint >= 0) {
 			this._logMessage('Farkle! No points from last spin.')
 			//TODO faire une fonction de reset
 			this._currentSpins = 0
@@ -228,7 +228,8 @@ export default class MachineManager {
 			this._updatePointsDisplay()
 
 			gsap.delayedCall(2, () => {
-				this._collect()
+				this._scene.resources.items.farkleAudio.play()
+				// this._collect()
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: -1 },
@@ -429,6 +430,7 @@ export default class MachineManager {
 	 * Common Utilities
 	 */
 	async _animateWheelSpin(wheels, results, numSegments, delayStep = 0.3) {
+		this._scene.resources.items.spinningAudio.play()
 		const animations = wheels.map((wheel, index) => {
 			gsap.killTweensOf(wheel.rotation)
 			if (wheel.isLocked) return Promise.resolve()
@@ -533,6 +535,7 @@ export default class MachineManager {
 	 */
 	_lockWheel(index) {
 		if (this._machine.wheels[index].isDisabled) return
+		this._scene.resources.items.buttonAudio.play()
 		gsap.killTweensOf(this._machine.wheels[index].rotation)
 
 		// Toggle lock state
@@ -557,6 +560,8 @@ export default class MachineManager {
 
 	_collect() {
 		// Reset spins for next round
+		if (this._currentSpins <= 0) return
+		this._scene.resources.items.collectAudio.play()
 		this._currentSpins = 0
 		this._collectedPoints += this._rollingPoints
 		this._logMessage(`Collected ${this._rollingPoints} points!`)

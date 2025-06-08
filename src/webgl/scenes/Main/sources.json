@@ -82,8 +82,39 @@
 		"path": "models/physical-parts.glb"
 	},
 	{
-		"name": "rouletteSpinningAudio",
-		"path": "audio/roulette-spinning.mp3"
+		"name": "spinningAudio",
+		"path": "audio/spinning.mp3",
+		"loop": false,
+		"volume": 0.8,
+		"autoplay": false
+	},
+	{
+		"name": "ambientAudio",
+		"path": "audio/ambient.mp3",
+		"loop": true,
+		"volume": 0.8,
+		"autoplay": true
+	},
+	{
+		"name": "buttonAudio",
+		"path": "audio/button.mp3",
+		"loop": false,
+		"volume": 0.6,
+		"autoplay": false
+	},
+	{
+		"name": "collectAudio",
+		"path": "audio/collect.mp3",
+		"loop": false,
+		"volume": 0.9,
+		"autoplay": false
+	},
+	{
+		"name": "farkleAudio",
+		"path": "audio/farkle.mp3",
+		"loop": false,
+		"volume": 0.9,
+		"autoplay": false
 	},
 	{
 		"name": "clothModel",
