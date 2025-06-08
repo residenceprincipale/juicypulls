@@ -190,59 +190,15 @@ export default class Resources extends EventEmitter {
 					this.sourceLoaded(source, audio)
 					break
 				default:
-					const errorMsg = `${source.path} is not a valid source type`
-					console.error('❌ Asset Loading Error:', errorMsg)
-					this.errors.push({
-						source: source,
-						error: errorMsg,
-						timestamp: new Date().toISOString(),
-					})
+					console.error(`${source.path} is not a valid source type`)
 					break
 			}
 		}
 	}
 
 	sourceError(source, error) {
-		source.endTime = performance.now()
-		source.loadTime = Math.floor(source.endTime - source.startTime)
+		console.error(`Failed to load: ${source.name}`)
 
-		// Create detailed error information
-		const errorDetails = {
-			source: source,
-			error: error,
-			errorMessage: error?.message || 'Unknown error',
-			path: source.path,
-			name: source.name,
-			loadTime: source.loadTime,
-			timestamp: new Date().toISOString(),
-		}
-
-		this.errors.push(errorDetails)
-
-		// Log error with detailed information
-		console.group('❌ Asset Loading Error')
-		console.error(`Failed to load asset: ${source.name}`)
-		console.error(`Path: ${source.path}`)
-		console.error(`Type: ${source.path.split('.').pop()}`)
-		console.error(`Attempt duration: ${source.loadTime}ms`)
-		console.error('Error details:', error)
-
-		// Check if file exists in public folder
-		const fullPath = source.path.startsWith('/') ? source.path : `/${source.path}`
-		console.error(`Expected file location: public${fullPath}`)
-
-		// Suggest common fixes
-		console.group('💡 Troubleshooting suggestions:')
-		console.log('1. Check if the file exists in the public folder')
-		console.log('2. Verify the file path and filename (case-sensitive)')
-		console.log('3. Check file permissions')
-		console.log('4. Ensure the file format is supported')
-		console.log('5. Check browser network tab for HTTP errors')
-		console.groupEnd()
-
-		console.groupEnd()
-
-		// Still increment loaded count to prevent hanging
 		this.loaded++
 
 		// Update loading bar
@@ -250,7 +206,7 @@ export default class Resources extends EventEmitter {
 			this.loadingBarElement.style.transform = `scaleX(${this.loaded / this.toLoad})`
 		}
 
-		// Check if all resources are processed (loaded or failed)
+		// Check if all resources are processed
 		if (this.loaded === this.toLoad) {
 			this.finishLoading()
 		}
@@ -288,37 +244,12 @@ export default class Resources extends EventEmitter {
 
 	finishLoading() {
 		if (this.debug.active && this.debug.debugParams.ResourceLog) {
-			const totalEndTime = performance.now()
-			const totalLoadTime = totalEndTime - this.totalStartTime
-			console.debug(`✅ Resources processed in ${totalLoadTime}ms!`)
-
-			// Summary of loading results
-			const successCount = this.toLoad - this.errors.length
-			console.log(`📊 Loading Summary: ${successCount}/${this.toLoad} assets loaded successfully`)
-
-			if (this.errors.length > 0) {
-				console.warn(`⚠️  ${this.errors.length} assets failed to load:`)
-				this.errors.forEach((error) => {
-					console.warn(`   - ${error.source.name} (${error.source.path})`)
-				})
-			}
-
-			console.groupEnd()
+			console.debug(`✅ Resources loaded!`)
 		}
 
 		if (this.loadingScreenElement) this.loadingScreenElement.remove()
 
-		// Emit ready event with error information
-		this.trigger('ready', {
-			loadedCount: this.toLoad - this.errors.length,
-			totalCount: this.toLoad,
-			errors: this.errors,
-		})
-	}
-
-	// Utility method to get loading errors
-	getErrors() {
-		return this.errors
+		this.trigger('ready')
 	}
 
 	// Utility method to check if a specific asset loaded successfully
