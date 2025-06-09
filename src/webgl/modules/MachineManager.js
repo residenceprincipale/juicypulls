@@ -287,6 +287,10 @@ export default class MachineManager {
 					data: { value: false, index: -1 },
 					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 				})
+				socket.send({
+					event: 'reset-combi',
+					receiver: 'combi',
+				})
 				this._machine.wheels.forEach((wheel) => {
 					wheel.isDisabled = true
 					wheel.isLocked = false
