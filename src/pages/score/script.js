@@ -95,20 +95,3 @@ function hideCallback() {
 }
 
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
-
-socket.on('open', () => {
-	socket.send({
-		event: 'show-message',
-		data: {
-			message: 'SCORE',
-			size: 'inner',
-			modifier: [
-				{
-					text: 'SCORE',
-					color: '#ff0000',
-				},
-			],
-		},
-		receiver: 'combi',
-	})
-})

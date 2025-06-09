@@ -144,6 +144,12 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	top: 100px;
+	left: 280px;
+	padding: 32px 64px;
+	width: 800px;
+	scale: 0.9;
+	transform-origin: top left;
 
 	&:empty {
 		display: none;
