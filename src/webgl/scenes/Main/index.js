@@ -114,7 +114,9 @@ export default class Main {
 
 		gsap.delayedCall(3.5, () => {
 			this._machine.turnOnLeds()
+		})
 
+		gsap.delayedCall(4.5, () => {
 			this._tutorialManager.start()
 		})
 	}

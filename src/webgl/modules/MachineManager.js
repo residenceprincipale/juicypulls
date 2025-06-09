@@ -517,9 +517,9 @@ export default class MachineManager {
 
 	_logMessage(message) {
 		console.log(message)
-		if (this._physicalDebug) {
-			this._physicalDebug.printToRightScreen(message)
-		}
+		// if (this._physicalDebug) {
+		// 	this._physicalDebug.printToRightScreen(message)
+		// }
 	}
 
 	/**

@@ -33,7 +33,7 @@
 }
 
 .right-screen {
-	overflow: scroll;
+	/* overflow: scroll; */
 	display: block;
 }
 

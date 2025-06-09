@@ -65,15 +65,6 @@ export default class TutorialManager {
             this._machineManager.firstSpinDone = true
             this._machineManager.isLeverLocked = true
             this._machineManager._spinWheels([4, 2, 2, 5, 3])
-
-            gsap.delayedCall(3, () => {
-                socket.send({
-                    event: 'tutorial-step',
-                    data: {
-                        index: 1,
-                    },
-                })
-            })
         }
     }
 }
