@@ -138,6 +138,7 @@ function fullscreenCallback(textElement) {
 
 function innerCallback(textElement) {
 	innerTextElement.appendChild(textElement)
+	combiElement.style.visibility = 'hidden'
 	cloneAndBlur()
 }
 
@@ -145,24 +146,8 @@ function hideCallback() {
 	fullscreenTextElement.innerHTML = ''
 	innerTextElement.innerHTML = ''
 	canvasElement.style.visibility = 'visible'
+	combiElement.style.visibility = 'visible'
 	cloneAndBlur()
 }
 
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
-
-socket.on('open', () => {
-	socket.send({
-		event: 'show-message',
-		data: {
-			message: 'COMBI',
-			size: 'inner',
-			modifier: [
-				{
-					text: 'COMBI',
-					color: '#ff0000',
-				},
-			],
-		},
-		receiver: 'score',
-	})
-})
