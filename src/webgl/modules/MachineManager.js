@@ -121,7 +121,7 @@ export default class MachineManager {
 	 * Public
 	 */
 	spinWheels(riggedCombination = null) {
-		this._spinWheels(riggedCombination = null)
+		this._spinWheels((riggedCombination = null))
 	}
 
 	/**
@@ -146,6 +146,13 @@ export default class MachineManager {
 				data: {
 					value: this._spinTokens,
 				},
+				receiver: 'score',
+			})
+
+			socket.send({
+				event: 'button-lights-enabled',
+				data: { value: false, index: -1 },
+				receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 			})
 		})
 
@@ -156,12 +163,6 @@ export default class MachineManager {
 
 		// Second roulette state
 		this._secondRouletteResults = new Array(SECOND_ROULETTE_CONFIG.numWheels).fill(0)
-
-		socket.send({
-			event: 'button-lights-enabled',
-			data: { value: false, index: -1 },
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-		})
 	}
 
 	_spinWheels(riggedCombination = null) {
@@ -458,6 +459,7 @@ export default class MachineManager {
 				socket.send({
 					event: 'update-spin-tokens',
 					data: { value: `+${secondWheelSymbol.replace('x', '')}` },
+					receiver: 'score',
 				})
 				break
 			}
@@ -539,7 +541,7 @@ export default class MachineManager {
 			data: {
 				value: this._rollingPoints,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
+			receiver: 'score',
 		})
 	}
 
@@ -549,7 +551,7 @@ export default class MachineManager {
 			data: {
 				value: this._spinsLeft,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
+			receiver: 'score',
 		})
 	}
 
@@ -559,6 +561,7 @@ export default class MachineManager {
 			data: {
 				value: this._spinTokens,
 			},
+			receiver: 'score',
 		})
 
 		// Also log to debug console
@@ -571,7 +574,7 @@ export default class MachineManager {
 			data: {
 				value: this._collectedPoints,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
+			receiver: 'score',
 		})
 	}
 

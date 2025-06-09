@@ -49,6 +49,8 @@ export default class PhysicalDebug {
 
 	// public
 	printToRightScreen(message) {
+		return
+
 		if (!this._rightScreen) return
 		// create element on right screen
 		const element = document.createElement('div')

@@ -151,3 +151,8 @@ function hideCallback() {
 }
 
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
+
+// if is an iframe
+if (window.self !== window.top) {
+	document.querySelector('html').style.fontSize = '4px'
+}
