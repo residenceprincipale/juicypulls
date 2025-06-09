@@ -3,14 +3,12 @@ uniform sampler2D uAmbient;
 uniform sampler2D uBars;
 uniform sampler2D uBottomLeft;
 uniform sampler2D uBottomRight;
-uniform sampler2D uPostprocessing;
 uniform sampler2D uStroke;
 uniform sampler2D uTop;
 uniform float uAmbientOpacity;
 uniform float uBarsOpacity;
 uniform float uBottomLeftOpacity;
 uniform float uBottomRightOpacity;
-uniform float uPostprocessingOpacity;
 uniform float uStrokeOpacity;
 uniform float uTopOpacity;
 
@@ -28,7 +26,6 @@ void main()  {
     vec4 barsColor = texture2D(uBars, vUv);
     vec4 bottomLeftColor = texture2D(uBottomLeft, vUv);
     vec4 bottomRightColor = texture2D(uBottomRight, vUv);
-    vec4 postprocessingColor = texture2D(uPostprocessing, vUv);
     vec4 strokeColor = texture2D(uStroke, vUv);
     vec4 topColor = texture2D(uTop, vUv);
 
@@ -37,7 +34,6 @@ void main()  {
     color = add(color, barsColor * uBarsOpacity);
     color = add(color, bottomLeftColor * uBottomLeftOpacity);
     color = add(color, bottomRightColor * uBottomRightOpacity);
-    color = add(color, postprocessingColor * uPostprocessingOpacity);
     color = add(color, strokeColor * uStrokeOpacity);
     color = add(color, topColor * uTopOpacity);
 
