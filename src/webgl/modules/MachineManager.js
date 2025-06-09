@@ -237,6 +237,7 @@ export default class MachineManager {
 				this._machine.wheels.forEach((wheel) => {
 					wheel.isDisabled = true
 					wheel.isLocked = false
+					this._machine.animateWheelLock({ index, value: false })
 				})
 			})
 		} else {
