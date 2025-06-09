@@ -57,8 +57,20 @@ socket.on('update-collected-points', ({ value }) => {
 	cloneAndBlur()
 })
 
+let spinTokens = 0
 socket.on('update-spin-tokens', ({ value }) => {
-	tokensValueElement.textContent = value.toString().padStart(4, '0')
+	const stringValue = value.toString()
+	if (stringValue.startsWith('+')) {
+		const increment = parseInt(stringValue.slice(1), 10)
+		spinTokens = parseInt(spinTokens) + (isNaN(increment) ? 1 : increment)
+	} else if (stringValue.startsWith('-')) {
+		const decrement = parseInt(stringValue.slice(1), 10)
+		spinTokens = parseInt(spinTokens) - (isNaN(decrement) ? 1 : decrement)
+		if (spinTokens < 0) spinTokens = 0 // Prevent negative tokens
+	} else {
+		spinTokens = value
+	}
+	tokensValueElement.textContent = spinTokens.toString().padStart(4, '0')
 	splitCharacters(tokensValueElement)
 	cloneAndBlur()
 })
@@ -95,3 +107,8 @@ function hideCallback() {
 }
 
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
+
+// if is an iframe
+if (window.self !== window.top) {
+	document.querySelector('html').style.fontSize = '3.6px'
+}

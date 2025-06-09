@@ -49,6 +49,8 @@ export default class PhysicalDebug {
 
 	// public
 	printToRightScreen(message) {
+		return
+
 		if (!this._rightScreen) return
 		// create element on right screen
 		const element = document.createElement('div')
@@ -260,21 +262,21 @@ export default class PhysicalDebug {
 				this._leverClickHandler()
 			}
 		})
-		socket.on('update-collected-points', (e) => {
-			this._updateCollectedPointsHandler(e)
-		})
-		socket.on('update-rolling-points', (e) => {
-			this._updateRollingPointsHandler(e)
-		})
-		socket.on('update-spin-tokens', (e) => {
-			this._updateSpinTokensHandler(e)
-		})
-		socket.on('update-rounds', (e) => {
-			this._updateRounds(e)
-		})
-		socket.on('update-quota', (e) => {
-			this._updateQuota(e)
-		})
+		// socket.on('update-collected-points', (e) => {
+		// 	this._updateCollectedPointsHandler(e)
+		// })
+		// socket.on('update-rolling-points', (e) => {
+		// 	this._updateRollingPointsHandler(e)
+		// })
+		// socket.on('update-spin-tokens', (e) => {
+		// 	this._updateSpinTokensHandler(e)
+		// })
+		// socket.on('update-rounds', (e) => {
+		// 	this._updateRounds(e)
+		// })
+		// socket.on('update-quota', (e) => {
+		// 	this._updateQuota(e)
+		// })
 		socket.on('button-lights-enabled', (e) => {
 			this._buttonLightsEnabledHandler(e)
 		})

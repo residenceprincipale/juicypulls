@@ -121,7 +121,7 @@ export default class MachineManager {
 	 * Public
 	 */
 	spinWheels(riggedCombination = null) {
-		this._spinWheels(riggedCombination = null)
+		this._spinWheels((riggedCombination = null))
 	}
 
 	/**
@@ -146,6 +146,13 @@ export default class MachineManager {
 				data: {
 					value: this._spinTokens,
 				},
+				receiver: 'score',
+			})
+
+			socket.send({
+				event: 'button-lights-enabled',
+				data: { value: false, index: -1 },
+				receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 			})
 		})
 
@@ -156,12 +163,6 @@ export default class MachineManager {
 
 		// Second roulette state
 		this._secondRouletteResults = new Array(SECOND_ROULETTE_CONFIG.numWheels).fill(0)
-
-		socket.send({
-			event: 'button-lights-enabled',
-			data: { value: false, index: -1 },
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-		})
 	}
 
 	_spinWheels(riggedCombination = null) {
@@ -264,35 +265,34 @@ export default class MachineManager {
 			}
 		}
 
-		const noLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
-		const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
-		if (lockedPoint - noLockedPoint >= 0) {
-			this._logMessage('Farkle! No points from last spin.')
-			//TODO faire une fonction de reset
-			this._currentSpins = 0
-			this._rollingPoints = 0
-			this._updatePointsDisplay()
-
-			gsap.delayedCall(2, () => {
-				this._scene.resources.items.farkleAudio.play()
-				// this._collect()
-				socket.send({
-					event: 'button-lights-enabled',
-					data: { value: false, index: -1 },
-					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-				})
-				this._machine.wheels.forEach((wheel) => {
-					wheel.isDisabled = true
-					wheel.isLocked = false
-				})
-			})
-		}
-
 		// Animate wheels
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
 		// Update UI when animation completes
 		gsap.delayedCall(2, () => {
+			const noLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
+			const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
+			if (lockedPoint - noLockedPoint >= 0) {
+				this._logMessage('Farkle! No points from last spin.')
+				//TODO faire une fonction de reset
+				this._currentSpins = 0
+				this._rollingPoints = 0
+				this._updatePointsDisplay()
+
+				gsap.delayedCall(2, () => {
+					this._scene.resources.items.farkleAudio.play()
+					// this._collect()
+					socket.send({
+						event: 'button-lights-enabled',
+						data: { value: false, index: -1 },
+						receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+					})
+					this._machine.wheels.forEach((wheel) => {
+						wheel.isDisabled = true
+						wheel.isLocked = false
+					})
+				})
+			}
 			this._currentSpinIsDone = true
 			this._rollingPoints = this._getPoints().points || 0
 			this._updatePointsDisplay()
@@ -459,6 +459,7 @@ export default class MachineManager {
 				socket.send({
 					event: 'update-spin-tokens',
 					data: { value: `+${secondWheelSymbol.replace('x', '')}` },
+					receiver: 'score',
 				})
 				break
 			}
@@ -540,7 +541,7 @@ export default class MachineManager {
 			data: {
 				value: this._rollingPoints,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
+			receiver: 'score',
 		})
 	}
 
@@ -550,7 +551,7 @@ export default class MachineManager {
 			data: {
 				value: this._spinsLeft,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
+			receiver: 'score',
 		})
 	}
 
@@ -560,6 +561,7 @@ export default class MachineManager {
 			data: {
 				value: this._spinTokens,
 			},
+			receiver: 'score',
 		})
 
 		// Also log to debug console
@@ -572,7 +574,7 @@ export default class MachineManager {
 			data: {
 				value: this._collectedPoints,
 			},
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'score',
+			receiver: 'score',
 		})
 	}
 
