@@ -1,4 +1,4 @@
-@import "../styles/reset.css";
+@import '../styles/reset.css';
 #webgl {
 	position: fixed;
 	top: 0;
@@ -14,7 +14,7 @@
 .top-screens {
 	height: 25vh;
 	width: calc(30vh * 2);
-	display: flex;
+	display: none;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -36,7 +36,7 @@
 
 .right-screen {
 	overflow: scroll;
-	display: block;;
+	display: block;
 }
 
 .left-screen {
@@ -56,17 +56,22 @@
 	object-fit: cover;
 }
 
-.rounds-spins-container, .scores-container {
+.rounds-spins-container,
+.scores-container {
 	display: flex;
 	flex-direction: column;
 	padding: 3%;
 	gap: 10%;
 }
 
-.current, .score, .round, .spins {
+.current,
+.score,
+.round,
+.spins {
 	font-size: 200%;
 }
-.current, .score {
+.current,
+.score {
 	font-size: 200%;
 }
 

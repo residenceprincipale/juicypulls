@@ -45,6 +45,9 @@ export default class PhysicalDebug {
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
+
+		const screensElement = document.querySelector('.top-screens')
+		screensElement.style.display = 'flex'
 	}
 
 	// public

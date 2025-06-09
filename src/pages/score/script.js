@@ -82,7 +82,7 @@ socket.on('update-collected-points', ({ value }) => {
 	)
 })
 
-let spinTokens = 0
+let spinTokens = 10
 socket.on('update-spin-tokens', ({ value }) => {
 	const stringValue = value.toString()
 	if (stringValue.startsWith('+')) {
