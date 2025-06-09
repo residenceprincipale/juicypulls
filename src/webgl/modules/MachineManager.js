@@ -265,16 +265,16 @@ export default class MachineManager {
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
 
-			const noLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
+			const nonLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
 			const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
-			if (lockedPoint - noLockedPoint >= 0) {
+			if (lockedPoint - nonLockedPoint >= 0) {
 				this._logMessage('Farkle! No points from last spin.')
-				//TODO faire une fonction de reset
+				//TODO: faire une fonction de reset
 				this._currentSpins = 0
 				this._rollingPoints = 0
 				this._updatePointsDisplay()
 				this._scene.resources.items.farkleAudio.play()
-				// this._collect()
+
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: -1 },
