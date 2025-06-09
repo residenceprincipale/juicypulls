@@ -631,6 +631,11 @@ export default class MachineManager {
 		this._updateCollectedPointsDisplay()
 		this._updatePointsDisplay()
 		this._updateSpinsDisplay()
+		//reset combination
+		socket.send({
+			event: 'reset-combi',
+			receiver: 'combi',
+		})
 	}
 
 	/**

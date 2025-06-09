@@ -66,8 +66,20 @@ socket.on('update-rolling-points', ({ value }) => {
 })
 
 socket.on('update-collected-points', ({ value }) => {
-	bankValueElement.textContent = value.toString().padStart(4, '0')
-	cloneAndBlur()
+	const oldValue = parseInt(bankValueElement.textContent.replace(/\D/g, '')) || 0
+	gsap.to(
+		{ value: oldValue },
+		{
+			value,
+			duration: 0.6,
+			ease: 'power2.out',
+			onUpdate: function () {
+				const displayValue = Math.round(this.targets()[0].value)
+				bankValueElement.textContent = displayValue.toString().padStart(4, '0')
+				cloneAndBlur()
+			},
+		},
+	)
 })
 
 let spinTokens = 0
