@@ -573,6 +573,10 @@ export default class MachineManager {
 	 */
 	_lockWheel(index) {
 		if (this._machine.wheels[index].isDisabled) return
+		socket.send({
+			event: 'reset-combi',
+			receiver: 'combi',
+		})
 		this._scene.resources.items.buttonAudio.play()
 		gsap.killTweensOf(this._machine.wheels[index].rotation)
 
