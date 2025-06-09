@@ -235,11 +235,7 @@ export default class MachineManager {
 					data: { value: false, index: -1 },
 					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 				})
-				this._machine.wheels.forEach((wheel) => {
-					wheel.isDisabled = true
-					wheel.isLocked = false
-					this._machine.animateWheelLock({ index, value: false })
-				})
+				this._resetWheels()
 			})
 		} else {
 			const special = counts['7'] >= 3
@@ -257,10 +253,7 @@ export default class MachineManager {
 						data: { value: false, index: -1 },
 						receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 					})
-					this._machine.wheels.forEach((wheel) => {
-						wheel.isDisabled = true
-						wheel.isLocked = false
-					})
+					this._resetWheels()
 				})
 			}
 		}
@@ -287,10 +280,7 @@ export default class MachineManager {
 					data: { value: false, index: -1 },
 					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 				})
-				this._machine.wheels.forEach((wheel) => {
-					wheel.isDisabled = true
-					wheel.isLocked = false
-				})
+				this._resetWheels()
 				return
 			}
 
@@ -607,6 +597,14 @@ export default class MachineManager {
 		this._updatePointsDisplay()
 	}
 
+	_resetWheels() {
+		this._machine.wheels.forEach((wheel) => {
+			wheel.isDisabled = true
+			wheel.isLocked = false
+			this._machine.animateWheelLock({ index: wheel.index, value: false })
+		})
+	}
+
 	_collect() {
 		// Reset spins for next round
 		if (this._currentSpins <= 0) return
@@ -622,10 +620,7 @@ export default class MachineManager {
 		this._rollingPoints = 0
 
 		// Unlock all wheels
-		this._machine.wheels.forEach((wheel) => {
-			wheel.isLocked = false
-			wheel.isDisabled = true
-		})
+		this._resetWheels()
 
 		// Update UI
 		this._updateCollectedPointsDisplay()
