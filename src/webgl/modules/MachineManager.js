@@ -270,6 +270,8 @@ export default class MachineManager {
 
 		// Update UI when animation completes
 		gsap.delayedCall(2, () => {
+			this._currentSpinIsDone = true
+
 			const noLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
 			const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
 			if (lockedPoint - noLockedPoint >= 0) {
@@ -278,22 +280,20 @@ export default class MachineManager {
 				this._currentSpins = 0
 				this._rollingPoints = 0
 				this._updatePointsDisplay()
-
-				gsap.delayedCall(2, () => {
-					this._scene.resources.items.farkleAudio.play()
-					// this._collect()
-					socket.send({
-						event: 'button-lights-enabled',
-						data: { value: false, index: -1 },
-						receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-					})
-					this._machine.wheels.forEach((wheel) => {
-						wheel.isDisabled = true
-						wheel.isLocked = false
-					})
+				this._scene.resources.items.farkleAudio.play()
+				// this._collect()
+				socket.send({
+					event: 'button-lights-enabled',
+					data: { value: false, index: -1 },
+					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 				})
+				this._machine.wheels.forEach((wheel) => {
+					wheel.isDisabled = true
+					wheel.isLocked = false
+				})
+				return
 			}
-			this._currentSpinIsDone = true
+
 			this._rollingPoints = this._getPoints().points || 0
 			this._updatePointsDisplay()
 

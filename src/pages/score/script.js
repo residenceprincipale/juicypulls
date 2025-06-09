@@ -1,6 +1,7 @@
 import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
+import { gsap } from 'gsap'
 
 const canvasElement = document.querySelector('canvas#webgl')
 const experience = new Experience(canvasElement)
@@ -47,9 +48,21 @@ function splitCharacters(element) {
 }
 
 socket.on('update-rolling-points', ({ value }) => {
-	currentElement.textContent = value.toString().padStart(4, '0')
-	splitCharacters(currentElement)
-	cloneAndBlur()
+	const oldValue = parseInt(currentElement.textContent.replace(/\D/g, '')) || 0
+	gsap.to(
+		{ value: oldValue },
+		{
+			value,
+			duration: 0.6,
+			ease: 'power2.out',
+			onUpdate: function () {
+				const displayValue = Math.round(this.targets()[0].value)
+				currentElement.textContent = displayValue.toString().padStart(4, '0')
+				splitCharacters(currentElement)
+				cloneAndBlur()
+			},
+		},
+	)
 })
 
 socket.on('update-collected-points', ({ value }) => {
