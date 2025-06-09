@@ -1,5 +1,6 @@
 import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
+import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 
 const canvasElement = document.querySelector('canvas#webgl')
 const experience = new Experience(canvasElement)
@@ -62,58 +63,27 @@ socket.on('update-spin-tokens', ({ value }) => {
 	cloneAndBlur()
 })
 
-socket.on('show-message', showMessage)
-socket.on('hide-message', hideMessage)
-
 const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
 
-/**
- * @param {'fullscreen' | 'inner'} size
- * @param {String} message
- * @param {Array<{text: String, color: String}>} modifier
- * @example
- * showMessage({
- * 	message: `PULL THE LEVER`,
- * 	size: 'fullscreen',
- * 	modifier: [
- * 		{
- * 			text: 'PULL',
- * 			color: '#ff0000',
- * 		},
- * 	],
- * })
- */
-function showMessage({ size = 'fullscreen', message, modifier = [] }) {
-	const textElement = document.createElement('span')
-	textElement.classList.add('text')
-	textElement.innerText = message
-
-	if (modifier.length > 0) {
-		modifier.forEach(({ text, color }) => {
-			const modifierElement = document.createElement('span')
-			modifierElement.classList.add('modifier')
-			modifierElement.style.color = color
-			modifierElement.innerText = text
-			textElement.innerHTML = message.replace(text, modifierElement.outerHTML)
-		})
-	}
-	if (size === 'fullscreen') {
-		fullscreenTextElement.appendChild(textElement)
-		currentElement.style.visibility = 'hidden'
-		bankElement.style.visibility = 'hidden'
-		tokensElement.style.visibility = 'hidden'
-		quotaElement.style.visibility = 'hidden'
-		canvasElement.style.visibility = 'hidden'
-	} else if (size === 'inner') {
-		innerTextElement.appendChild(textElement)
-		currentElement.style.visibility = 'hidden'
-		bankElement.style.visibility = 'hidden'
-	}
+function fullscreenCallback(textElement) {
+	fullscreenTextElement.appendChild(textElement)
+	currentElement.style.visibility = 'hidden'
+	bankElement.style.visibility = 'hidden'
+	tokensElement.style.visibility = 'hidden'
+	quotaElement.style.visibility = 'hidden'
+	canvasElement.style.visibility = 'hidden'
 	cloneAndBlur()
 }
 
-function hideMessage() {
+function innerCallback(textElement) {
+	innerTextElement.appendChild(textElement)
+	currentElement.style.visibility = 'hidden'
+	bankElement.style.visibility = 'hidden'
+	cloneAndBlur()
+}
+
+function hideCallback() {
 	fullscreenTextElement.innerHTML = ''
 	innerTextElement.innerHTML = ''
 	currentElement.style.visibility = 'visible'
@@ -121,4 +91,24 @@ function hideMessage() {
 	tokensElement.style.visibility = 'visible'
 	quotaElement.style.visibility = 'visible'
 	canvasElement.style.visibility = 'visible'
+	cloneAndBlur()
 }
+
+initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
+
+socket.on('open', () => {
+	socket.send({
+		event: 'show-message',
+		data: {
+			message: 'SCORE',
+			size: 'inner',
+			modifier: [
+				{
+					text: 'SCORE',
+					color: '#ff0000',
+				},
+			],
+		},
+		receiver: 'combi',
+	})
+})

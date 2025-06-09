@@ -1,11 +1,15 @@
 import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
 import { MAIN_ROULETTE_CONFIG } from 'webgl/modules/MachineManager.js'
+import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 
-const CANVAS_SELECTOR = 'canvas#webgl'
-const COMBI_SELECTOR = '.combi'
+const canvasElement = document.querySelector('canvas#webgl')
+const overlayElement = document.querySelector('.overlay')
+const combiElement = document.querySelector('.combi')
+const fullscreenTextElement = document.querySelector('.fullscreen-text')
+const innerTextElement = document.querySelector('.inner-text')
 
-const experience = new Experience(document.querySelector(CANVAS_SELECTOR))
+const experience = new Experience(canvasElement)
 const socket = new Socket()
 socket.connect('combi')
 
@@ -80,18 +84,17 @@ function renderMatrix(matrix, combiElement) {
 	})
 }
 
-const combiElement = document.querySelector(COMBI_SELECTOR)
 const matrix = buildMatrix()
 renderMatrix(matrix, combiElement)
 
-let lastCombiElement = null
+let lastOverlayElement = null
 
 function cloneAndBlur() {
-	if (lastCombiElement) lastCombiElement.remove()
-	const combiClone = combiElement.cloneNode(true)
-	combiClone.classList.add('combi-blur')
-	combiElement.parentNode.appendChild(combiClone)
-	lastCombiElement = combiClone
+	if (lastOverlayElement) lastOverlayElement.remove()
+	const overlayClone = overlayElement.cloneNode(true)
+	overlayClone.classList.add('overlay-blur')
+	combiElement.parentNode.appendChild(overlayClone)
+	lastOverlayElement = overlayClone
 }
 
 function resetCombi() {
@@ -125,3 +128,41 @@ function updateCombi({ symbol, value }) {
 cloneAndBlur()
 socket.on('update-combi', updateCombi)
 socket.on('reset-combi', resetCombi)
+
+function fullscreenCallback(textElement) {
+	fullscreenTextElement.appendChild(textElement)
+	canvasElement.style.visibility = 'hidden'
+	combiElement.style.visibility = 'hidden'
+	cloneAndBlur()
+}
+
+function innerCallback(textElement) {
+	innerTextElement.appendChild(textElement)
+	cloneAndBlur()
+}
+
+function hideCallback() {
+	fullscreenTextElement.innerHTML = ''
+	innerTextElement.innerHTML = ''
+	canvasElement.style.visibility = 'visible'
+	cloneAndBlur()
+}
+
+initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
+
+socket.on('open', () => {
+	socket.send({
+		event: 'show-message',
+		data: {
+			message: 'COMBI',
+			size: 'inner',
+			modifier: [
+				{
+					text: 'COMBI',
+					color: '#ff0000',
+				},
+			],
+		},
+		receiver: 'score',
+	})
+})

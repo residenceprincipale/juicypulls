@@ -23,6 +23,16 @@ body {
 	height: 100%;
 }
 
+.overlay-blur {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	filter: blur(10px);
+	z-index: -1;
+}
+
 .score {
 	width: 100%;
 	height: 100%;
@@ -40,15 +50,6 @@ body {
 	column-gap: 60px;
 }
 
-.overlay-blur {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	filter: blur(10px);
-	z-index: -1;
-}
 .bank-container {
 	grid-area: bank;
 	font-size: 72px;
@@ -170,4 +171,8 @@ $scale-factor: 0.11;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+
+	&:empty {
+		display: none;
+	}
 }
