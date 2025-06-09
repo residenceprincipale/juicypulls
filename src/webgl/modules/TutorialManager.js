@@ -15,9 +15,28 @@ export default class TutorialManager {
 
     start() {
         this._isStarted = true
+
         socket.send({
             event: 'start-tutorial',
             data: {},
+        })
+
+        socket.send({
+            event: 'show-message',
+            data: {
+                message: 'PULL THE LEVER',
+                size: 'fullscreen',
+            },
+            receiver: 'score',
+        })
+
+        socket.send({
+            event: 'show-message',
+            data: {
+                message: 'PULL THE LEVER',
+                size: 'fullscreen',
+            },
+            receiver: 'combi',
         })
     }
 

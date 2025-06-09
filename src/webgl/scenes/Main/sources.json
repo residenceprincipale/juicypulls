@@ -123,18 +123,6 @@
 		"autoplay": false
 	},
 	{
-		"name": "clothModel",
-		"path": "models/cloth.glb"
-	},
-	{
-		"name": "clothPositionTexture",
-		"path": "textures/offsets.exr"
-	},
-	{
-		"name": "clothNormalTexture",
-		"path": "textures/normals.png"
-	},
-	{
 		"name": "secondRouletteModel",
 		"path": "models/second-wheel-model.glb"
 	},
@@ -218,6 +206,11 @@
 	{
 		"name": "gunTarget",
 		"path": "textures/gun/cible.png",
+		"flipY": true
+	},
+	{
+		"name": "targetFaces",
+		"path": "textures/gun/faces.png",
 		"flipY": true
 	}
 ]

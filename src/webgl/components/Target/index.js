@@ -29,6 +29,7 @@ export default class Target {
         this._createGeometry()
         this._createMaterial()
         this._createMesh()
+        this._createFaceMesh()
         this._setupBoundingBox()
 
         // if (this._debug.active) this._createDebug()
@@ -241,6 +242,10 @@ export default class Target {
         this._mesh.rotation.x = Math.PI / 2
 
         this._scene.add(this._mesh)
+    }
+
+    _createFaceMesh() {
+
     }
 
     _setupBoundingBox() {

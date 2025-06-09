@@ -10,7 +10,7 @@ uniform float uLockedOpacity4;
 varying vec2 vUv;
 
 void main() {
-    vec3 color = mix(uColor, uLockedColor, uLockedOpacity0);
+    vec3 color = uColor;
 
     if (vUv.x < 0.2) {
         color = mix(color, uLockedColor, uLockedOpacity0);
