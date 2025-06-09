@@ -585,6 +585,7 @@ export default class MachineManager {
 
 		// Toggle lock state
 		this._machine.wheels[index].isLocked = !this._machine.wheels[index].isLocked
+		this._machine.animateWheelLock({ index, value: this._machine.wheels[index].isLocked })
 
 		// Log the lock/unlock action
 		if (this._machine.wheels[index].isLocked) {

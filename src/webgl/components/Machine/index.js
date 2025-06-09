@@ -3,6 +3,10 @@ import rouletteVertexShader from './shadersRoulette/vertex.glsl'
 import rouletteFragmentShader from './shadersRoulette/fragment.glsl'
 import innerReflectionVertexShader from './shadersInnerReflection/vertex.glsl'
 import innerReflectionFragmentShader from './shadersInnerReflection/fragment.glsl'
+import ledsVertexShader from './shadersLeds/vertex.glsl'
+import ledsFragmentShader from './shadersLeds/fragment.glsl'
+import innerLedsVertexShader from './shadersInnerLeds/vertex.glsl'
+import innerLedsFragmentShader from './shadersInnerLeds/fragment.glsl'
 import {
 	BoxGeometry,
 	Mesh,
@@ -43,7 +47,8 @@ export default class Machine {
 		this._createGoldMaterial()
 		this._createGoldLogoMaterial()
 		// this._createInnerReflectionMaterial()
-		this._createBloomMaterial()
+		this._createLedsMaterial()
+		this._createInnerLedsMaterial()
 		this._createModel()
 
 		this._createEventListeners()
@@ -91,7 +96,7 @@ export default class Machine {
 		// this._isHandFighting = true
 		this._innerOutTimeline?.kill()
 		this._innerOutTimeline = gsap.timeline()
-		this._innerOutTimeline.add(this.turnOffLeds(), 0)
+		this._innerOutTimeline.add(this.turnOffInnerLeds(), 0)
 		this._innerOutTimeline.to(this._innerMachine.position, {
 			z: -0.4,
 			ease: 'none',
@@ -122,6 +127,7 @@ export default class Machine {
 			duration: 0.8,
 			delay: 0.4,
 		})
+		this._innerInTimeline.add(this.turnOnInnerLeds(), "+=0.2")
 
 		return this._innerInTimeline
 	}
@@ -154,18 +160,18 @@ export default class Machine {
 
 	turnOffLeds() {
 		const timeline = gsap.timeline()
-		timeline.to(this._innerLeds.material, {
-			opacity: 0,
+		timeline.to(this._innerLeds.material.uniforms.uOpacity, {
+			value: 0,
 			duration: 0.1,
 			ease: 'none',
 		})
-		timeline.to(this._outerLeds.material, {
-			opacity: 0,
+		timeline.to(this._outerLeds.material.uniforms.uOpacity, {
+			value: 0,
 			duration: 0.1,
 			ease: 'none',
 		})
-		timeline.to(this._separatorsLeds.material, {
-			opacity: 0,
+		timeline.to(this._separatorsLeds.material.uniforms.uOpacity, {
+			value: 0,
 			duration: 0.1,
 			ease: 'none',
 		})
@@ -175,13 +181,13 @@ export default class Machine {
 
 	turnOffInnerLeds() {
 		const timeline = gsap.timeline()
-		timeline.to(this._innerLeds.material, {
-			opacity: 0,
+		timeline.to(this._innerLeds.material.uniforms.uOpacity, {
+			value: 0,
 			duration: 0.1,
 			ease: 'none',
 		})
-		timeline.to(this._separatorsLeds.material, {
-			opacity: 0,
+		timeline.to(this._separatorsLeds.material.uniforms.uOpacity, {
+			value: 0,
 			duration: 0.1,
 			ease: 'none',
 		})
@@ -193,38 +199,38 @@ export default class Machine {
 		const timeline = gsap.timeline()
 		// Simple flicker effect for all LEDs
 		timeline
-			.to(this._innerLeds.material, {
-				opacity: 0.3,
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0.3,
 				duration: 0.05,
 				ease: 'power1.in',
 			})
-			.to(this._innerLeds.material, {
-				opacity: 0.8,
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0.8,
 				duration: 0.03,
 				ease: 'power1.out',
 			})
-			.to(this._innerLeds.material, {
-				opacity: 1,
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 1,
 				duration: 0.1,
 				ease: 'power1.out',
 			})
-			.to(this._outerLeds.material, {
-				opacity: 0.4,
+			.to(this._outerLeds.material.uniforms.uOpacity, {
+				value: 0.4,
 				duration: 0.04,
 				ease: 'power1.in',
 			}, 0.02)
-			.to(this._outerLeds.material, {
-				opacity: 1,
+			.to(this._outerLeds.material.uniforms.uOpacity, {
+				value: 1,
 				duration: 0.12,
 				ease: 'power1.out',
 			})
-			.to(this._separatorsLeds.material, {
-				opacity: 0.2,
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 0.2,
 				duration: 0.03,
 				ease: 'power1.in',
 			}, 0.04)
-			.to(this._separatorsLeds.material, {
-				opacity: 1,
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 1,
 				duration: 0.08,
 				ease: 'power1.out',
 			})
@@ -234,36 +240,60 @@ export default class Machine {
 
 	turnOnInnerLeds() {
 		const timeline = gsap.timeline()
-		// Simple flicker effect for inner LEDs
+
 		timeline
-			.to(this._innerLeds.material, {
-				opacity: 0.2,
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0.2,
 				duration: 0.04,
 				ease: 'power1.in',
 			})
-			.to(this._innerLeds.material, {
-				opacity: 0.7,
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0.7,
 				duration: 0.02,
 				ease: 'power1.out',
 			})
-			.to(this._innerLeds.material, {
-				opacity: 1,
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 1,
 				duration: 0.08,
 				ease: 'power1.out',
 			})
-			.to(this._separatorsLeds.material, {
-				opacity: 0.3,
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 0.3,
 				duration: 0.03,
 				ease: 'power1.in',
 			}, 0.02)
-			.to(this._separatorsLeds.material, {
-				opacity: 1,
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 1,
 				duration: 0.1,
 				ease: 'power1.out',
 			})
 
 		return timeline
 	}
+
+	animateWheelLock({ index, value }) {
+		// this._innerLedsMaterial.uniforms[`uLockedOpacity${index}`].value = value ? 1 : 0
+
+		const timeline = gsap.timeline()
+		timeline.to(this._innerLedsMaterial.uniforms[`uLockedOpacity${index}`], {
+			value: value ? 1 : 0,
+			duration: 0.04,
+			ease: 'power1.out',
+		})
+		timeline.to(this._innerLedsMaterial.uniforms[`uLockedOpacity${index}`], {
+			value: value ? 0 : 1,
+			duration: 0.04,
+			ease: 'power1.in',
+		}, 0.05)
+		timeline.to(this._innerLedsMaterial.uniforms[`uLockedOpacity${index}`], {
+			value: value ? 1 : 0,
+			duration: 0.04,
+			ease: 'power1.out',
+		}, 0.1)
+
+		return timeline
+	}
+
 	/**
 	 * Private
 	 */
@@ -301,11 +331,12 @@ export default class Machine {
 				this._innerMachine = child
 			}
 			if (child.name.includes('led')) {
-				child.material = this._bloomMaterial.clone()
+				child.material = this._ledsMaterial.clone()
 				child.userData.renderBloom = true
 				this._leds.push(child)
 			}
 			if (child.name === 'leds-inner-wheels') {
+				child.material = this._innerLedsMaterial
 				this._innerLeds = child
 			}
 			if (child.name === 'leds-outer-machine') {
@@ -385,15 +416,40 @@ export default class Machine {
 		})
 	}
 
-	_createBloomMaterial() {
-		const brightMaterial = new MeshBasicMaterial({
-			color: 0xffffff,
-			opacity: 1,
+	_createLedsMaterial() {
+		this._ledsMaterial = new ShaderMaterial({
+			vertexShader: ledsVertexShader,
+			fragmentShader: ledsFragmentShader,
+			name: 'Leds Material',
 			transparent: true,
+			uniforms: {
+				uColor: { value: new Color(0xffffff) },
+				uOpacity: { value: 1.0 },
+				uMaskProgressEnd: { value: 0.0 },
+				uMaskProgressStart: { value: 0.0 }
+			},
 		})
-
-		this._bloomMaterial = brightMaterial
 	}
+
+	_createInnerLedsMaterial() {
+		this._innerLedsMaterial = new ShaderMaterial({
+			vertexShader: innerLedsVertexShader,
+			fragmentShader: innerLedsFragmentShader,
+			name: 'Inner Leds Material',
+			transparent: true,
+			uniforms: {
+				uColor: { value: new Color(0xffffff) },
+				uLockedColor: { value: new Color(0xffe161) },
+				uOpacity: { value: 1.0 },
+				uLockedOpacity0: { value: 0.0 },
+				uLockedOpacity1: { value: 1.0 },
+				uLockedOpacity2: { value: 1.0 },
+				uLockedOpacity3: { value: 0.0 },
+				uLockedOpacity4: { value: 0.0 },
+			},
+		})
+	}
+
 	/**
 	 * Events
 	 */
@@ -419,6 +475,23 @@ export default class Machine {
 		}).on('click', () => {
 			this.animateInnerMachineIn()
 		})
+
+		const color = {
+			value: "#000000"
+		}
+
+		folder.addBinding(color, 'value').on('change', (value) => {
+			this._innerLedsMaterial.uniforms.uLockedColor.value = new Color(value.value)
+		})
+		folder.addBinding(this._innerLeds.material.uniforms.uOpacity, 'value')
+
+		// folder.addBinding(this._innerLeds.material.uniforms.uColor, 'value')
+		// folder.addBinding(this._innerLeds.material.uniforms.uMaskProgressStart, 'value')
+		// folder.addBinding(this._innerLeds.material.uniforms.uMaskProgressEnd, 'value')
+		// folder.addBinding(this._outerLeds.material.uniforms.uMaskProgressStart, 'value')
+		// folder.addBinding(this._outerLeds.material.uniforms.uMaskProgressEnd, 'value')
+		// folder.addBinding(this._separatorsLeds.material.uniforms.uMaskProgressStart, 'value')
+		// folder.addBinding(this._separatorsLeds.material.uniforms.uMaskProgressEnd, 'value')
 
 		// addMaterialDebug(folder, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)

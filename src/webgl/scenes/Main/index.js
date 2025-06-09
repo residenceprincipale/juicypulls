@@ -196,7 +196,7 @@ export default class Main {
 	}
 
 	handleButtonInput(button) {
-		if (!this._tutorialInputPressed) {
+		if (!this._tutorialInputPressed && this._debug.tutorialActive) {
 			this._tutorialInputPressed = true
 			this.startTutorial()
 		}
