@@ -2,6 +2,7 @@ import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 import { gsap } from 'gsap'
+import { flickerAnimation } from '@/scripts/uiAnimations.js'
 
 const canvasElement = document.querySelector('canvas#webgl')
 const experience = new Experience(canvasElement)
@@ -137,3 +138,8 @@ initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
 if (window.self !== window.top) {
 	document.querySelector('html').style.fontSize = innerHeight * 0.015 + 'px'
 }
+
+flickerAnimation(currentElement)
+flickerAnimation(bankElement)
+flickerAnimation(tokensElement)
+flickerAnimation(quotaElement)
