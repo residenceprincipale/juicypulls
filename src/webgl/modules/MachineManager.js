@@ -16,7 +16,7 @@ export const MAIN_ROULETTE_CONFIG = {
 		'🍋': 0, // 🍋
 		'🍒': 0, // 🍒
 		'💀': 'malus', // Crâne
-		7: 'jackpot', // Œil
+		7: 'special', // Œil
 	},
 	malusPoints: {
 		1: -100, // Two craniums

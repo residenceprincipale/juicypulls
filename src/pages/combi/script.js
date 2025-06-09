@@ -29,8 +29,8 @@ function buildMatrix() {
 		const malusPoints = MAIN_ROULETTE_CONFIG.malusPoints
 		if (emojiValue === 'malus') {
 			matrix.push([emoji, malusPoints[1], 'FARKLE', 'FARKLE', 'FARKLE'])
-		} else if (emojiValue === 'jackpot') {
-			matrix.push([emoji, '-', 'JACKPOT', 'JACKPOT', 'JACKPOT'])
+		} else if (emojiValue === 'special') {
+			matrix.push([emoji, '-', 'SPECIAL', 'SPECIAL', 'SPECIAL'])
 		} else {
 			matrix.push([
 				emoji,
