@@ -16,10 +16,6 @@
 		"path": "/textures/score/bottom-right.webp"
 	},
 	{
-		"name": "postprocessingTexture",
-		"path": "/textures/score/postprocessing.webp"
-	},
-	{
 		"name": "strokeTexture",
 		"path": "/textures/score/stroke.webp"
 	},
