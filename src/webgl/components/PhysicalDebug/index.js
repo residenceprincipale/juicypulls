@@ -262,21 +262,21 @@ export default class PhysicalDebug {
 				this._leverClickHandler()
 			}
 		})
-		socket.on('update-collected-points', (e) => {
-			this._updateCollectedPointsHandler(e)
-		})
-		socket.on('update-rolling-points', (e) => {
-			this._updateRollingPointsHandler(e)
-		})
-		socket.on('update-spin-tokens', (e) => {
-			this._updateSpinTokensHandler(e)
-		})
-		socket.on('update-rounds', (e) => {
-			this._updateRounds(e)
-		})
-		socket.on('update-quota', (e) => {
-			this._updateQuota(e)
-		})
+		// socket.on('update-collected-points', (e) => {
+		// 	this._updateCollectedPointsHandler(e)
+		// })
+		// socket.on('update-rolling-points', (e) => {
+		// 	this._updateRollingPointsHandler(e)
+		// })
+		// socket.on('update-spin-tokens', (e) => {
+		// 	this._updateSpinTokensHandler(e)
+		// })
+		// socket.on('update-rounds', (e) => {
+		// 	this._updateRounds(e)
+		// })
+		// socket.on('update-quota', (e) => {
+		// 	this._updateQuota(e)
+		// })
 		socket.on('button-lights-enabled', (e) => {
 			this._buttonLightsEnabledHandler(e)
 		})

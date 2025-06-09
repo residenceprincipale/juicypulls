@@ -154,5 +154,5 @@ initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
 
 // if is an iframe
 if (window.self !== window.top) {
-	document.querySelector('html').style.fontSize = '4px'
+	document.querySelector('html').style.fontSize = '3.6px'
 }
