@@ -60,7 +60,12 @@ export default class Main {
 				hands: this._hands,
 				scene: this,
 			})
-			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine, scene: this })
+			this._shooterManager = new ShooterManager({
+				gun: this._gun,
+				machine: this._machine,
+				scene: this,
+				machineManager: this._machineManager,
+			})
 
 			if (this._debug.active) {
 				this._machine.isDebugDev = true
@@ -145,6 +150,8 @@ export default class Main {
 
 		// showw shooter indications on top screens
 		// animate lights
+
+		this._machineManager.collectedPoints = 0
 
 		this.startShooter()
 	}

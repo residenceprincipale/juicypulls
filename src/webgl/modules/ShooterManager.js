@@ -19,6 +19,7 @@ export default class ShooterManager {
 
 		this._gun = options.gun
 		this._machine = options.machine
+		this._machineManager = options.machineManager
 
 		// Game settings
 		this._maxTargets = 3
@@ -544,7 +545,7 @@ export default class ShooterManager {
 		// Update score
 		this._score++
 
-		this._sceneInstance.spinTokens = (this._sceneInstance.spinTokens || 0) + 1
+		this._machineManager.spinTokens = (this._machineManager.spinTokens || 0) + 1
 
 		// Remove from active targets
 		const targetIndex = this._activeTargets.indexOf(target)

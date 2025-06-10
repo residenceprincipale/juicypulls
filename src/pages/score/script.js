@@ -52,8 +52,6 @@ socket.on('update-rolling-points', ({ value }) => {
 	const oldValue = parseInt(currentElement.textContent.replace(/[^\d-]/g, '')) || 0
 	const newValue = value
 
-	console.log(newValue, oldValue)
-
 	if (newValue === oldValue) return
 
 	gsap.killTweensOf(currentElement)
@@ -110,6 +108,18 @@ socket.on('update-spin-tokens', ({ value }) => {
 
 socket.on('update-quota', ({ value }) => {
 	quotaValueElement.textContent = value.toString().padStart(4, '0')
+	splitCharacters(quotaValueElement)
+	cloneAndBlur()
+})
+
+socket.on('reset', () => {
+	currentElement.textContent = '0000'
+	splitCharacters(currentElement)
+	bankValueElement.textContent = '0000'
+	splitCharacters(bankValueElement)
+	tokensValueElement.textContent = '0000'
+	splitCharacters(tokensValueElement)
+	quotaValueElement.textContent = '0000'
 	splitCharacters(quotaValueElement)
 	cloneAndBlur()
 })

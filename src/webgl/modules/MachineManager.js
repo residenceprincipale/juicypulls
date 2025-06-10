@@ -213,6 +213,10 @@ export default class MachineManager {
 				event: `x${this._multiplier}`,
 				receiver: 'bulbs',
 			})
+
+			socket.send({
+				event: 'reset',
+			})
 		})
 
 		// Main roulette state

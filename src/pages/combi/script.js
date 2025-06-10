@@ -128,6 +128,7 @@ function updateCombi({ symbol, value }) {
 cloneAndBlur()
 socket.on('update-combi', updateCombi)
 socket.on('reset-combi', resetCombi)
+socket.on('reset', resetCombi)
 
 function fullscreenCallback(textElement) {
 	fullscreenTextElement.appendChild(textElement)
