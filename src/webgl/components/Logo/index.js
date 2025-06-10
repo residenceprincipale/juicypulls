@@ -103,7 +103,7 @@ export default class Logo {
             this._model.material = this._material;
             this._model.position.set(0, 0, 0);
             this._model.rotation.set(1.600, 0.000, 0.000);
-            this._model.scale.set(4, 4, 4);
+            this._model.scale.set(3.5, 3.5, 3.5);
             this._model.userData.renderBloom = true
             this._scene.add(this._model);
         } else {
