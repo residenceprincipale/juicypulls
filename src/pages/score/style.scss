@@ -42,9 +42,9 @@ body {
 	height: 100%;
 	display: grid;
 	grid-template-areas:
-		'bank bank'
+		'quota quota'
 		'current current'
-		'tokens quota';
+		'tokens bank';
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: max-content 1fr 12.5rem;
 	text-transform: uppercase;
@@ -54,8 +54,8 @@ body {
 	column-gap: 3.75rem;
 }
 
-.bank-container {
-	grid-area: bank;
+.quota-container {
+	grid-area: quota;
 	font-size: 4.5rem;
 	line-height: 0.8;
 	padding-top: 1.5rem;
@@ -63,9 +63,36 @@ body {
 	justify-content: center;
 	align-items: center;
 }
-.bank {
+.quota {
 	display: flex;
 	gap: 3.75rem;
+	outline: 0.25rem solid var(--primary-color);
+	padding: 1rem 4rem;
+	width: calc(14.375rem * 4);
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+	z-index: 1;
+	border-radius: 2rem;
+	overflow: hidden;
+
+	.label,
+	.value {
+		mix-blend-mode: difference;
+		font-size: 6rem;
+	}
+
+	.value {
+	}
+
+	.progress-bar {
+		position: absolute;
+		inset: 0;
+		background: var(--primary-color);
+		z-index: -1;
+		transform-origin: left;
+		transform: scaleX(0);
+	}
 }
 
 .current-container {
@@ -73,7 +100,7 @@ body {
 	display: flex;
 	justify-content: center;
 	container-type: size;
-	padding-bottom: 1.25rem;
+	padding-top: 1rem;
 }
 
 .current {
@@ -86,15 +113,18 @@ body {
 	display: inline-block;
 	width: 14.375rem;
 	text-align: center;
+	line-height: 0.7;
+	transform-origin: top;
+	scale: 1.2 0.95;
 }
 
 .current span:nth-child(1),
 .current span:nth-child(4) {
-	scale: 1 0.8;
+	scale: 1.2 0.8;
 }
 
 .tokens-container,
-.quota-container {
+.bank-container {
 	font-size: 3rem;
 	display: flex;
 	align-items: flex-end;
@@ -107,13 +137,13 @@ body {
 	justify-content: flex-end;
 }
 
-.quota-container {
-	grid-area: quota;
+.bank-container {
+	grid-area: bank;
 	justify-content: flex-start;
 }
 
 .tokens,
-.quota {
+.bank {
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-between;
@@ -122,18 +152,18 @@ body {
 }
 
 .tokens-container .label,
-.quota-container .label {
+.bank-container .label {
 	position: relative;
 	bottom: 1.875rem;
 }
 
 .tokens-container .value,
-.quota-container .value {
+.bank-container .value {
 	font-size: 16.375rem;
 	letter-spacing: -0.625rem;
 }
 .tokens-container .value span,
-.quota-container .value span {
+.bank-container .value span {
 	display: inline-block;
 	transform-origin: bottom;
 }
@@ -143,7 +173,7 @@ $scale-factor: 0.11;
 	.tokens-container .value span:nth-child(#{$i}) {
 		scale: 1 calc(1 - $scale-factor * ($i - 1));
 	}
-	.quota-container .value span:nth-child(#{$i}) {
+	.bank-container .value span:nth-child(#{$i}) {
 		scale: 1 calc(1 - $scale-factor * (4 - $i));
 	}
 }

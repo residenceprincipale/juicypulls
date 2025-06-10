@@ -20,11 +20,14 @@ const quotaElement = document.querySelector('.quota')
 const quotaValueElement = quotaElement.querySelector('.value')
 const bankElement = document.querySelector('.bank')
 const bankValueElement = bankElement.querySelector('.value')
+const progressBarElement = document.querySelector('.progress-bar')
 let lastOverlayElement = null
+let collectedPoints = 0
+let quotaValue = 0
 
 splitCharacters(currentElement)
 splitCharacters(tokensValueElement)
-splitCharacters(quotaValueElement)
+splitCharacters(bankValueElement)
 cloneAndBlur()
 
 function cloneAndBlur() {
@@ -73,6 +76,7 @@ socket.on('update-rolling-points', ({ value }) => {
 
 socket.on('update-collected-points', ({ value }) => {
 	const oldValue = parseInt(bankValueElement.textContent.replace(/\D/g, '')) || 0
+	collectedPoints = value
 	gsap.to(
 		{ value: oldValue },
 		{
@@ -82,34 +86,42 @@ socket.on('update-collected-points', ({ value }) => {
 			onUpdate: function () {
 				const displayValue = Math.round(this.targets()[0].value)
 				bankValueElement.textContent = displayValue.toString().padStart(4, '0')
+				splitCharacters(bankValueElement)
 				cloneAndBlur()
 			},
 		},
 	)
+	// Update progress bar
+	const progress = collectedPoints / quotaValue
+	gsap.to(progressBarElement, {
+		scaleX: progress,
+		duration: 0.6,
+		ease: 'power2.out',
+		onUpdate: function () {
+			cloneAndBlur()
+		},
+	})
 })
 
-let spinTokens = 0
 socket.on('update-spin-tokens', ({ value }) => {
 	const stringValue = value.toString()
-	if (stringValue.startsWith('+')) {
-		const increment = parseInt(stringValue.slice(1), 10)
-		spinTokens = parseInt(spinTokens) + (isNaN(increment) ? 1 : increment)
-	} else if (stringValue.startsWith('-')) {
-		const decrement = parseInt(stringValue.slice(1), 10)
-		spinTokens = parseInt(spinTokens) - (isNaN(decrement) ? 1 : decrement)
-		if (spinTokens < 0) spinTokens = 0 // Prevent negative tokens
-	} else {
-		spinTokens = value
-	}
-	tokensValueElement.textContent = spinTokens.toString().padStart(4, '0')
+	tokensValueElement.textContent = stringValue.toString().padStart(4, '0')
 	splitCharacters(tokensValueElement)
 	cloneAndBlur()
 })
-
 socket.on('update-quota', ({ value }) => {
+	quotaValue = value
 	quotaValueElement.textContent = value.toString().padStart(4, '0')
-	splitCharacters(quotaValueElement)
-	cloneAndBlur()
+	//update progress bar
+	const progress = collectedPoints / value
+	gsap.to(progressBarElement, {
+		scaleX: progress,
+		duration: 0.6,
+		ease: 'power2.out',
+		onUpdate: function () {
+			cloneAndBlur()
+		},
+	})
 })
 
 socket.on('reset', () => {
