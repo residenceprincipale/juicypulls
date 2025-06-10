@@ -36,8 +36,8 @@ export const MAIN_ROULETTE_CONFIG = {
 const SECOND_ROULETTE_CONFIG = {
 	numWheels: 2,
 	segments: 4,
-	wheelEmojis1: ['+100', '-100', 'token', 'multiplier'].reverse(),
-	wheelEmojis2: ['x1', 'x2', 'x3', 'x4'].reverse(),
+	wheelEmojis1: ['+100', 'token', '-100', 'multiplier'].reverse(),
+	wheelEmojis2: ['x2', 'x4', 'x3', 'x1'].reverse(),
 	symbolNames: ['magic', 'mask', 'target', 'thunder'],
 	symbolValues: {
 		magic: 200, // 🔮
@@ -250,7 +250,8 @@ export default class MachineManager {
 			}
 
 			// Decrement spin tokens only for the first spin of a round
-			socket.send({ event: 'update-spin-tokens', data: { value: -1 } })
+			this._spinTokens -= 1
+			socket.send({ event: 'update-spin-tokens', data: { value: this._spinTokens } })
 		}
 
 		this._currentSpinIsDone = false
@@ -298,8 +299,8 @@ export default class MachineManager {
 
 			// Trigger special roulette if needed
 			if (special) {
-				this._logMessage('Triggering Special Roulette Mechanics!')
 				this._triggerSecondRoulette()
+				this._logMessage('Triggering Special Roulette Mechanics!')
 				this._rollingPoints = 0
 				this._currentSpins = 0
 				this._updatePointsDisplay()
@@ -314,6 +315,10 @@ export default class MachineManager {
 			}
 		}
 
+		// socket.send({
+		// 	event: 'anim',
+		// 	receiver: 'bulbs',
+		// })
 		// Animate wheels
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
@@ -504,20 +509,17 @@ export default class MachineManager {
 		//do actions depending on the combination of the two wheels
 		const firstWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis1[this._secondRouletteResults[0]]
 		const secondWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis2[this._secondRouletteResults[1]]
-
 		switch (firstWheelSymbol) {
-			case 'multiplier': {
-				socket.send({ event: 'bulbs', data: secondWheelSymbol, receiver: 'bulbs' })
+			case 'multiplier':
+				socket.send({ event: secondWheelSymbol, receiver: 'bulbs' })
 				break
-			}
-			case 'token': {
+			case 'token':
+				this._spinTokens += parseInt(secondWheelSymbol.replace('x', '') || 1)
 				socket.send({
 					event: 'update-spin-tokens',
-					data: { value: `+${secondWheelSymbol.replace('x', '')}` },
-					receiver: 'score',
+					data: { value: this._spinTokens },
 				})
 				break
-			}
 			case '+100':
 			case '-100':
 				const points =
@@ -733,19 +735,19 @@ export default class MachineManager {
 		socket.on('button-collect', (e) => {
 			this._buttonCollectClickHandler(e)
 		})
-		socket.on('update-spin-tokens', ({ value }) => {
-			const stringValue = value.toString()
-			if (stringValue.startsWith('+')) {
-				const increment = parseInt(stringValue.slice(1), 10)
-				this._spinTokens = parseInt(this._spinTokens) + (isNaN(increment) ? 1 : increment)
-			} else if (stringValue.startsWith('-')) {
-				const decrement = parseInt(stringValue.slice(1), 10)
-				this._spinTokens = parseInt(this._spinTokens) - (isNaN(decrement) ? 1 : decrement)
-				if (this._spinTokens < 0) this._spinTokens = 0 // Prevent negative tokens
-			} else {
-				this._spinTokens = value
-			}
-		})
+		// socket.on('update-spin-tokens', ({ value }) => {
+		// 	const stringValue = value.toString()
+		// 	if (stringValue.startsWith('+')) {
+		// 		const increment = parseInt(stringValue.slice(1), 10)
+		// 		this._spinTokens = parseInt(this._spinTokens) + (isNaN(increment) ? 1 : increment)
+		// 	} else if (stringValue.startsWith('-')) {
+		// 		const decrement = parseInt(stringValue.slice(1), 10)
+		// 		this._spinTokens = parseInt(this._spinTokens) - (isNaN(decrement) ? 1 : decrement)
+		// 		if (this._spinTokens < 0) this._spinTokens = 0 // Prevent negative tokens
+		// 	} else {
+		// 		this._spinTokens = value
+		// 	}
+		// })
 	}
 
 	_leverClickHandler(e) {
