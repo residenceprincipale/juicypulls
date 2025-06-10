@@ -17,6 +17,7 @@ body {
 	background: black;
 	height: 100vh;
 	font-family: 'League Gothic';
+	color: var(--primary-color);
 }
 
 .overlay {
@@ -74,7 +75,7 @@ body {
 .combi__item-border {
 	position: absolute;
 	inset: 0;
-	border: 0.25rem solid white;
+	border: 0.25rem solid var(--primary-color);
 	//transition: 0.5s;
 }
 

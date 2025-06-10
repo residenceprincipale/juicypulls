@@ -189,6 +189,7 @@ export default class MachineManager {
 		this._currentSpinPoints = 0
 		this._spinTokens = 0
 		this._quota = 0
+		this._multiplier = 1
 
 		socket.on('open', () => {
 			socket.send({
@@ -209,7 +210,7 @@ export default class MachineManager {
 				receiver: 'combi',
 			})
 			socket.send({
-				event: 'x1',
+				event: `x${this._multiplier}`,
 				receiver: 'bulbs',
 			})
 		})
@@ -425,10 +426,10 @@ export default class MachineManager {
 		let points = 0
 
 		// 1. Calculate occurrence points (pairs, triples)
-		points += this._calculateOccurrencePoints(counts)
+		points += this._calculateOccurrencePoints(counts) * this._multiplier
 
 		// 2. Calculate individual symbol points
-		points += this._calculateIndividualSymbolPoints(counts)
+		points += this._calculateIndividualSymbolPoints(counts) * this._multiplier
 
 		// 3. Apply cranium penalties
 		const pointsBeforeCranium = points
@@ -519,6 +520,7 @@ export default class MachineManager {
 		switch (firstWheelSymbol) {
 			case 'multiplier':
 				socket.send({ event: secondWheelSymbol, receiver: 'bulbs' })
+				this._multiplier = parseInt(secondWheelSymbol.replace('x', '') || 1)
 				break
 			case 'token':
 				this._spinTokens += parseInt(secondWheelSymbol.replace('x', '') || 1)
