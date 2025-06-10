@@ -7,6 +7,13 @@ export default defineConfig({
 	publicDir: path.resolve(__dirname, 'public'),
 	build: {
 		outDir: path.resolve(__dirname, 'dist'),
+		rollupOptions: {
+			input: {
+				main: path.resolve(__dirname, 'src/pages/index.html'),
+				score: path.resolve(__dirname, 'src/pages/score/index.html'),
+				combi: path.resolve(__dirname, 'src/pages/combi/index.html'),
+			},
+		},
 	},
 	resolve: {
 		alias: {
