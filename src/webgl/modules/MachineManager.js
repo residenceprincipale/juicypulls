@@ -204,6 +204,14 @@ export default class MachineManager {
 				data: { value: false, index: -1 },
 				receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 			})
+			socket.send({
+				event: 'reset-combi',
+				receiver: 'combi',
+			})
+			socket.send({
+				event: 'x1',
+				receiver: 'bulbs',
+			})
 		})
 
 		// Main roulette state
@@ -216,7 +224,6 @@ export default class MachineManager {
 	}
 
 	_spinWheels(riggedCombination = null) {
-
 		this._anyLockedWheels = false
 		this._machine.turnOnInnerLeds()
 		this._machine.wheels.forEach((wheel, index) => {
@@ -526,6 +533,9 @@ export default class MachineManager {
 					parseInt(firstWheelSymbol.replace('+', '').replace('-', '')) * (firstWheelSymbol.startsWith('+') ? 1 : -1)
 				this._collectedPoints = Math.max(0, this._collectedPoints + points * (secondWheelSymbol.replace('x', '') || 1))
 				this._updateCollectedPointsDisplay()
+				// gsap.delayedCall(2, () => {
+				// 	this._collect()
+				// })
 				break
 		}
 	}
