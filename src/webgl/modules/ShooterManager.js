@@ -544,12 +544,7 @@ export default class ShooterManager {
 		// Update score
 		this._score++
 
-		socket.send({
-			event: 'update-spin-tokens',
-			data: {
-				value: '+1',
-			},
-		})
+		this._sceneInstance.spinTokens = (this._sceneInstance.spinTokens || 0) + 1
 
 		// Remove from active targets
 		const targetIndex = this._activeTargets.indexOf(target)
