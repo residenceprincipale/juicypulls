@@ -94,6 +94,7 @@ export default class Main {
 		this._logo.show()
 
 		this._tutorialInputPressed = false
+		this._loseCount = 0
 	}
 
 	startSkipIntro() {
@@ -169,11 +170,24 @@ export default class Main {
 	endGame() { }
 
 	lose() {
+		console.log('LOSE GAME')
+		this._loseCount += 1
 		if (this._machine) this._machine.animateInnerMachineOut()
 		if (this._hands) this._hands.setupFight()
 	}
 
-	loseFinal() { }
+	respawn() {
+		console.log('RESPAWN')
+		this._machineManager.quota = this._machineManager.quota += 400
+		this._machineManager.spinTokens = 3
+	}
+
+	loseFinal() {
+		console.log('LOSE FINAL')
+
+		this._machineManager.turnOffLeds()
+		this._lights.turnOff()
+	}
 
 	startSecondChance() { }
 

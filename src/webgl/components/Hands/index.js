@@ -114,6 +114,9 @@ export default class Hands {
 		const right = this.rightAnimationName;
 		const winner = this.getWinner(left, right);
 
+		if (winner === 'right') this._sceneInstance.respawn()
+		else this._sceneInstance.loseFinal()
+
 		// Play winner's hand animation BEFORE hiding the hands
 		const handPunch = (mesh) => {
 			return gsap.to(mesh.position, {

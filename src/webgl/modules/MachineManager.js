@@ -244,6 +244,7 @@ export default class MachineManager {
 
 			if (this._spinTokens <= 0) {
 				this._logMessage('No spin tokens left! Game over.')
+				this._sceneInstance.lose()
 				return
 			}
 
