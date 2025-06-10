@@ -27,6 +27,7 @@ const symbolOrder = MAIN_ROULETTE_CONFIG.symbolNames
 
 function buildMatrix() {
 	const matrix = [['-', ...multiplierOrder]]
+
 	MAIN_ROULETTE_CONFIG.symbolNames.reverse().forEach((emoji) => {
 		const emojiValue = MAIN_ROULETTE_CONFIG.symbolValues[emoji]
 		const { triple, quadruple, quintuple } = MAIN_ROULETTE_CONFIG.occurrencePoints
@@ -36,13 +37,26 @@ function buildMatrix() {
 		} else if (emojiValue === 'special') {
 			matrix.push([emoji, '-', 'SPECIAL', 'SPECIAL', 'SPECIAL'])
 		} else {
-			matrix.push([
-				emoji,
-				emojiValue > 0 ? emojiValue : '-',
-				emojiValue * 3 + triple,
-				emojiValue * 4 + quadruple,
-				emojiValue * 5 + quintuple,
-			])
+			// Utilisation de combinationPoints si disponible
+			const row = [emoji]
+			const symbolCounts = [1, 3, 4, 5]
+			for (let i = 0; i < multiplierOrder.length; i++) {
+				const key = `${symbolCounts[i]}${emoji}`
+				if (MAIN_ROULETTE_CONFIG.combinationPoints.hasOwnProperty(key)) {
+					row.push(MAIN_ROULETTE_CONFIG.combinationPoints[key])
+				} else {
+					if (i === 0) {
+						row.push(emojiValue > 0 ? emojiValue : '-')
+					} else if (i === 1) {
+						row.push(emojiValue * 3 + triple)
+					} else if (i === 2) {
+						row.push(emojiValue * 4 + quadruple)
+					} else if (i === 3) {
+						row.push(emojiValue * 5 + quintuple)
+					}
+				}
+			}
+			matrix.push(row)
 		}
 	})
 	return matrix
@@ -122,6 +136,8 @@ function updateCombi({ symbol, value }) {
 	if (cellElement) {
 		cellElement.classList.add('combi__item--active')
 	}
+	// Affichage des points si la combinaison existe
+	const combiKey = `${multiplierIndex + 3}${symbol}` // x1=3, x3=4, x4=5, x5=6 symboles
 	cloneAndBlur()
 }
 

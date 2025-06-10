@@ -19,8 +19,11 @@ export const MAIN_ROULETTE_CONFIG = {
 		7: 'special', // Œil
 	},
 	malusPoints: {
-		1: -100, // Two craniums
-		2: -200, // One cranium
+		1: -25, // Two craniums
+		2: -50, // One cranium
+		3: -75, // Three craniums
+		4: -100, // Four craniums
+		5: -125, // Five craniums
 	},
 	occurrencePoints: {
 		triple: 100, // Points for a triple of any symbol (except cranium)
@@ -28,8 +31,12 @@ export const MAIN_ROULETTE_CONFIG = {
 		quintuple: 500, // Points for five of any symbol (except cranium)
 	},
 	combinationPoints: {
-		'5🍇': 1000,
-		'5🍊': 600,
+		'4🍋': 300,
+		'5🍋': 2000,
+		'5🍇': 900,
+		'3🍒': 150,
+		'4🍒': 500,
+		'5🍒': 600,
 	},
 }
 
@@ -38,22 +45,6 @@ const SECOND_ROULETTE_CONFIG = {
 	segments: 4,
 	wheelEmojis1: ['+100', 'token', '-100', 'multiplier'].reverse(),
 	wheelEmojis2: ['x2', 'x4', 'x3', 'x1'].reverse(),
-	symbolNames: ['magic', 'mask', 'target', 'thunder'],
-	symbolValues: {
-		magic: 200, // 🔮
-		mask: 150, // 🎭
-		target: 300, // 🎯
-		thunder: 250, // ⚡
-	},
-	combinationBonus: {
-		match: 2.5, // Multiplier when both wheels match
-		specialMatch: 5, // Multiplier for specific combinations
-	},
-	specialCombos: {
-		'magic-thunder': 'Magical Thunder', // 🔮 + ⚡
-		'target-dice': 'Lucky Shot', // 🎯 + 🎲
-		'mask-target': 'Perfect Disguise', // 🎭 + 🎯
-	},
 }
 
 export default class MachineManager {
@@ -132,7 +123,7 @@ export default class MachineManager {
 	}
 
 	set collectedPoints(value) {
-		this._collectedPoints = value
+		this._collectedPoints = Math.max(0, value)
 		this._updateCollectedPointsDisplay()
 	}
 
@@ -288,35 +279,21 @@ export default class MachineManager {
 
 		// Increment spins first
 		this._currentSpins += 1
-		console.log('CURRENT SPINS', this._currentSpins, this._anyLockedWheels)
 
 		// Check for triple cranium farkle
 		const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
-		if (counts['💀'] >= 3) {
-			this._logMessage('Farkle! Triple cranium - score of the round is lost.')
-			this._rollingPoints = 0
-			this._currentSpins = 0
-			this._updatePointsDisplay()
+		if (counts['💀'] >= 1) {
 			gsap.delayedCall(2, () => {
-				this._scene.resources.items.farkleAudio.play()
-				socket.send({
-					event: 'button-lights-enabled',
-					data: { value: false, index: -1 },
-					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-				})
-				this._resetWheels()
+				this.collectedPoints += MAIN_ROULETTE_CONFIG.malusPoints[counts['💀']] || 0
 			})
-		} else {
-			const special = counts['7'] >= 3
 
-			// Trigger special roulette if needed
-			if (special) {
-				this._triggerSecondRoulette()
-				this._logMessage('Triggering Special Roulette Mechanics!')
+			if (counts['💀'] >= 3) {
+				this._logMessage('Farkle! Triple cranium - score of the round is lost.')
 				this._rollingPoints = 0
 				this._currentSpins = 0
 				this._updatePointsDisplay()
 				gsap.delayedCall(2, () => {
+					this._scene.resources.items.farkleAudio.play()
 					socket.send({
 						event: 'button-lights-enabled',
 						data: { value: false, index: -1 },
@@ -325,6 +302,22 @@ export default class MachineManager {
 					this._resetWheels()
 				})
 			}
+		}
+		// Trigger special roulette if needed
+		if (counts['7'] >= 3) {
+			this._triggerSecondRoulette()
+			this._logMessage('Triggering Special Roulette Mechanics!')
+			this._rollingPoints = 0
+			this._currentSpins = 0
+			this._updatePointsDisplay()
+			gsap.delayedCall(2, () => {
+				socket.send({
+					event: 'button-lights-enabled',
+					data: { value: false, index: -1 },
+					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				})
+				this._resetWheels()
+			})
 		}
 
 		// socket.send({
@@ -429,16 +422,32 @@ export default class MachineManager {
 		// Calculate total points
 		let points = 0
 
-		// 1. Calculate occurrence points (pairs, triples)
-		points += this._calculateOccurrencePoints(counts) * this._multiplier
+		// 1. Vérifier les combinaisons spéciales (combinationPoints)
+		const excludedSymbols = []
+		for (const combiKey in MAIN_ROULETTE_CONFIG.combinationPoints) {
+			// Extraire le symbole et le nombre d'occurrences attendues
+			const match = combiKey.match(/(\d+)(.+)/)
+			if (match) {
+				const expectedCount = parseInt(match[1], 10)
+				const symbol = match[2]
+				if (counts[symbol] === expectedCount) {
+					points += MAIN_ROULETTE_CONFIG.combinationPoints[combiKey] * this._multiplier
+					excludedSymbols.push(symbol)
+				}
+			}
+		}
 
-		// 2. Calculate individual symbol points
-		points += this._calculateIndividualSymbolPoints(counts) * this._multiplier
+		// 2. Si aucune combinaison spéciale, calculer les points d'occurrence et individuels
+		// 2.1. Points d'occurrence (paires, triples)
+		points += this._calculateOccurrencePoints(counts, excludedSymbols) * this._multiplier
+
+		// 2.2. Points individuels par symbole
+		points += this._calculateIndividualSymbolPoints(counts, excludedSymbols) * this._multiplier
 
 		// 3. Apply cranium penalties
 		const pointsBeforeCranium = points
-		const craniumCount = counts['💀'] || 0
-		if (this._currentSpins > 1) points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0 // apply malus only if there are locked wheels
+		// const craniumCount = counts['💀'] || 0
+		// points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0 // apply malus only if there are locked wheels
 
 		// Don't allow negative points
 		return {
@@ -447,23 +456,26 @@ export default class MachineManager {
 		}
 	}
 
-	_calculateIndividualSymbolPoints(counts) {
+	_calculateIndividualSymbolPoints(counts, excludedSymbols = []) {
 		// Calculate individual symbol points (not occurrence-based)
 		let points = 0
 		MAIN_ROULETTE_CONFIG.symbolNames.forEach((symbol) => {
-			points += (counts[symbol] || 0) * MAIN_ROULETTE_CONFIG.symbolValues[symbol] || 0
+			if (!excludedSymbols.includes(symbol) && symbol !== '💀' && symbol !== '7') {
+				points += (counts[symbol] || 0) * (MAIN_ROULETTE_CONFIG.symbolValues[symbol] || 0)
+			}
 		})
 
 		return points
 	}
 
-	_calculateOccurrencePoints(counts) {
+	_calculateOccurrencePoints(counts, excludedSymbols = []) {
 		// Calculate points based on symbol occurrences (pairs, triples, etc.)
 		let occurrencePoints = 0
 
 		// Exclude 💀 from occurrence calculations
-		const validSymbols = Object.keys(counts).filter((symbol) => symbol !== '💀' && counts[symbol] > 1)
-
+		const validSymbols = Object.keys(counts).filter(
+			(symbol) => symbol !== '💀' && counts[symbol] > 1 && !excludedSymbols.includes(symbol),
+		)
 		validSymbols.forEach((symbol) => {
 			const count = counts[symbol]
 			if (count === 3) {
