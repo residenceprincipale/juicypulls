@@ -46,7 +46,7 @@ export default class PhysicalDebug {
 
 		if (this._debug.active) this._createDebug()
 
-		if (window.location.hash === '#debug-dev') {
+		if (window.location.hash.includes('#debug') && !window.location.hash.includes('dev')) {
 			const screensElement = document.querySelector('.top-screens')
 			screensElement.style.display = 'flex'
 		}

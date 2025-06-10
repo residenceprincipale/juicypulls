@@ -1,13 +1,7 @@
 import Experience from 'core/Experience.js'
-import Environment from 'components/Environment.js'
-import Floor from 'components/Floor.js'
-import Fox from 'components/Fox/Fox.js'
-import Cube from 'components/Cube/Cube.js'
 import Machine from '@/webgl/components/Machine/index.js'
 import LightsMain from '@/webgl/components/LightsMain/index.js'
 import Hands from '@/webgl/components/Hands/index.js'
-import CameraPlayer from '@/webgl/components/CameraPlayer/index.js'
-import VAT from 'components/VAT'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import PhysicalDebug from '@/webgl/components/PhysicalDebug/index.js'
@@ -60,6 +54,7 @@ export default class Main {
 				hands: this._hands,
 				scene: this,
 			})
+
 			this._shooterManager = new ShooterManager({
 				gun: this._gun,
 				machine: this._machine,
@@ -109,7 +104,7 @@ export default class Main {
 
 		gsap.delayedCall(1.5, () => {
 			this._machineManager.spinTokens = 10
-			this._machineManager.quota = 1000
+			this._machineManager.quota = 200
 		})
 	}
 
@@ -150,8 +145,8 @@ export default class Main {
 
 		// showw shooter indications on top screens
 		// animate lights
-
 		this._machineManager.collectedPoints = 0
+		this._gun.show()
 
 		this.startShooter()
 	}
@@ -176,11 +171,12 @@ export default class Main {
 		this._machineManager.quota = this._machineManager.quota += 400
 	}
 
-	endGame() {}
+	endGame() { }
 
 	lose() {
 		console.log('LOSE GAME')
 		this._loseCount += 1
+		this._hands.show()
 		if (this._machine) this._machine.animateInnerMachineOut()
 		if (this._hands) this._hands.setupFight()
 	}
@@ -198,7 +194,7 @@ export default class Main {
 		this._lights.turnOff()
 	}
 
-	startSecondChance() {}
+	startSecondChance() { }
 
 	update() {
 		const timeData = {

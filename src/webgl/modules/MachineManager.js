@@ -383,6 +383,7 @@ export default class MachineManager {
 		this._machine.wheels.forEach((wheel, index) => {
 			const isCranium = MAIN_ROULETTE_CONFIG.symbolNames[this._results[index]] === '💀'
 			const shouldAdd = isCranium || !options.lockedOnly || wheel.isLocked
+			if (isCranium && this._currentSpins > 1) this._machine.turnOnWheelLeds({ index, color: 'red' })
 			if (shouldAdd) {
 				results.push(this._results[index])
 			}

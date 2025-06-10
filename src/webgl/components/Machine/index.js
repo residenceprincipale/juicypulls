@@ -279,7 +279,12 @@ export default class Machine {
 		return timeline
 	}
 
-	animateWheelLock({ index, value }) {
+	turnOnWheelLeds() {
+		if (this._innerLeds.material.uniforms.uOpacity.value === 1) return
+
+	}
+
+	animateWheelLock({ index, value, color }) {
 		// this._innerLedsMaterial.uniforms[`uLockedOpacity${index}`].value = value ? 1 : 0
 
 		const timeline = gsap.timeline()
@@ -288,6 +293,7 @@ export default class Machine {
 			duration: 0.04,
 			ease: 'power1.out',
 		})
+
 		timeline.to(this._innerLedsMaterial.uniforms[`uLockedOpacity${index}`], {
 			value: value ? 0 : 1,
 			duration: 0.04,

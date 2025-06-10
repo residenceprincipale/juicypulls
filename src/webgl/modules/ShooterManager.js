@@ -421,8 +421,8 @@ export default class ShooterManager {
             .crosshair-horizontal,
             .crosshair-vertical {
                 position: absolute;
-                background: rgba(255, 255, 255, 0.9);
-                border: 1px solid rgba(0, 0, 0, 0.5);
+                background: rgba(255, 0, 0, 0.9);
+                border: 4px solid rgba(1, 0, 0, 0.5);
             }
 
             .crosshair-horizontal {
@@ -580,6 +580,11 @@ export default class ShooterManager {
 		socket.on('button', (e) => {
 			this._handleButtonPress(e.index)
 		})
+
+		socket.on('button-collect', (e) => {
+			if (!this._isGameActive) return
+			this.shoot()
+		})
 	}
 
 	_handleButtonPress(index) {
@@ -587,19 +592,16 @@ export default class ShooterManager {
 
 		switch (index) {
 			case 0: // Left
-				this.moveCrosshairLeft()
+				this.moveCrosshairUp()
 				break
 			case 1: // Bottom (Down)
 				this.moveCrosshairDown()
 				break
-			case 2: // Top (Up)
-				this.moveCrosshairUp()
+			case 3: // Top (Up)
+				this.moveCrosshairLeft()
 				break
-			case 3: // Right
+			case 4: // Right
 				this.moveCrosshairRight()
-				break
-			case 4: // Shoot
-				this.shoot()
 				break
 			default:
 				console.warn(`Unknown button index: ${index}`)

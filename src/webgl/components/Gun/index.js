@@ -100,8 +100,6 @@ export default class Gun {
             duration: 0.8,
             ease: "back.out(1.7)"
         })
-
-        console.log('Gun in animation started')
     }
 
     animateGunOut() {
