@@ -104,7 +104,7 @@ export default class Main {
 
 		gsap.delayedCall(1.5, () => {
 			this._machineManager.spinTokens = 10
-			this._machineManager.quota = 200
+			this._machineManager.quota = 1000
 		})
 	}
 
@@ -144,7 +144,7 @@ export default class Main {
 		console.log('COMPLETE ROUND :', options.index)
 
 		// showw shooter indications on top screens
-		// animate lights 
+		// animate lights
 
 		this.startShooter()
 	}
@@ -169,7 +169,7 @@ export default class Main {
 		this._machineManager.quota = this._machineManager.quota += 400
 	}
 
-	endGame() { }
+	endGame() {}
 
 	lose() {
 		console.log('LOSE GAME')
@@ -191,7 +191,7 @@ export default class Main {
 		this._lights.turnOff()
 	}
 
-	startSecondChance() { }
+	startSecondChance() {}
 
 	update() {
 		const timeData = {

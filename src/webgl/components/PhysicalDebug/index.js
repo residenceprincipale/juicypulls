@@ -46,14 +46,15 @@ export default class PhysicalDebug {
 
 		if (this._debug.active) this._createDebug()
 
-		const screensElement = document.querySelector('.top-screens')
-		screensElement.style.display = 'flex'
+		if (window.location.hash === '#debug-dev') {
+			const screensElement = document.querySelector('.top-screens')
+			screensElement.style.display = 'flex'
+		}
 	}
 
 	// public
 	printToRightScreen(message) {
 		return
-
 	}
 
 	// private
