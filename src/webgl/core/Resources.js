@@ -197,7 +197,10 @@ export default class Resources extends EventEmitter {
 	}
 
 	sourceError(source, error) {
-		console.error(`Failed to load: ${source.name}`)
+		console.error(`Failed to load resource: ${source.name}`)
+		console.error(`Resource path: ${source.path}`)
+		console.error(`Resource type: ${source.type || 'auto-detected'}`)
+		console.error(`Original error:`, error)
 
 		this.loaded++
 
