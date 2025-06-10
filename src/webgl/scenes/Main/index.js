@@ -105,6 +105,8 @@ export default class Main {
 		gsap.delayedCall(1.5, () => {
 			this._machineManager.spinTokens = 10
 			this._machineManager.quota = 200
+
+			this._machineManager.round = 1
 		})
 	}
 
@@ -133,6 +135,7 @@ export default class Main {
 	startGame() {
 		// this._machineManager.startGame()
 		// start round ?
+		this._machineManager.round = 1
 	}
 
 	startRound() {

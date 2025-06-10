@@ -43,7 +43,6 @@ export default class TutorialManager {
     }
 
     _setupMachineManager() {
-        this._machineManager.isPlayingTutorial = true
         this._machineManager.firstSpinDone = false
         this._machineManager.isLeverLocked = true
         this._machineManager.spinTokens = 1
@@ -176,7 +175,6 @@ export default class TutorialManager {
     _endTutorial() {
         this._isStarted = false
         this._listenToLeverStart = false
-        this._machineManager.isPlayingTutorial = false
 
         socket.send({
             event: 'hide-message',
@@ -198,7 +196,7 @@ export default class TutorialManager {
     _leverClickHandler() {
         if (!this._isStarted) return
 
-        if (this._machineManager.isPlayingTutorial && !this._machineManager.firstSpinDone) {
+        if (!this._machineManager.firstSpinDone) {
             this._machineManager.firstSpinDone = true
             this._machineManager.isLeverLocked = true
             this._machineManager.spinWheels([5, 2, 2, 2, 3])
@@ -211,14 +209,13 @@ export default class TutorialManager {
     _updateRollingPoints(data) {
         if (this._isBankStep) return
 
-        if (data.value === MAIN_ROULETTE_CONFIG.occurrencePoints.triple) {
+        if (data.value === MAIN_ROULETTE_CONFIG.combinationPoints['3🍒']) {
             this._goToBankStep()
         }
     }
 
     _buttonCollectClickHandler() {
         if (this._listenToBank) {
-            console.log('buttonCollectClickHandler')
             this._listenToBank = false
             this._goToLastStep()
         }

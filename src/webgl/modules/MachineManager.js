@@ -85,14 +85,6 @@ export default class MachineManager {
 		this._isLeverLocked = value
 	}
 
-	get isPlayingTutorial() {
-		return this._isPlayingTutorial
-	}
-
-	set isPlayingTutorial(value) {
-		this._isPlayingTutorial = value
-	}
-
 	get firstSpinDone() {
 		return this._firstSpinDone
 	}
@@ -732,7 +724,7 @@ export default class MachineManager {
 			receiver: 'combi',
 		})
 
-		if (this._collectedPoints >= this._quota) {
+		if (this._collectedPoints >= this._quota && this._round > 0) {
 			this._sceneInstance.completeRound({ index: this._round })
 			this._round += 1
 		}
