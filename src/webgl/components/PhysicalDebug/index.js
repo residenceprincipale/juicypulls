@@ -235,7 +235,7 @@ export default class PhysicalDebug {
 
 		// listen to f g h j k and send corresponding index button events to machine and shooter
 		window.addEventListener('keydown', (e) => {
-			const keyToIndex = { f: 0, g: 1, h: 2, j: 3, k: 4 }
+			const keyToIndex = { '&': 0, 'é': 1, '"': 2, "'": 3, '(': 4 }
 			if (e.key in keyToIndex) {
 				const index = keyToIndex[e.key]
 				if (this._buttonLightsEnabled[index]) {
