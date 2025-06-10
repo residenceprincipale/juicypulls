@@ -159,6 +159,8 @@ export default class Machine {
 	}
 
 	turnOffLeds() {
+		if (this._innerLeds.material.uniforms.uOpacity.value === 0) return
+
 		const timeline = gsap.timeline()
 		timeline.to(this._innerLeds.material.uniforms.uOpacity, {
 			value: 0,
@@ -180,6 +182,8 @@ export default class Machine {
 	}
 
 	turnOffInnerLeds() {
+		if (this._innerLeds.material.uniforms.uOpacity.value === 0) return
+
 		const timeline = gsap.timeline()
 		timeline.to(this._innerLeds.material.uniforms.uOpacity, {
 			value: 0,
@@ -196,6 +200,8 @@ export default class Machine {
 	}
 
 	turnOnLeds() {
+		if (this._innerLeds.material.uniforms.uOpacity.value === 1) return
+
 		const timeline = gsap.timeline()
 		// Simple flicker effect for all LEDs
 		timeline
@@ -239,6 +245,8 @@ export default class Machine {
 	}
 
 	turnOnInnerLeds() {
+		if (this._innerLeds.material.uniforms.uOpacity.value === 1) return
+
 		const timeline = gsap.timeline()
 
 		timeline

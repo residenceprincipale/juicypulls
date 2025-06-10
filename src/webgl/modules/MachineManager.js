@@ -218,6 +218,7 @@ export default class MachineManager {
 	_spinWheels(riggedCombination = null) {
 
 		this._anyLockedWheels = false
+		this._machine.turnOnInnerLeds()
 		this._machine.wheels.forEach((wheel, index) => {
 			if (wheel.isLocked) {
 				wheel.isDisabled = true
@@ -669,6 +670,8 @@ export default class MachineManager {
 			wheel.isLocked = false
 			this._machine.animateWheelLock({ index, value: false })
 		})
+
+		this._machine.turnOffInnerLeds()
 	}
 
 	_collect() {
