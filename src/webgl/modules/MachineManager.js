@@ -154,6 +154,14 @@ export default class MachineManager {
 		this._updateQuotaDisplay()
 	}
 
+	get round() {
+		return this._round
+	}
+
+	set round(value) {
+		this._round = value
+	}
+
 	/**
 	 * Public
 	 */
@@ -360,15 +368,12 @@ export default class MachineManager {
 		// Get results for locked wheels only
 		const results = []
 
-		let anyLockedWheels = false
-
 		this._machine.wheels.forEach((wheel, index) => {
 			const isCranium = MAIN_ROULETTE_CONFIG.symbolNames[this._results[index]] === '💀'
 			const shouldAdd = isCranium || !options.lockedOnly || wheel.isLocked
 			if (shouldAdd) {
 				results.push(this._results[index])
 			}
-			if (wheel.isLocked) anyLockedWheels = true
 		})
 
 		// If no wheels are locked, return 0 points
@@ -387,7 +392,7 @@ export default class MachineManager {
 		results.forEach((index) => {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
 
-			if (symbolName === '💀' && !anyLockedWheels) return // don't count craniums if no locked wheels
+			if (symbolName === '💀' && this._currentSpins < 2 && !this._machine.wheels[index].isLocked) return // don't count craniums if first spîn before locked wheels
 
 			counts[symbolName] = (counts[symbolName] || 0) + 1
 			if (counts[symbolName] !== 0 && options.lockedOnly) {
@@ -414,7 +419,7 @@ export default class MachineManager {
 		// 3. Apply cranium penalties
 		const pointsBeforeCranium = points
 		const craniumCount = counts['💀'] || 0
-		if (anyLockedWheels) points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0 // apply malus only if there are locked wheels
+		if (this._currentSpins > 1) points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0 // apply malus only if there are locked wheels
 
 		// Don't allow negative points
 		return {

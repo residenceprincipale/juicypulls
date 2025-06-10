@@ -12,6 +12,7 @@ export default class ShooterManager {
 		socket.connect('shooter')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
+		this._sceneInstance = options.scene
 		this._debug = this._experience.debug
 		this._time = this._experience.time
 		this._camera = this._experience.camera
@@ -140,6 +141,8 @@ export default class ShooterManager {
 		})
 
 		console.log(`Game ended! Final score: ${this._score}`)
+
+		this._sceneInstance.endShooter()
 	}
 
 	// 2D Shooting detection

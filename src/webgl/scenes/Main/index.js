@@ -60,7 +60,7 @@ export default class Main {
 				hands: this._hands,
 				scene: this,
 			})
-			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine })
+			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine, scene: this })
 
 			if (this._debug.active) {
 				this._machine.isDebugDev = true
@@ -159,6 +159,11 @@ export default class Main {
 	endShooter() {
 		// animate machine in
 		// start round
+
+		console.log('END SHOOTER')
+		console.log('start round', this._machineManager.round)
+
+		this._machineManager.quota = this._machineManager.quota += 400
 	}
 
 	endGame() { }
