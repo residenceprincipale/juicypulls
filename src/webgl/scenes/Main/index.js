@@ -74,6 +74,8 @@ export default class Main {
 			if (this._debug.tutorialActive || !this._debug.active) {
 				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager, scene: this })
 				this.start()
+
+				this._isPlayingTutorial = true
 			} else {
 				this.startSkipIntro()
 			}
@@ -215,7 +217,7 @@ export default class Main {
 	}
 
 	handleButtonInput(button) {
-		if (!this._tutorialInputPressed && this._debug.tutorialActive) {
+		if (!this._tutorialInputPressed && this._isPlayingTutorial) {
 			this._tutorialInputPressed = true
 			this.startTutorial()
 		}
