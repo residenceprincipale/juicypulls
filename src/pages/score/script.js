@@ -83,7 +83,7 @@ socket.on('update-collected-points', ({ value }) => {
 	)
 })
 
-let spinTokens = 10
+let spinTokens = 0
 socket.on('update-spin-tokens', ({ value }) => {
 	const stringValue = value.toString()
 	if (stringValue.startsWith('+')) {
@@ -98,6 +98,12 @@ socket.on('update-spin-tokens', ({ value }) => {
 	}
 	tokensValueElement.textContent = spinTokens.toString().padStart(4, '0')
 	splitCharacters(tokensValueElement)
+	cloneAndBlur()
+})
+
+socket.on('update-quota', ({ value }) => {
+	quotaValueElement.textContent = value.toString().padStart(4, '0')
+	splitCharacters(quotaValueElement)
 	cloneAndBlur()
 })
 

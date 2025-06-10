@@ -71,7 +71,7 @@ export default class Main {
 			if (this._debug.active) this.setDebug()
 
 			if (this._debug.tutorialActive || !this._debug.active) {
-				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager })
+				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager, scene: this })
 				this.start()
 			} else {
 				this.startSkipIntro()
@@ -97,6 +97,10 @@ export default class Main {
 
 	startSkipIntro() {
 		this._logo.hide()
+
+		gsap.delayedCall(1.5, () => {
+			this._machineManager.spinTokens = 10
+		})
 	}
 
 	startTutorial() {
@@ -121,20 +125,9 @@ export default class Main {
 		})
 	}
 
-	nextStepTutorial() {
-		// go to next UI panel
-	}
-
-	displayCombinations() {
-		// display combinations flash animation
-	}
-
-	displayScore() {
-		// display score flash animation
-	}
-
-	endTutorial() {
-		// remove ui panels
+	startGame() {
+		// this._machineManager.startGame()
+		// start round ?
 	}
 
 	startRound() {
@@ -186,9 +179,6 @@ export default class Main {
 
 	_createEventListeners() {
 		socket.on('reset', this.reset.bind(this))
-		socket.on('display-combinations', this.displayCombinations.bind(this))
-		socket.on('display-score', this.displayScore.bind(this))
-		socket.on('end-tutorial', this.endTutorial.bind(this))
 		socket.on('start-round', this.startRound.bind(this))
 		socket.on('complete-round', this.completeRound.bind(this))
 		socket.on('start-shooter', this.startShooter.bind(this))

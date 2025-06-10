@@ -54,18 +54,6 @@ export default class PhysicalDebug {
 	printToRightScreen(message) {
 		return
 
-		if (!this._rightScreen) return
-		// create element on right screen
-		const element = document.createElement('div')
-		element.className = 'right-screen-text'
-		element.textContent = message
-		element.style.color = '#ffffff'
-		element.style.fontSize = '15px'
-		element.style.fontFamily = 'Arial, sans-serif'
-		this._rightScreen.appendChild(element)
-
-		// scroll right screen to the bottom
-		this._rightScreen.scrollTop = this._rightScreen.scrollHeight
 	}
 
 	// private
@@ -235,7 +223,7 @@ export default class PhysicalDebug {
 
 		socket.send({
 			event: 'button-collect',
-			receiver: 'machine', // add physical non-debug too
+			// receiver: 'machine', // add physical non-debug too
 		})
 	}
 

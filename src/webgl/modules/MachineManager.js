@@ -117,11 +117,51 @@ export default class MachineManager {
 		this._currentSpins = value
 	}
 
+	get spinTokens() {
+		return this._spinTokens
+	}
+
+	set spinTokens(value) {
+		this._spinTokens = value
+		this._updateSpinTokensDisplay()
+	}
+
+	get collectedPoints() {
+		return this._collectedPoints
+	}
+
+	set collectedPoints(value) {
+		this._collectedPoints = value
+		this._updateCollectedPointsDisplay()
+	}
+
+	get rollingPoints() {
+		return this._rollingPoints
+	}
+
+	set rollingPoints(value) {
+		this._rollingPoints = value
+		this._updatePointsDisplay()
+	}
+
+	get quota() {
+		return this._quota
+	}
+
+	set quota(value) {
+		this._quota = value
+		this._updateQuotaDisplay()
+	}
+
 	/**
 	 * Public
 	 */
 	spinWheels(riggedCombination = null) {
-		this._spinWheels((riggedCombination = null))
+		this._spinWheels(riggedCombination)
+	}
+
+	sendPointsToTutorial() {
+		this._sendPointsToTutorial = true
 	}
 
 	/**
@@ -138,7 +178,8 @@ export default class MachineManager {
 		this._currentSpinIsDone = true
 		this._currentSpins = 0
 		this._currentSpinPoints = 0
-		this._spinTokens = 10 // Initialize spin tokens to 10
+		this._spinTokens = 0
+		this._quota = 0
 
 		socket.on('open', () => {
 			socket.send({
@@ -166,9 +207,12 @@ export default class MachineManager {
 	}
 
 	_spinWheels(riggedCombination = null) {
+
+		this._anyLockedWheels = false
 		this._machine.wheels.forEach((wheel, index) => {
 			if (wheel.isLocked) {
 				wheel.isDisabled = true
+				this._anyLockedWheels = true
 				console.log(`Wheel ${index} is blocked`)
 				socket.send({
 					event: 'button-lights-enabled',
@@ -185,10 +229,10 @@ export default class MachineManager {
 
 		if (!this._currentSpinIsDone) return
 
-		// Only check and use spin tokens at the beginning of a new round
-		// (when currentSpins is 0, meaning it's the first spin after collect or farkle)
-		if (this._currentSpins === 0) {
+		// use a spin token if there is no locked wheels or if it's the first spin
+		if (this._currentSpins === 0 || !this._anyLockedWheels) {
 			// Check if player has spin tokens available
+
 			if (this._spinTokens <= 0) {
 				this._logMessage('No spin tokens left! Game over.')
 				return
@@ -220,6 +264,7 @@ export default class MachineManager {
 
 		// Increment spins first
 		this._currentSpins += 1
+		console.log('CURRENT SPINS', this._currentSpins, this._anyLockedWheels)
 
 		// Check for triple cranium farkle
 		const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
@@ -357,6 +402,8 @@ export default class MachineManager {
 		const pointsBeforeCranium = points
 		const craniumCount = counts['💀'] || 0
 		points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0
+
+		console.log('CALCULATED points', points)
 
 		// Don't allow negative points
 		return {
@@ -531,17 +578,7 @@ export default class MachineManager {
 			data: {
 				value: this._rollingPoints,
 			},
-			receiver: 'score',
-		})
-	}
-
-	_updateSpinsDisplay() {
-		socket.send({
-			event: 'update-spins',
-			data: {
-				value: this._spinsLeft,
-			},
-			receiver: 'score',
+			receiver: this._sendPointsToTutorial ? ['tutorial', 'score'] : 'score',
 		})
 	}
 
@@ -554,7 +591,6 @@ export default class MachineManager {
 			receiver: 'score',
 		})
 
-		// Also log to debug console
 		this._logMessage(`Spin tokens remaining: ${this._spinTokens}`)
 	}
 
@@ -565,6 +601,15 @@ export default class MachineManager {
 				value: this._collectedPoints,
 			},
 			receiver: 'score',
+		})
+	}
+
+	_updateQuotaDisplay() {
+		socket.send({
+			event: 'update-quota',
+			data: {
+				value: this._quota,
+			},
 		})
 	}
 
@@ -602,10 +647,10 @@ export default class MachineManager {
 	}
 
 	_resetWheels() {
-		this._machine.wheels.forEach((wheel) => {
+		this._machine.wheels.forEach((wheel, index) => {
 			wheel.isDisabled = true
 			wheel.isLocked = false
-			this._machine.animateWheelLock({ index: wheel.index, value: false })
+			this._machine.animateWheelLock({ index, value: false })
 		})
 	}
 
@@ -629,7 +674,7 @@ export default class MachineManager {
 		// Update UI
 		this._updateCollectedPointsDisplay()
 		this._updatePointsDisplay()
-		this._updateSpinsDisplay()
+		// this._updateSpinsDisplay()
 		//reset combination
 		socket.send({
 			event: 'reset-combi',

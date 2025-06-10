@@ -83,7 +83,6 @@ Uniform Types in (`materialSettings.js`) file:
 | `update-collected-points` | Updates total collected points.                                       |
 | `update-quota`            | Updates quota info.                                                   |
 | `update-round`            | Updates the current round.                                            |
-| `update-spins`            | Updates spin count.                                                   |
 | `update-spin-tokens`      | Updates spin count.                                                   |
 
 ---
