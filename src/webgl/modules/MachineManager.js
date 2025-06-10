@@ -67,6 +67,7 @@ export default class MachineManager {
 		this._secondRoulette = options.secondRoulette
 		this._physicalDebug = options.physicalDebug
 		this._hands = options.hands
+		this._sceneInstance = options.scene
 
 		this._initializeGameState()
 		this._createEventListeners()
@@ -172,7 +173,7 @@ export default class MachineManager {
 		this._rollingPoints = 0
 		this._lockedPoints = 0
 		this._collectedPoints = 0
-		this._round = 1
+		this._round = 0
 		this._maxSpins = false
 		this._spinsLeft = 3
 		this._currentSpinIsDone = true
@@ -321,6 +322,11 @@ export default class MachineManager {
 				this._scene.resources.items.farkleAudio.play()
 
 				socket.send({
+					event: 'reset-combi',
+					receiver: 'combi',
+				})
+
+				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: -1 },
 					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
@@ -381,7 +387,7 @@ export default class MachineManager {
 		results.forEach((index) => {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
 
-			if (symbolName === '💀' && !anyLockedWheels) return
+			if (symbolName === '💀' && !anyLockedWheels) return // don't count craniums if no locked wheels
 
 			counts[symbolName] = (counts[symbolName] || 0) + 1
 			if (counts[symbolName] !== 0 && options.lockedOnly) {
@@ -408,9 +414,7 @@ export default class MachineManager {
 		// 3. Apply cranium penalties
 		const pointsBeforeCranium = points
 		const craniumCount = counts['💀'] || 0
-		if (anyLockedWheels) points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0
-
-		console.log('CALCULATED points', points)
+		if (anyLockedWheels) points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0 // apply malus only if there are locked wheels
 
 		// Don't allow negative points
 		return {
@@ -687,6 +691,11 @@ export default class MachineManager {
 			event: 'reset-combi',
 			receiver: 'combi',
 		})
+
+		if (this._collectedPoints >= this._quota) {
+			this._sceneInstance.completeRound({ index: this._round })
+			this._round += 1
+		}
 	}
 
 	/**

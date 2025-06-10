@@ -58,6 +58,7 @@ export default class Main {
 				machine: this._machine,
 				secondRoulette: this._secondRoulette,
 				hands: this._hands,
+				scene: this,
 			})
 			this._shooterManager = new ShooterManager({ gun: this._gun, machine: this._machine })
 
@@ -100,7 +101,7 @@ export default class Main {
 
 		gsap.delayedCall(1.5, () => {
 			this._machineManager.spinTokens = 10
-			this._machineManager.quota = 300
+			this._machineManager.quota = 200
 		})
 	}
 
@@ -135,8 +136,14 @@ export default class Main {
 		// animate available tokens and quota
 	}
 
-	completeRound() {
+	completeRound(options) {
 		// animate obtained quota
+		console.log('COMPLETE ROUND :', options.index)
+
+		// showw shooter indications on top screens
+		// animate lights 
+
+		this.startShooter()
 	}
 
 	startShooter() {
