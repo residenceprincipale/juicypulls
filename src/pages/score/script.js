@@ -49,11 +49,18 @@ function splitCharacters(element) {
 }
 
 socket.on('update-rolling-points', ({ value }) => {
-	const oldValue = parseInt(currentElement.textContent.replace(/\D/g, '')) || 0
+	const oldValue = parseInt(currentElement.textContent.replace(/[^\d-]/g, '')) || 0
+	const newValue = value
+
+	console.log(newValue, oldValue)
+
+	if (newValue === oldValue) return
+
+	gsap.killTweensOf(currentElement)
 	gsap.to(
 		{ value: oldValue },
 		{
-			value,
+			value: newValue,
 			duration: 0.6,
 			ease: 'power2.out',
 			onUpdate: function () {

@@ -330,6 +330,7 @@ export default class MachineManager {
 			}
 
 			this._rollingPoints = this._getPoints().points || 0
+
 			this._updatePointsDisplay()
 
 			if (this._currentSpins === 1) {
@@ -353,12 +354,15 @@ export default class MachineManager {
 		// Get results for locked wheels only
 		const results = []
 
+		let anyLockedWheels = false
+
 		this._machine.wheels.forEach((wheel, index) => {
 			const isCranium = MAIN_ROULETTE_CONFIG.symbolNames[this._results[index]] === '💀'
 			const shouldAdd = isCranium || !options.lockedOnly || wheel.isLocked
 			if (shouldAdd) {
 				results.push(this._results[index])
 			}
+			if (wheel.isLocked) anyLockedWheels = true
 		})
 
 		// If no wheels are locked, return 0 points
@@ -376,6 +380,9 @@ export default class MachineManager {
 		})
 		results.forEach((index) => {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
+
+			if (symbolName === '💀' && !anyLockedWheels) return
+
 			counts[symbolName] = (counts[symbolName] || 0) + 1
 			if (counts[symbolName] !== 0 && options.lockedOnly) {
 				socket.send({
@@ -401,7 +408,7 @@ export default class MachineManager {
 		// 3. Apply cranium penalties
 		const pointsBeforeCranium = points
 		const craniumCount = counts['💀'] || 0
-		points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0
+		if (anyLockedWheels) points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0
 
 		console.log('CALCULATED points', points)
 

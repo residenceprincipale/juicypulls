@@ -100,6 +100,7 @@ export default class Main {
 
 		gsap.delayedCall(1.5, () => {
 			this._machineManager.spinTokens = 10
+			this._machineManager.quota = 300
 		})
 	}
 
