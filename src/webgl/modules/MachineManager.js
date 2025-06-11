@@ -398,6 +398,7 @@ export default class MachineManager {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
 
 			if (symbolName === '💀' && this._currentSpins < 2 && !this._machine.wheels[index].isLocked) return // don't count craniums if first spîn before locked wheels
+			if (symbolName === '💀') this._machine.turnOnWheelLeds({ index, value: true, color: '0xff0000' })
 
 			counts[symbolName] = (counts[symbolName] || 0) + 1
 			if (counts[symbolName] !== 0 && options.lockedOnly) {
@@ -694,7 +695,7 @@ export default class MachineManager {
 			this._machine.animateWheelLock({ index, value: false })
 		})
 
-		this._machine.turnOffInnerLeds()
+		this._machine.turnOffWheelLeds()
 	}
 
 	_collect() {

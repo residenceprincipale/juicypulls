@@ -37,16 +37,13 @@ export default class PhysicalDebug {
 		this._createMaterials()
 		this._createModel()
 		this._createInteraction()
-		// this._css3dRenderer = this._createCss3dRenderer()
-		// this._css3dScene = this._createCss3dScene()
 		this._cssScreen = this._createCssScreen()
-		// this._css3dScreen = this._createCss3dScreen()
 
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
 
-		if (window.location.hash.includes('#debug') && !window.location.hash.includes('dev')) {
+		if (window.location.hash.includes('#debug-dev')) {
 			const screensElement = document.querySelector('.top-screens')
 			screensElement.style.display = 'flex'
 		}
