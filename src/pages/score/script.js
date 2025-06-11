@@ -234,7 +234,7 @@ function updateRollingPoints({ value }) {
 		{ value: oldValue },
 		{
 			value: newValue,
-			duration: 0.6,
+			duration: 0.3,
 			ease: 'power2.out',
 			onUpdate: function () {
 				const displayValue = Math.round(this.targets()[0].value)
@@ -252,11 +252,12 @@ function updateRollingPoints({ value }) {
 			opacity: 1,
 		},
 		{
-			opacity: 0.3,
+			opacity: 0.05,
 			duration: 0.15,
 			ease: 'steps(1)',
 			repeat: 3,
 			yoyo: true,
+			delay: 0.1,
 		},
 	)
 }
@@ -288,18 +289,85 @@ function updateCollectedPoints({ value }) {
 			cloneAndBlur()
 		},
 	})
+
+	//blink
+	gsap.fromTo(
+		bankValueElement,
+		{
+			opacity: 1,
+		},
+		{
+			opacity: 0.05,
+			duration: 0.15,
+			ease: 'steps(1)',
+			repeat: 3,
+			yoyo: true,
+			delay: 0.6,
+		},
+	)
 }
 
 function updateSpinTokens({ value }) {
-	const stringValue = value.toString()
-	tokensValueElement.textContent = stringValue.toString().padStart(4, '0')
-	splitCharacters(tokensValueElement)
-	cloneAndBlur()
+	const oldValue = parseInt(tokensValueElement.textContent.replace(/\D/g, '')) || 0
+	const newValue = value
+
+	if (newValue === oldValue) return
+
+	gsap.killTweensOf(tokensValueElement)
+	gsap.to(
+		{ value: oldValue },
+		{
+			value: newValue,
+			duration: 0.6,
+			ease: 'power2.out',
+			onUpdate: function () {
+				const displayValue = Math.round(this.targets()[0].value)
+				tokensValueElement.textContent = displayValue.toString().padStart(4, '0')
+				splitCharacters(tokensValueElement)
+				cloneAndBlur()
+			},
+		},
+	)
+
+	//blink
+	gsap.fromTo(
+		tokensValueElement,
+		{
+			opacity: 1,
+		},
+		{
+			opacity: 0.05,
+			duration: 0.15,
+			ease: 'steps(1)',
+			repeat: 3,
+			yoyo: true,
+			delay: 0.6,
+		},
+	)
 }
 
 function updateQuota({ value }) {
+	const oldValue = parseInt(quotaValueElement.textContent.replace(/\D/g, '')) || 0
+	const newValue = value
 	quotaValue = value
-	quotaValueElement.textContent = value.toString().padStart(4, '0')
+
+	if (newValue === oldValue) return
+
+	gsap.killTweensOf(quotaValueElement)
+	gsap.to(
+		{ value: oldValue },
+		{
+			value: newValue,
+			duration: 0.6,
+			ease: 'power2.out',
+			onUpdate: function () {
+				const displayValue = Math.round(this.targets()[0].value)
+				quotaValueElement.textContent = displayValue.toString().padStart(4, '0')
+				cloneAndBlur()
+			},
+		},
+	)
+
 	//update progress bar
 	const progress = collectedPoints / value
 	gsap.to(progressBarElement, {
@@ -310,6 +378,22 @@ function updateQuota({ value }) {
 			cloneAndBlur()
 		},
 	})
+
+	//blink
+	gsap.fromTo(
+		quotaValueElement,
+		{
+			opacity: 1,
+		},
+		{
+			opacity: 0.05,
+			duration: 0.15,
+			ease: 'steps(1)',
+			repeat: 3,
+			yoyo: true,
+			delay: 0.6,
+		},
+	)
 }
 
 function reset() {
