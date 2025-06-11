@@ -36,6 +36,71 @@ export default class CombiBackground {
 	 * Public
 	 */
 
+	showAnimation(immediate = false) {
+		if (immediate) {
+			this._material.uniforms.uAmbientOpacity.value = 1
+			this._material.uniforms.uBarsOpacity.value = 1
+			this._material.uniforms.uInnerOpacity.value = 1
+			this._material.uniforms.uOuterOpacity.value = 1
+			this._material.uniforms.uStrokeOpacity.value = 1
+			this.idleAnimation()
+			return
+		}
+		const timeline = gsap.timeline({
+			defaults: { duration: 0.5 },
+			onComplete: () => {
+				this.idleAnimation()
+			},
+		})
+		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uBarsOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uInnerOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uOuterOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 1 })
+	}
+
+	hideAnimation(immediate = false) {
+		if (this._idleTimeline) {
+			this._idleTimeline.kill()
+			this._idleTimeline = null
+		}
+		if (immediate) {
+			this._material.uniforms.uAmbientOpacity.value = 0
+			this._material.uniforms.uBarsOpacity.value = 0
+			this._material.uniforms.uInnerOpacity.value = 0
+			this._material.uniforms.uOuterOpacity.value = 0
+			this._material.uniforms.uStrokeOpacity.value = 0
+			return
+		}
+		const timeline = gsap.timeline({ defaults: { duration: 0.25 } })
+		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uBarsOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uInnerOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uOuterOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 0 })
+	}
+
+	idleAnimation() {
+		if (this._idleTimeline) {
+			this._idleTimeline.kill()
+		}
+		const timeline = gsap.timeline({ repeat: -1, defaults: { duration: 0.5 } })
+		this._idleTimeline = timeline
+		const steps = [
+			{ uAmbientOpacity: 1, uBarsOpacity: 1, uInnerOpacity: 1, uOuterOpacity: 1, uStrokeOpacity: 1 },
+			{ uAmbientOpacity: 0.75, uBarsOpacity: 0.75, uInnerOpacity: 0.75, uOuterOpacity: 0.75, uStrokeOpacity: 0.75 },
+			{ uAmbientOpacity: 1, uBarsOpacity: 1, uInnerOpacity: 1, uOuterOpacity: 1, uStrokeOpacity: 1 },
+		]
+
+		steps.forEach((step) => {
+			timeline.to(this._material.uniforms.uAmbientOpacity, { value: step.uAmbientOpacity })
+			timeline.to(this._material.uniforms.uBarsOpacity, { value: step.uBarsOpacity })
+			timeline.to(this._material.uniforms.uInnerOpacity, { value: step.uInnerOpacity })
+			timeline.to(this._material.uniforms.uOuterOpacity, { value: step.uOuterOpacity })
+			timeline.to(this._material.uniforms.uStrokeOpacity, { value: step.uStrokeOpacity })
+		})
+	}
+
 	/**
 	 * Private
 	 */
@@ -52,7 +117,15 @@ export default class CombiBackground {
 		this._material = new ShaderMaterial({
 			uniforms: {
 				uAmbient: { value: this._resources.items.ambientTexture },
-				uAmbientOpacity: { value: 1 },
+				uAmbientOpacity: { value: 0 },
+				uBars: { value: this._resources.items.barsTexture },
+				uBarsOpacity: { value: 0 },
+				uInner: { value: this._resources.items.innerTexture },
+				uInnerOpacity: { value: 0 },
+				uOuter: { value: this._resources.items.outerTexture },
+				uOuterOpacity: { value: 0 },
+				uStroke: { value: this._resources.items.strokeTexture },
+				uStrokeOpacity: { value: 0 },
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragmentShader,

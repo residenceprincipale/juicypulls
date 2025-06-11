@@ -2,5 +2,21 @@
 	{
 		"name": "ambientTexture",
 		"path": "/textures/combi/ambient.webp"
+	},
+	{
+		"name": "barsTexture",
+		"path": "/textures/combi/bars.webp"
+	},
+	{
+		"name": "innerTexture",
+		"path": "/textures/combi/inner.webp"
+	},
+	{
+		"name": "outerTexture",
+		"path": "/textures/combi/outer.webp"
+	},
+	{
+		"name": "strokeTexture",
+		"path": "/textures/combi/stroke.webp"
 	}
 ]

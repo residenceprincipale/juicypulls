@@ -2,6 +2,7 @@ import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
 import { MAIN_ROULETTE_CONFIG } from 'webgl/modules/MachineManager.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
+import { gsap } from 'gsap'
 
 const canvasElement = document.querySelector('canvas#webgl')
 const overlayElement = document.querySelector('.overlay')
@@ -145,6 +146,54 @@ cloneAndBlur()
 socket.on('update-combi', updateCombi)
 socket.on('reset-combi', resetCombi)
 socket.on('reset', resetCombi)
+socket.on('hide', hide)
+socket.on('show', show)
+
+function show({ immediate = false } = {}) {
+	if (immediate) {
+		combiElement.style.opacity = 1
+		experience.sceneManager.combi.showAnimation(immediate)
+		cloneAndBlur()
+		return
+	}
+	gsap.fromTo(
+		combiElement,
+		{ opacity: 0 },
+		{
+			opacity: 1,
+			duration: 1,
+			delay: 1,
+			onComplete: () => {
+				cloneAndBlur()
+			},
+		},
+	)
+
+	experience.sceneManager.combi.showAnimation(immediate)
+}
+
+function hide({ immediate = false } = {}) {
+	if (immediate) {
+		combiElement.style.opacity = 0
+		experience.sceneManager.combi.hideAnimation(immediate)
+		cloneAndBlur()
+		return
+	}
+	gsap.fromTo(
+		combiElement,
+		{ opacity: 1 },
+		{
+			opacity: 0,
+			duration: 0.5,
+			delay: 0.5,
+			onComplete: () => {
+				cloneAndBlur()
+			},
+		},
+	)
+
+	experience.sceneManager.combi.hideAnimation(immediate)
+}
 
 function fullscreenCallback(textElement) {
 	fullscreenTextElement.appendChild(textElement)

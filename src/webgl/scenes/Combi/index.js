@@ -10,7 +10,7 @@ export default class Combi {
 		this._scene.resources = new Resources(sources)
 
 		this._scene.resources.on('ready', () => {
-			this._score = new CombiBackground()
+			this.combi = new CombiBackground()
 		})
 	}
 }
