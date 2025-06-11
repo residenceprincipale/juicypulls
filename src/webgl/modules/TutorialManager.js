@@ -50,24 +50,17 @@ export default class TutorialManager {
 
     _goToHoldStep() {
         socket.send({
-            event: 'show-message',
-            data: {
-                message: '',
-                size: 'fullscreen',
-            },
-            receiver: 'score',
+            event: 'show',
+            receiver: ['combi', 'score'],
         })
 
         socket.send({
-            event: 'show-message',
-            data: {
-                message: '',
-                size: 'fullscreen',
-            },
-            receiver: 'combi',
+            event: 'hide-message',
+            receiver: ['combi', 'score'],
         })
 
-        gsap.delayedCall(0.5, () => {
+        gsap.delayedCall(1.5, () => {
+
             socket.send({
                 event: 'show-message',
                 data: {
@@ -83,10 +76,6 @@ export default class TutorialManager {
                 receiver: 'score',
             })
 
-            socket.send({
-                event: 'hide-message',
-                receiver: 'combi',
-            })
 
             this._machineManager.sendPointsToTutorial()
         })

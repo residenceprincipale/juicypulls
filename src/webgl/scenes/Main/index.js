@@ -103,6 +103,14 @@ export default class Main {
 		this._logo.hide()
 
 		gsap.delayedCall(1.5, () => {
+			socket.send({
+				event: 'show',
+				data: {
+					immediate: true,
+				},
+				receiver: ['combi', 'score'],
+			})
+
 			this._machineManager.spinTokens = 10
 			this._machineManager.quota = 200
 
