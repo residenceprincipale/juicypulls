@@ -63,9 +63,6 @@ export default class PhysicalDebug {
 
 		this._leds = []
 
-		const collectButtonTexture = this._resources.items.collectButtonTexture
-		collectButtonTexture.flipY = false
-
 		this._model.traverse((child) => {
 			if (!child.isMesh) return
 			if (child.name.includes('led')) {
@@ -73,7 +70,7 @@ export default class PhysicalDebug {
 			} else if (child.name.includes('base')) {
 				child.material = new MeshMatcapMaterial({ matcap: this._resources.items.goldMatcap })
 			} else if (child.name.includes('collect')) {
-				child.material = new MeshBasicMaterial({ map: collectButtonTexture })
+				// child.material = new MeshBasicMaterial({ map: collectButtonTexture })
 				this._collectButton = child
 			} else if (child.name.includes('machine')) {
 				child.material = new MeshBasicMaterial({ color: new Color(0x000000) })

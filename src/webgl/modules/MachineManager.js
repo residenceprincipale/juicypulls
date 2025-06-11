@@ -421,7 +421,6 @@ export default class MachineManager {
 					socket.send({
 						event: 'jackpot',
 						data: {
-							value: combiKey,
 							symbol: symbol,
 							count: expectedCount,
 						},
@@ -476,6 +475,14 @@ export default class MachineManager {
 			} else if (count === 5) {
 				occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.quintuple
 			}
+
+			socket.send({
+				event: 'jackpot',
+				data: {
+					symbol: symbol,
+					count: count,
+				},
+			})
 		})
 
 		return occurrencePoints

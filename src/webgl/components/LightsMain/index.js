@@ -311,10 +311,12 @@ export default class LightsMain {
 
     _createEventListeners() {
         socket.on('farkle', () => {
+            if (this.blockColorChange) return
             this._animateFarkle()
         })
 
         socket.on('jackpot', () => {
+            if (this.blockColorChange) return
             this._animateJackpot()
         })
     }

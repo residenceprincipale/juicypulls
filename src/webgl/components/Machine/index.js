@@ -101,12 +101,13 @@ export default class Machine {
 		this._innerOutTimeline = gsap.timeline()
 		this._innerOutTimeline.add(this.turnOffInnerLeds(), 0)
 		this._innerOutTimeline.to(this._innerMachine.position, {
-			z: -0.4,
+			z: -0.3,
 			ease: 'none',
-			duration: 0.4,
+			duration: 0.3,
+			delay: 0.2,
 		})
 		this._innerOutTimeline.to(this._innerMachine.position, {
-			y: -0.6,
+			y: -0.5,
 			ease: 'none',
 			duration: 0.4,
 			delay: 0.5,
@@ -127,10 +128,10 @@ export default class Machine {
 		this._innerInTimeline.to(this._innerMachine.position, {
 			z: 0,
 			ease: 'none',
-			duration: 0.8,
-			delay: 0.4,
+			duration: 0.4,
+			delay: 0.5,
 		})
-		this._innerInTimeline.add(this.turnOnInnerLeds(), "+=0.2")
+		this._innerInTimeline.add(this.turnOnInnerLeds(), 0.9)
 
 		return this._innerInTimeline
 	}
@@ -283,16 +284,38 @@ export default class Machine {
 		if (this._separatorsLeds.material.uniforms.uOpacity.value === 0) return
 
 		const timeline = gsap.timeline()
-		timeline.to(this._innerLeds.material.uniforms.uOpacity, {
-			value: 0,
-			duration: 0.1,
-			ease: 'none',
-		})
-		timeline.to(this._separatorsLeds.material.uniforms.uOpacity, {
-			value: 0,
-			duration: 0.1,
-			ease: 'none',
-		})
+
+		timeline
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.01,
+				ease: 'power1.out',
+			})
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.02,
+				ease: 'power1.in',
+			}, 0.09)
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.01,
+				ease: 'power1.out',
+			}, 0.14)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.03,
+				ease: 'power1.out',
+			}, 0.06)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.02,
+				ease: 'power1.in',
+			}, 0.13)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.01,
+				ease: 'power1.out',
+			}, 0.18)
 
 		return timeline
 	}
@@ -386,7 +409,7 @@ export default class Machine {
 			},
 			{
 				value: 1,
-				duration: 1,
+				duration: 0.5,
 				ease: 'power2.inOut',
 			})
 
@@ -455,7 +478,7 @@ export default class Machine {
 
 		this._model.traverse((child) => {
 			if (!child.isMesh) return
-			if (child.name.includes('metal') || child.name.includes('inside')) {
+			if (child.name.includes('metal')) {
 				child.material = this._baseMaterial
 			} else if (child.name.includes('wheels')) {
 				child.material = this._rouletteMaterial
@@ -581,7 +604,7 @@ export default class Machine {
 			transparent: true,
 			uniforms: {
 				uColor: { value: new Color(0xffffff) },
-				uOpacity: { value: 1.0 },
+				uOpacity: { value: 1 },
 				uLockedOpacity0: { value: 0.0 },
 				uLockedOpacity1: { value: 0.0 },
 				uLockedOpacity2: { value: 0.0 },

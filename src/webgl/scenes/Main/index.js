@@ -120,6 +120,7 @@ export default class Main {
 
 	startTutorial() {
 		this._logo.hide()
+		this._lights.blockColorChange = true
 
 		gsap.delayedCall(1.5, () => {
 			this._lights.turnOff({ immediate: true })
@@ -144,6 +145,7 @@ export default class Main {
 		// this._machineManager.startGame()
 		// start round ?
 		this._machineManager.round = 1
+		this._lights.blockColorChange = false
 	}
 
 	startRound() {

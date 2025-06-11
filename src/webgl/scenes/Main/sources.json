@@ -64,16 +64,8 @@
 		"path": "textures/matcaps/metal-shiny.png"
 	},
 	{
-		"name": "collectButtonTexture",
-		"path": "textures/collect-button.jpg"
-	},
-	{
-		"name": "foxModel",
-		"path": "models/Fox/glTF/Fox.gltf"
-	},
-	{
 		"name": "rouletteModel",
-		"path": "models/roulette-v3.glb"
+		"path": "models/roulette-v5.glb"
 	},
 	{
 		"name": "handModel",
