@@ -45,6 +45,7 @@ splitCharacters(bankValueElement)
 cloneAndBlur()
 
 function cloneAndBlur() {
+	return
 	if (lastOverlayElement) {
 		lastOverlayElement.remove()
 	}
@@ -85,7 +86,6 @@ function farkle() {
 		opacity: 0,
 		color: '#ff4726',
 		duration: 0.5,
-		onUpdate: cloneAndBlur,
 		onComplete: () => {
 			farkleVideoElement.play()
 		},

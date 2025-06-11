@@ -25,6 +25,6 @@ export function flickerAnimation(element) {
 	flicker()
 	return () => {
 		stopped = true
-		element.style.opacity = 1
+		// element.style.opacity = 1
 	}
 }
