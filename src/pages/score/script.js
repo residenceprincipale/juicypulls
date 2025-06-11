@@ -244,6 +244,21 @@ function updateRollingPoints({ value }) {
 			},
 		},
 	)
+
+	//blink
+	gsap.fromTo(
+		currentElement,
+		{
+			opacity: 1,
+		},
+		{
+			opacity: 0.3,
+			duration: 0.15,
+			ease: 'steps(1)',
+			repeat: 3,
+			yoyo: true,
+		},
+	)
 }
 
 function updateCollectedPoints({ value }) {
