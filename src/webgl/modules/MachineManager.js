@@ -303,6 +303,7 @@ export default class MachineManager {
 		// Trigger special roulette if needed
 		if (counts['7'] >= 3) {
 			this._triggerSecondRoulette()
+			this._isLeverLocked = true
 			this._logMessage('Triggering Special Roulette Mechanics!')
 			this._rollingPoints = 0
 			this._currentSpins = 0

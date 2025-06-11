@@ -72,7 +72,7 @@ export default class Main {
 			if (this._debug.active) this.setDebug()
 
 			if (this._debug.tutorialActive || !this._debug.active) {
-				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager, scene: this })
+				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager, machine: this._machine, scene: this })
 				this.start()
 
 				this._isPlayingTutorial = true

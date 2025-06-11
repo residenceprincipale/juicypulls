@@ -55,6 +55,9 @@ export default class Machine {
 
 		// this.animateInnerMachineOut()
 
+		// Initialize wheel blink timelines array
+		this._wheelBlinkTimelines = []
+
 		if (this._debug.active) this._createDebug()
 	}
 
@@ -338,7 +341,52 @@ export default class Machine {
 		return timeline
 	}
 
+	animateWheelBlink({ index, value, color }) {
+		// Kill any existing blink timeline for this wheel
+		if (this._wheelBlinkTimelines[index]) {
+			this._wheelBlinkTimelines[index].kill()
+			this._wheelBlinkTimelines[index] = null
+		}
+
+		if (!value) {
+			// If value is false, just turn off the LED and return
+			this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`].value = 0
+			return
+		}
+
+		// Set the color
+		this._innerWheelsLedsMaterial.uniforms[`uLockedColor${index}`].value.set(color || this._defaultWheelLockColor)
+
+		// Create repeating blink timeline
+		const timeline = gsap.timeline({ repeat: -1, yoyo: true })
+
+		timeline.fromTo(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`],
+			{
+				value: 0,
+			},
+			{
+				value: 1,
+				duration: 1,
+				ease: 'power2.inOut',
+			})
+
+		// Store the timeline so it can be killed later
+		this._wheelBlinkTimelines[index] = timeline
+
+		return timeline
+	}
+
 	animateWheelLock({ index, value, color }) {
+		// if blink and trying to reset, do nothing
+		if (this._wheelBlinkTimelines[index] && color === '#ffffff') {
+			return;
+		} else if (this._wheelBlinkTimelines[index]) {
+			this._wheelBlinkTimelines[index].kill()
+			this._wheelBlinkTimelines[index] = null
+		}
+
+		console.log('animateWheelLock', index, value, color)
+
 		if (this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`].value === (value ? 1 : 0)) return
 
 		const timeline = gsap.timeline()

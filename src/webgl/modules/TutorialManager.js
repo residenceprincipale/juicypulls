@@ -6,6 +6,7 @@ const socket = new Socket()
 export default class TutorialManager {
     constructor(options = {}) {
         this._machineManager = options.machineManager
+        this._machine = options.machine
         this._scene = options.scene
 
         socket.connect('tutorial')
@@ -78,6 +79,10 @@ export default class TutorialManager {
 
 
             this._machineManager.sendPointsToTutorial()
+
+            this._machine.animateWheelBlink({ index: 1, value: true })
+            this._machine.animateWheelBlink({ index: 2, value: true })
+            this._machine.animateWheelBlink({ index: 3, value: true })
         })
     }
 
