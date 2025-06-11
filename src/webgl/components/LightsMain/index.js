@@ -8,8 +8,13 @@ import settingsLight3 from './lightSettings-3.js';
 
 import gsap from 'gsap';
 
+import Socket from '@/scripts/Socket.js'
+
+const socket = new Socket()
+
 export default class LightsMain {
     constructor() {
+        socket.connect('lights')
         this._experience = new Experience();
         this._scene = this._experience.scene;
         this._debug = this._experience.debug;
@@ -20,9 +25,12 @@ export default class LightsMain {
             settingsLight3,
         ];
 
+
         if (this._debug.active) this._createDebug();
 
         this._createLights();
+
+        this._createEventListeners()
     }
 
     /**
@@ -214,6 +222,62 @@ export default class LightsMain {
                 addLightDebug(this._debugFolder, light, settings);
             }
         });
+    }
+
+    _animateFarkle() {
+        // make top light flicker to red color with a timeline
+        const timeline = gsap.timeline()
+
+        timeline.to(this._lightTop, {
+            intensity: 0,
+            ease: 'power1.inOut',
+            duration: 0.1
+        })
+        timeline.call(() => {
+            this._lightTop.color.set('#ff0000')
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.05,
+            intensity: 2,
+            ease: 'power1.inOut'
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.05,
+            intensity: 0,
+            ease: 'power1.inOut'
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.05,
+            intensity: 2,
+            ease: 'power1.inOut'
+        })
+        timeline.to(this._lightTop, {
+            intensity: 0,
+            ease: 'power1.inOut',
+            duration: 0.2
+        }, "+=3.5")
+        timeline.call(() => {
+            this._lightTop.color.set('#ffffff')
+        }, null)
+        timeline.to(this._lightTop, {
+            intensity: this._lightSettings[0].intensity.value,
+            ease: 'power1.inOut',
+            duration: 0.05
+        })
+    }
+
+    _animateJackpot() {
+
+    }
+
+    _createEventListeners() {
+        socket.on('farkle', () => {
+            this._animateFarkle()
+        })
+
+        socket.on('jackpot', () => {
+            this._animateJackpot()
+        })
     }
 
     _createDebug() {

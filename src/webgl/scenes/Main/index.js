@@ -209,7 +209,13 @@ export default class Main {
 		this._lights.turnOff()
 	}
 
-	startSecondChance() { }
+	triggerFarkle() {
+		this._machineManager.spinWheels([1, 1, 1, 1, 1])
+	}
+
+	triggerJackpot() {
+		this._machineManager.spinWheels([5, 5, 5, 5, 5])
+	}
 
 	update() {
 		const timeData = {
@@ -248,54 +254,17 @@ export default class Main {
 		})
 		folder
 			.addButton({
-				title: 'Start',
+				title: 'Trigger Farkle',
 			})
 			.on('click', () => {
-				this.start()
-			})
-
-		folder
-			.addButton({
-				title: 'Start Tutorial',
-			})
-			.on('click', () => {
-				this.startTutorial()
+				this.triggerFarkle()
 			})
 		folder
 			.addButton({
-				title: 'Display Combinations',
+				title: 'Trigger Jackpot',
 			})
 			.on('click', () => {
-				this.displayCombinations()
-			})
-		folder
-			.addButton({
-				title: 'Display Score',
-			})
-			.on('click', () => {
-				this.displayScore()
-			})
-		folder
-			.addButton({
-				title: 'End Tutorial',
-			})
-			.on('click', () => {
-				this.endTutorial()
-			})
-
-		folder
-			.addButton({
-				title: 'Start Round',
-			})
-			.on('click', () => {
-				this.startRound()
-			})
-		folder
-			.addButton({
-				title: 'Complete Round',
-			})
-			.on('click', () => {
-				this.completeRound()
+				this.triggerJackpot()
 			})
 		folder
 			.addButton({
@@ -317,13 +286,6 @@ export default class Main {
 			})
 			.on('click', () => {
 				this.lose()
-			})
-		folder
-			.addButton({
-				title: 'Start Second Chance',
-			})
-			.on('click', () => {
-				this.startSecondChance()
 			})
 		folder
 			.addButton({

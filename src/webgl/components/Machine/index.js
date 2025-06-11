@@ -341,6 +341,26 @@ export default class Machine {
 		return timeline
 	}
 
+	flickerOnceOuterLeds() {
+		const timeline = gsap.timeline()
+
+		// Turn off outer LEDs immediately
+		timeline.to(this._outerLeds.material.uniforms.uOpacity, {
+			value: 0,
+			duration: 0.05,
+			ease: 'power1.out',
+		})
+
+		// Wait 0.5 seconds then turn back on
+		timeline.to(this._outerLeds.material.uniforms.uOpacity, {
+			value: 1,
+			duration: 0.1,
+			ease: 'power1.out',
+		}, '+=0.5')
+
+		return timeline
+	}
+
 	animateWheelBlink({ index, value, color }) {
 		// Kill any existing blink timeline for this wheel
 		if (this._wheelBlinkTimelines[index]) {

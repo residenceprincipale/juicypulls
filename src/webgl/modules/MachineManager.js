@@ -290,16 +290,7 @@ export default class MachineManager {
 				this._currentSpins = 0
 				this._updatePointsDisplay()
 				gsap.delayedCall(2, () => {
-					this._scene.resources.items.farkleAudio.play()
-					socket.send({
-						event: 'farkle',
-					})
-					socket.send({
-						event: 'button-lights-enabled',
-						data: { value: false, index: -1 },
-						receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-					})
-					this._resetWheels()
+					this._farkle()
 				})
 			}
 		}
@@ -334,22 +325,13 @@ export default class MachineManager {
 				this._currentSpins = 0
 				this._rollingPoints = 0
 				this._updatePointsDisplay()
-				this._scene.resources.items.farkleAudio.play()
-				socket.send({
-					event: 'farkle',
-				})
 
 				socket.send({
 					event: 'reset-combi',
 					receiver: 'combi',
 				})
 
-				socket.send({
-					event: 'button-lights-enabled',
-					data: { value: false, index: -1 },
-					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
-				})
-				this._resetWheels()
+				this._farkle()
 				return
 			}
 
@@ -736,6 +718,21 @@ export default class MachineManager {
 			this._sceneInstance.completeRound({ index: this._round })
 			this._round += 1
 		}
+	}
+
+	_farkle() {
+		this._scene.resources.items.farkleAudio.play()
+		socket.send({
+			event: 'farkle',
+		})
+		socket.send({
+			event: 'button-lights-enabled',
+			data: { value: false, index: -1 },
+			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+		})
+		this._resetWheels()
+		this._machine.turnOffInnerLeds()
+		this._machine.flickerOnceOuterLeds()
 	}
 
 	/**
