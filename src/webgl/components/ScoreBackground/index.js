@@ -19,10 +19,7 @@ export default class ScoreBackground {
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
-		this.spinAnimation()
-		setInterval(() => {
-			this.spinAnimation()
-		}, 3000)
+		// this.spinAnimation()
 	}
 
 	/**
@@ -40,77 +37,79 @@ export default class ScoreBackground {
 	 * Public
 	 */
 	spinAnimation() {
-		const spinTimeline = gsap.timeline({
-			defaults: {
-				duration: 1,
+		const timeline = gsap.timeline({ repeat: -1, defaults: { duration: 0.05 } })
+		const steps = [
+			{ uTop: 1, uBottomLeft: 0, uBottomRight: 0 },
+			{ uTop: 0, uBottomLeft: 1, uBottomRight: 0 },
+			{ uTop: 0, uBottomLeft: 0, uBottomRight: 1 },
+			{ uTop: 0, uBottomLeft: 0, uBottomRight: 0 },
+		]
+
+		steps.forEach((step, i) => {
+			timeline.to(this._material.uniforms.uTopOpacity, { value: step.uTop })
+			timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: step.uBottomLeft })
+			timeline.to(this._material.uniforms.uBottomRightOpacity, { value: step.uBottomRight })
+		})
+	}
+
+	showAnimation(immediate = false) {
+		if (immediate) {
+			this._material.uniforms.uAmbientOpacity.value = 1
+			this._material.uniforms.uBarsOpacity.value = 1
+			this._material.uniforms.uBottomLeftOpacity.value = 1
+			this._material.uniforms.uBottomRightOpacity.value = 1
+			this._material.uniforms.uTopOpacity.value = 1
+			this._material.uniforms.uStrokeOpacity.value = 1
+			this.idleAnimation()
+			return
+		}
+		const timeline = gsap.timeline({
+			defaults: { duration: 0.5 },
+			onComplete: () => {
+				this.idleAnimation()
 			},
 		})
+		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uBarsOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uBottomRightOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uTopOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 1 })
+	}
 
-		spinTimeline.to(
-			this._material.uniforms.uTopOpacity,
-			{
-				value: 1,
-			},
-			0,
-		)
-		spinTimeline.to(
-			this._material.uniforms.uBottomLeftOpacity,
-			{
-				value: 0,
-			},
-			0,
-		)
-		spinTimeline.to(
-			this._material.uniforms.uBottomRightOpacity,
-			{
-				value: 0,
-			},
-			0,
-		)
+	hideAnimation(immediate = false) {
+		if (this._idleTween) {
+			this._idleTween.kill()
+			this._idleTween = null
+		}
+		if (immediate) {
+			this._material.uniforms.uAmbientOpacity.value = 0
+			this._material.uniforms.uBarsOpacity.value = 0
+			this._material.uniforms.uBottomLeftOpacity.value = 0
+			this._material.uniforms.uBottomRightOpacity.value = 0
+			this._material.uniforms.uTopOpacity.value = 0
+			this._material.uniforms.uStrokeOpacity.value = 0
+			return
+		}
+		const timeline = gsap.timeline({
+			defaults: { duration: 0.25 },
+		})
+		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uBarsOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uBottomRightOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uTopOpacity, { value: 0 })
+		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 0 })
+	}
 
-		spinTimeline.to(
-			this._material.uniforms.uTopOpacity,
-			{
-				value: 0,
-			},
-			1,
-		)
-		spinTimeline.to(
-			this._material.uniforms.uBottomLeftOpacity,
-			{
-				value: 1,
-			},
-			1,
-		)
-		spinTimeline.to(
-			this._material.uniforms.uBottomRightOpacity,
-			{
-				value: 0,
-			},
-			1,
-		)
-
-		spinTimeline.to(
-			this._material.uniforms.uTopOpacity,
-			{
-				value: 0,
-			},
-			2,
-		)
-		spinTimeline.to(
-			this._material.uniforms.uBottomLeftOpacity,
-			{
-				value: 0,
-			},
-			2,
-		)
-		spinTimeline.to(
-			this._material.uniforms.uBottomRightOpacity,
-			{
-				value: 1,
-			},
-			2,
-		)
+	idleAnimation() {
+		if (this._idleTween) this._idleTween.kill()
+		this._idleTween = gsap.timeline({ repeat: -1, defaults: { duration: 0.5 } })
+		this._idleTween.to(this._material.uniforms.uAmbientOpacity, { value: 0.75, yoyo: true, repeat: -1 })
+		this._idleTween.to(this._material.uniforms.uBarsOpacity, { value: 0.75, yoyo: true, repeat: -1 }, '<')
+		this._idleTween.to(this._material.uniforms.uBottomLeftOpacity, { value: 0.75, yoyo: true, repeat: -1 }, '<')
+		this._idleTween.to(this._material.uniforms.uBottomRightOpacity, { value: 0.75, yoyo: true, repeat: -1 }, '<')
+		this._idleTween.to(this._material.uniforms.uTopOpacity, { value: 0.75, yoyo: true, repeat: -1 }, '<')
 	}
 
 	/**
@@ -134,11 +133,11 @@ export default class ScoreBackground {
 				uBottomRight: { value: this._resources.items.bottomRightTexture },
 				uStroke: { value: this._resources.items.strokeTexture },
 				uTop: { value: this._resources.items.topTexture },
-				uAmbientOpacity: { value: 1 },
+				uAmbientOpacity: { value: 0 },
 				uBarsOpacity: { value: 0 },
 				uBottomLeftOpacity: { value: 0 },
 				uBottomRightOpacity: { value: 0 },
-				uStrokeOpacity: { value: 1 },
+				uStrokeOpacity: { value: 0 },
 				uTopOpacity: { value: 0 },
 			},
 			vertexShader: vertexShader,

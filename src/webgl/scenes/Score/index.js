@@ -10,7 +10,7 @@ export default class Score {
 		this._scene.resources = new Resources(sources)
 
 		this._scene.resources.on('ready', () => {
-			this._score = new ScoreBackground()
+			this.score = new ScoreBackground()
 		})
 	}
 }
