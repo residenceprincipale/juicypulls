@@ -385,8 +385,6 @@ export default class Machine {
 			this._wheelBlinkTimelines[index] = null
 		}
 
-		console.log('animateWheelLock', index, value, color)
-
 		if (this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`].value === (value ? 1 : 0)) return
 
 		const timeline = gsap.timeline()
