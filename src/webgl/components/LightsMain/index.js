@@ -267,7 +267,46 @@ export default class LightsMain {
     }
 
     _animateJackpot() {
+        // make top light blink to orange-yellow color with a smooth timeline
+        const timeline = gsap.timeline()
 
+        timeline.to(this._lightTop, {
+            intensity: 0,
+            ease: 'power2.inOut',
+            duration: 0.15
+        })
+        timeline.call(() => {
+            this._lightTop.color.set('#ffcc00') // warm yellow color
+        })
+        // Two fast blinks
+        timeline.to(this._lightTop, {
+            duration: 0.1,
+            intensity: 0.8,
+            ease: 'power2.inOut'
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.1,
+            intensity: 0.1,
+            ease: 'power2.inOut'
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.1,
+            intensity: 0.8,
+            ease: 'power2.inOut'
+        })
+        timeline.to(this._lightTop, {
+            intensity: 0,
+            ease: 'power2.inOut',
+            duration: 0.4
+        }, "+=2.0")
+        timeline.call(() => {
+            this._lightTop.color.set('#ffffff')
+        }, null)
+        timeline.to(this._lightTop, {
+            intensity: this._lightSettings[0].intensity.value,
+            ease: 'power2.inOut',
+            duration: 0.3
+        })
     }
 
     _createEventListeners() {

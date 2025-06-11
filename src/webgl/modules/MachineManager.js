@@ -418,6 +418,14 @@ export default class MachineManager {
 				if (counts[symbol] === expectedCount) {
 					points += MAIN_ROULETTE_CONFIG.combinationPoints[combiKey] * this._multiplier
 					excludedSymbols.push(symbol)
+					socket.send({
+						event: 'jackpot',
+						data: {
+							value: combiKey,
+							symbol: symbol,
+							count: expectedCount,
+						},
+					})
 				}
 			}
 		}
