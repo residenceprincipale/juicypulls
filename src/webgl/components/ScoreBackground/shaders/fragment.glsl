@@ -11,6 +11,7 @@ uniform float uBottomLeftOpacity;
 uniform float uBottomRightOpacity;
 uniform float uStrokeOpacity;
 uniform float uTopOpacity;
+uniform vec3 uTint;
 
 vec3 screen(vec3 base, vec3 blend) {
     return 1.0 - (1.0 - base) * (1.0 - blend);
@@ -30,11 +31,11 @@ void main()  {
     vec4 topColor = texture2D(uTop, vUv);
 
     // Combine the colors using screen blend mode
-    color = add(color, ambientColor * uAmbientOpacity);
-    color = add(color, barsColor * uBarsOpacity);
+    color = add(color, ambientColor * uAmbientOpacity );
+    color = add(color, barsColor * uBarsOpacity * vec4(uTint, 1.0) );
     color = add(color, bottomLeftColor * uBottomLeftOpacity);
     color = add(color, bottomRightColor * uBottomRightOpacity);
-    color = add(color, strokeColor * uStrokeOpacity);
+    color = add(color, strokeColor * uStrokeOpacity * vec4(uTint, 1.0) );
     color = add(color, topColor * uTopOpacity);
 
 	gl_FragColor = color;

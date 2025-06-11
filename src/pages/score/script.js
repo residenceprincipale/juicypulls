@@ -3,14 +3,19 @@ import Experience from 'core/Experience.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 import { gsap } from 'gsap'
 import { flickerAnimation } from '@/scripts/uiAnimations.js'
+import { Color } from 'three'
 
 const canvasElement = document.querySelector('canvas#webgl')
 const experience = new Experience(canvasElement)
+let scoreBackground = undefined
+experience.sceneManager._scene.resources.on('ready', () => {
+	scoreBackground = experience.sceneManager.score
+})
 
 const socket = new Socket()
 socket.connect('score')
 
-//duplicate .score and apply filter blur to do like bloom
+const autoShow = false
 const overlayElement = document.querySelector('.overlay')
 const scoreElement = document.querySelector('.score')
 const currentElement = document.querySelector('.current')
@@ -23,6 +28,7 @@ const bankValueElement = bankElement.querySelector('.value')
 const progressBarElement = document.querySelector('.progress-bar')
 const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
+const farkleVideoElement = document.querySelector('.farkle-video')
 let lastOverlayElement = null
 let collectedPoints = 0
 let quotaValue = 0
@@ -66,6 +72,47 @@ socket.on('update-quota', updateQuota)
 socket.on('update-collected-points', updateCollectedPoints)
 socket.on('hide', hide)
 socket.on('show', show)
+socket.on('farkle', farkle)
+
+function farkle() {
+	farkleVideoElement.style.display = 'initial'
+
+	// Stop flicker animations
+	if (stopCurrentFlicker) stopCurrentFlicker()
+	if (stopQuotaFlicker) stopQuotaFlicker()
+	scoreBackground.tint = new Color('#ff4726')
+	gsap.to([currentElement, quotaElement], {
+		opacity: 0,
+		color: '#ff4726',
+		duration: 0.5,
+		onUpdate: cloneAndBlur,
+		onComplete: () => {
+			farkleVideoElement.play()
+		},
+	})
+	gsap.to([tokensElement, bankElement], {
+		color: '#ff4726',
+		duration: 0.5,
+	})
+	farkleVideoElement.onended = () => {
+		farkleVideoElement.style.display = 'none'
+		gsap.to([currentElement, quotaElement], {
+			opacity: 1,
+			duration: 0.5,
+			color: '',
+			onUpdate: cloneAndBlur,
+			onComplete: () => {
+				stopCurrentFlicker = flickerAnimation(currentElement)
+				stopQuotaFlicker = flickerAnimation(quotaElement)
+			},
+		})
+		gsap.to([tokensElement, bankElement], {
+			color: '',
+			duration: 0.5,
+		})
+		scoreBackground.tint = new Color('white')
+	}
+}
 
 function hide({ immediate = false } = {}) {
 	if (stopCurrentFlicker) stopCurrentFlicker()
@@ -77,7 +124,7 @@ function hide({ immediate = false } = {}) {
 		quotaElement.style.visibility = 'hidden'
 		bankElement.style.visibility = 'hidden'
 		tokensElement.style.visibility = 'hidden'
-		experience.sceneManager.score.hideAnimation(immediate)
+		scoreBackground.hideAnimation(immediate)
 		cloneAndBlur()
 		return
 	}
@@ -295,4 +342,11 @@ initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
 // if is an iframe
 if (window.self !== window.top) {
 	document.querySelector('html').style.fontSize = innerHeight * 0.015 + 'px'
+}
+
+// if autoShow is true, show the score immediately
+if (autoShow) {
+	experience.sceneManager._scene.resources.on('ready', () => {
+		show({ immediate: true })
+	})
 }

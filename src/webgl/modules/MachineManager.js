@@ -292,6 +292,9 @@ export default class MachineManager {
 				gsap.delayedCall(2, () => {
 					this._scene.resources.items.farkleAudio.play()
 					socket.send({
+						event: 'farkle',
+					})
+					socket.send({
 						event: 'button-lights-enabled',
 						data: { value: false, index: -1 },
 						receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
@@ -332,6 +335,9 @@ export default class MachineManager {
 				this._rollingPoints = 0
 				this._updatePointsDisplay()
 				this._scene.resources.items.farkleAudio.play()
+				socket.send({
+					event: 'farkle',
+				})
 
 				socket.send({
 					event: 'reset-combi',

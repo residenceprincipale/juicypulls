@@ -2,7 +2,7 @@ import Experience from 'core/Experience.js'
 import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
 
-import { Mesh, PlaneGeometry, ShaderMaterial } from 'three'
+import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 
@@ -14,6 +14,7 @@ export default class ScoreBackground {
 		this._resources = this._scene.resources
 		// this._resource = this._resources.items.environmentModel
 
+		this._tint = new Color(0xffffff)
 		this._createMaterial()
 		this._createModel()
 		this._createEventListeners()
@@ -32,6 +33,29 @@ export default class ScoreBackground {
 	get material() {
 		return this._material
 	}
+
+	get tint() {
+		return this._tint
+	}
+
+	set tint(value) {
+		this._tint = value
+		gsap.to(this._material.uniforms.uTint.value, {
+			r: value.r,
+			g: value.g,
+			b: value.b,
+			duration: 0.5,
+			ease: `rough({
+				template:none.out,
+				strength: 10,
+				points:20,
+				taper:none,
+				randomize:true,
+				clamp:false
+				})`,
+		})
+	}
+	//M0,0 C0,0 0.141,0 0.141,0 0.141,0 0.143,0.166 0.143,0.166 0.143,0.166 0.274,0 0.274,0 0.274,0 0.286,0.333 0.286,0.333 0.286,0.333 0.374,0.281 0.374,0.281 0.374,0.281 0.43,0.5 0.43,0.5 0.43,0.5 0.57,0.09 0.57,0.09 0.57,0.09 0.571,0.666 0.571,0.666 0.571,0.666 0.713,0.666 0.713,0.666 0.713,0.666 0.782,0.47 0.782,0.47 0.782,0.47 0.857,0.706 0.857,0.706 0.857,0.706 0.858,1 0.858,1 0.858,1 1,1 1,1
 
 	/**
 	 * Public
@@ -139,6 +163,7 @@ export default class ScoreBackground {
 				uBottomRightOpacity: { value: 0 },
 				uStrokeOpacity: { value: 0 },
 				uTopOpacity: { value: 0 },
+				uTint: { value: this._tint },
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragmentShader,
