@@ -97,7 +97,6 @@ export default class Logo {
         });
 
         if (logoMesh) {
-            console.log(logoMesh)
             this._model = logoMesh.clone();
             this._model.geometry = logoMesh.geometry.clone();
             this._model.material = this._material;

@@ -139,8 +139,6 @@ export default class Renderer {
 		this.activeComposer.setSize(this.sizes.width, this.sizes.height)
 		this.bloomPass.setSize(this.sizes.width, this.sizes.height)
 
-		console.log('Bloom post-processing initialized')
-
 		// Add debug controls if debug is active
 		if (this.experience.debug.active) {
 			this.addBloomDebugControls(bloomSettings)

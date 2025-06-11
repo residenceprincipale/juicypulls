@@ -117,7 +117,7 @@ export default class Gun {
             ease: "power2.in"
         })
 
-        console.log('Gun out animation started')
+        // console.log('Gun out animation started')
     }
 
     dispose() {
@@ -174,7 +174,6 @@ export default class Gun {
 
         // For demo purposes, use the created mesh as the model
         this._model = this._resource.scene
-        console.log(this._resource)
         this._model.name = 'gun arm'
 
         // Reset model position since parent handles positioning
@@ -208,7 +207,7 @@ export default class Gun {
                 model: this._resource.scene,
             })
 
-            console.log('Gun animations available:', this._resource.animations.map(anim => anim.name))
+            // console.log('Gun animations available:', this._resource.animations.map(anim => anim.name))
 
         } else {
             console.log('No animations found in gun resource')

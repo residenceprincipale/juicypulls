@@ -162,43 +162,53 @@ export default class Machine {
 		if (this._outerLeds.material.uniforms.uOpacity.value === 1) return
 
 		const timeline = gsap.timeline()
-		// Simple flicker effect for all LEDs
+		// Flicker effect for all LEDs
 		timeline
 			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0.3,
-				duration: 0.05,
-				ease: 'power1.in',
-			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0.8,
-				duration: 0.03,
+				value: 1,
+				duration: 0.025,
 				ease: 'power1.out',
 			})
 			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.1,
-				ease: 'power1.out',
-			})
-			.to(this._outerLeds.material.uniforms.uOpacity, {
-				value: 0.4,
-				duration: 0.04,
+				value: 0,
+				duration: 0.025,
 				ease: 'power1.in',
-			}, 0.02)
+			}, 0.1)
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.025,
+				ease: 'power1.out',
+			}, 0.15)
 			.to(this._outerLeds.material.uniforms.uOpacity, {
 				value: 1,
-				duration: 0.12,
+				duration: 0.025,
 				ease: 'power1.out',
-			})
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 0.2,
-				duration: 0.03,
+			}, 0.05)
+			.to(this._outerLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.025,
 				ease: 'power1.in',
-			}, 0.04)
+			}, 0.12)
+			.to(this._outerLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.025,
+				ease: 'power1.out',
+			}, 0.17)
 			.to(this._separatorsLeds.material.uniforms.uOpacity, {
 				value: 1,
-				duration: 0.08,
+				duration: 0.025,
 				ease: 'power1.out',
-			})
+			}, 0.08)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.025,
+				ease: 'power1.in',
+			}, 0.14)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.025,
+				ease: 'power1.out',
+			}, 0.19)
 
 		return timeline
 	}
@@ -233,30 +243,35 @@ export default class Machine {
 
 		timeline
 			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0.2,
-				duration: 0.04,
-				ease: 'power1.in',
-			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0.7,
-				duration: 0.02,
+				value: 1,
+				duration: 0.025,
 				ease: 'power1.out',
 			})
 			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.08,
-				ease: 'power1.out',
-			})
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 0.3,
-				duration: 0.03,
+				value: 0,
+				duration: 0.025,
 				ease: 'power1.in',
-			}, 0.02)
+			}, 0.09)
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.025,
+				ease: 'power1.out',
+			}, 0.14)
 			.to(this._separatorsLeds.material.uniforms.uOpacity, {
 				value: 1,
-				duration: 0.1,
+				duration: 0.025,
 				ease: 'power1.out',
-			})
+			}, 0.06)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.025,
+				ease: 'power1.in',
+			}, 0.13)
+			.to(this._separatorsLeds.material.uniforms.uOpacity, {
+				value: 1,
+				duration: 0.025,
+				ease: 'power1.out',
+			}, 0.18)
 
 		return timeline
 	}
@@ -284,24 +299,28 @@ export default class Machine {
 
 		const timeline = gsap.timeline()
 
-		this._innerWheelsLedsMaterial.uniforms[`uColor${index}`].value = 0xffffff
+		this._innerWheelsLedsMaterial.uniforms[`uLockedColor0`].value.set('#ffffff')
+		this._innerWheelsLedsMaterial.uniforms[`uLockedColor1`].value.set('#ffffff')
+		this._innerWheelsLedsMaterial.uniforms[`uLockedColor2`].value.set('#ffffff')
+		this._innerWheelsLedsMaterial.uniforms[`uLockedColor3`].value.set('#ffffff')
+		this._innerWheelsLedsMaterial.uniforms[`uLockedColor4`].value.set('#ffffff')
 
 		timeline
 			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0.2,
-				duration: 0.04,
-				ease: 'power1.in',
-			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0.7,
-				duration: 0.02,
+				value: 1,
+				duration: 0.025,
 				ease: 'power1.out',
 			})
+			.to(this._innerLeds.material.uniforms.uOpacity, {
+				value: 0,
+				duration: 0.025,
+				ease: 'power1.in',
+			}, 0.11)
 			.to(this._innerLeds.material.uniforms.uOpacity, {
 				value: 1,
-				duration: 0.08,
+				duration: 0.025,
 				ease: 'power1.out',
-			})
+			}, 0.16)
 
 		return timeline
 	}
@@ -312,7 +331,7 @@ export default class Machine {
 		const timeline = gsap.timeline()
 		timeline.to(this._innerLeds.material.uniforms.uOpacity, {
 			value: 0,
-			duration: 0.1,
+			duration: 0.05,
 			ease: 'none',
 		})
 
@@ -320,7 +339,10 @@ export default class Machine {
 	}
 
 	animateWheelLock({ index, value, color }) {
+		if (this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`].value === (value ? 1 : 0)) return
+
 		const timeline = gsap.timeline()
+
 		timeline.to(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`], {
 			value: value ? 1 : 0,
 			duration: 0.04,
@@ -328,20 +350,20 @@ export default class Machine {
 		})
 
 		timeline.call(() => {
-			this._innerWheelsLedsMaterial.uniforms[`uColor${index}`].value = color || 0xffffff
+			this._innerWheelsLedsMaterial.uniforms[`uLockedColor${index}`].value.set(color || this._defaultWheelLockColor)
 		}, null, value ? '>0.05' : '>0')
 
 		timeline.to(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`], {
 			value: value ? 0 : 1,
 			duration: 0.04,
 			ease: 'power1.in',
-		}, 0.05)
+		}, 0.1)
 
 		timeline.to(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`], {
 			value: value ? 1 : 0,
 			duration: 0.04,
 			ease: 'power1.out',
-		}, 0.1)
+		}, 0.15)
 
 		return timeline
 	}
@@ -484,6 +506,8 @@ export default class Machine {
 	}
 
 	_createInnerLedsMaterial() {
+		this._defaultWheelLockColor = '#ffe161'
+
 		this._innerWheelsLedsMaterial = new ShaderMaterial({
 			vertexShader: innerLedsVertexShader,
 			fragmentShader: innerLedsFragmentShader,
@@ -491,13 +515,17 @@ export default class Machine {
 			transparent: true,
 			uniforms: {
 				uColor: { value: new Color(0xffffff) },
-				uLockedColor: { value: new Color(0xffe161) },
 				uOpacity: { value: 1.0 },
 				uLockedOpacity0: { value: 0.0 },
 				uLockedOpacity1: { value: 0.0 },
 				uLockedOpacity2: { value: 0.0 },
 				uLockedOpacity3: { value: 0.0 },
 				uLockedOpacity4: { value: 0.0 },
+				uLockedColor0: { value: new Color(this._defaultWheelLockColor) },
+				uLockedColor1: { value: new Color(this._defaultWheelLockColor) },
+				uLockedColor2: { value: new Color(this._defaultWheelLockColor) },
+				uLockedColor3: { value: new Color(this._defaultWheelLockColor) },
+				uLockedColor4: { value: new Color(this._defaultWheelLockColor) },
 			},
 		})
 	}

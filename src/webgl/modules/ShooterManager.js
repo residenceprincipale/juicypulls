@@ -23,7 +23,7 @@ export default class ShooterManager {
 
 		// Game settings
 		this._maxTargets = 3
-		this._gameDuration = 30 // seconds
+		this._gameDuration = 15 // seconds
 		this._isGameActive = false
 		this._gameTimer = 0
 		this._score = 0

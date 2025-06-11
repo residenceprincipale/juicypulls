@@ -213,7 +213,10 @@ export default class MachineManager {
 
 	_spinWheels(riggedCombination = null) {
 		this._anyLockedWheels = false
+
 		this._machine.turnOnInnerLeds()
+		this._machine.turnOnWheelLeds()
+
 		this._machine.wheels.forEach((wheel, index) => {
 			if (wheel.isLocked) {
 				wheel.isDisabled = true
@@ -224,6 +227,8 @@ export default class MachineManager {
 					data: { value: false, index: index },
 					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 				})
+			} else {
+				this._machine.animateWheelLock({ index, value: false, color: '#ffffff' })
 			}
 		})
 		if (this._machine.wheels.every((wheel) => wheel.isLocked)) {
@@ -312,14 +317,8 @@ export default class MachineManager {
 			})
 		}
 
-		// socket.send({
-		// 	event: 'anim',
-		// 	receiver: 'bulbs',
-		// })
-		// Animate wheels
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
-		// Update UI when animation completes
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
 
@@ -375,7 +374,13 @@ export default class MachineManager {
 		this._machine.wheels.forEach((wheel, index) => {
 			const isCranium = MAIN_ROULETTE_CONFIG.symbolNames[this._results[index]] === '💀'
 			const shouldAdd = isCranium || !options.lockedOnly || wheel.isLocked
-			if (isCranium && this._currentSpins > 1) this._machine.turnOnWheelLeds({ index, color: 'red' })
+
+			if (isCranium) {
+				this._machine.animateWheelLock({ index, value: true, color: '#ff0000' })
+			} else if (!wheel.isLocked) {
+				this._machine.animateWheelLock({ index, value: false, color: '#ffffff' })
+			}
+
 			if (shouldAdd) {
 				results.push(this._results[index])
 			}
@@ -396,9 +401,6 @@ export default class MachineManager {
 		})
 		results.forEach((index) => {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
-
-			if (symbolName === '💀' && this._currentSpins < 2 && !this._machine.wheels[index].isLocked) return // don't count craniums if first spîn before locked wheels
-			if (symbolName === '💀') this._machine.turnOnWheelLeds({ index, value: true, color: '0xff0000' })
 
 			counts[symbolName] = (counts[symbolName] || 0) + 1
 			if (counts[symbolName] !== 0 && options.lockedOnly) {
@@ -440,8 +442,6 @@ export default class MachineManager {
 
 		// 3. Apply cranium penalties
 		const pointsBeforeCranium = points
-		// const craniumCount = counts['💀'] || 0
-		// points += MAIN_ROULETTE_CONFIG.malusPoints[craniumCount] || 0 // apply malus only if there are locked wheels
 
 		// Don't allow negative points
 		return {
