@@ -22,6 +22,7 @@
 	inset: 0;
 
 	z-index: 2;
+	gap: 1rem;
 }
 
 .left-screen,
@@ -30,6 +31,9 @@
 	height: 100%;
 
 	display: flex;
+
+	border-radius: 1rem;
+	overflow: hidden;
 }
 
 .right-screen {

@@ -6,8 +6,7 @@
 	font-weight: 400;
 	font-stretch: 100%;
 	font-display: swap;
-	src: url(https://fonts.gstatic.com/s/leaguegothic/v11/qFdR35CBi4tvBz81xy7WG7ep-BQAY7Krj7feObpH_9ahg9UYRshmq0s.woff2)
-		format('woff2');
+	src: url(https://fonts.gstatic.com/s/leaguegothic/v11/qFdR35CBi4tvBz81xy7WG7ep-BQAY7Krj7feObpH_9ahg9UYRshmq0s.woff2) format('woff2');
 	unicode-range:
 		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
 		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -18,6 +17,7 @@ body {
 	height: 100vh;
 	font-family: 'League Gothic', sans-serif;
 }
+
 body {
 	background: black;
 	color: var(--primary-color);
@@ -63,6 +63,7 @@ body {
 	justify-content: center;
 	align-items: center;
 }
+
 .quota {
 	display: flex;
 	gap: 3.75rem;
@@ -81,9 +82,6 @@ body {
 	.value {
 		mix-blend-mode: difference;
 		font-size: 6rem;
-	}
-
-	.value {
 	}
 
 	.progress-bar {
@@ -111,6 +109,7 @@ body {
 	align-items: center;
 	opacity: 0;
 }
+
 .current span {
 	display: inline-block;
 	width: 14.375rem;
@@ -165,6 +164,7 @@ body {
 	font-size: 16.375rem;
 	letter-spacing: -0.625rem;
 }
+
 .tokens-container .value span,
 .bank-container .value span {
 	display: inline-block;
@@ -172,10 +172,12 @@ body {
 }
 
 $scale-factor: 0.11;
+
 @for $i from 1 through 4 {
 	.tokens-container .value span:nth-child(#{$i}) {
 		scale: 1 calc(1 - $scale-factor * ($i - 1));
 	}
+
 	.bank-container .value span:nth-child(#{$i}) {
 		scale: 1 calc(1 - $scale-factor * (4 - $i));
 	}
