@@ -88,17 +88,17 @@ export default class ScoreBackground {
 			return
 		}
 		const timeline = gsap.timeline({
-			defaults: { duration: 0.5 },
+			defaults: { duration: 0.25, ease: 'steps(3)' },
 			onComplete: () => {
 				this.idleAnimation()
 			},
 		})
-		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uBarsOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 1 }, '<')
 		timeline.to(this._material.uniforms.uBottomRightOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uTopOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 1 })
+		timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: 1 }, '<')
+		timeline.to(this._material.uniforms.uTopOpacity, { value: 1 }, '<')
+		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 1 }, '<')
+		timeline.to(this._material.uniforms.uBarsOpacity, { value: 1 })
 	}
 
 	hideAnimation(immediate = false) {

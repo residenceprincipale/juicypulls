@@ -186,8 +186,8 @@ function show({ immediate = false } = {}) {
 		{ opacity: 0 },
 		{
 			opacity: 1,
-			duration: 1,
-			delay: 2,
+			duration: 0.5,
+			delay: 1,
 			onComplete: () => {
 				stopCurrentFlicker = flickerAnimation(currentElement)
 				stopQuotaFlicker = flickerAnimation(quotaElement)
@@ -200,8 +200,8 @@ function show({ immediate = false } = {}) {
 		{ opacity: 0 },
 		{
 			opacity: 1,
-			duration: 1,
-			delay: 1.5,
+			duration: 0.5,
+			delay: 0.75,
 			onComplete: () => {
 				stopBankFlicker = flickerAnimation(bankElement)
 				cloneAndBlur()
@@ -213,8 +213,8 @@ function show({ immediate = false } = {}) {
 		{ opacity: 0 },
 		{
 			opacity: 1,
-			duration: 1,
-			delay: 1,
+			duration: 0.5,
+			delay: 0.5,
 			onComplete: () => {
 				stopTokensFlicker = flickerAnimation(tokensElement)
 				cloneAndBlur()
@@ -337,7 +337,7 @@ function fullscreenCallback(textElement) {
 function innerCallback(textElement) {
 	innerTextElement.appendChild(textElement)
 	currentElement.style.visibility = 'hidden'
-	bankElement.style.visibility = 'hidden'
+	quotaElement.style.visibility = 'hidden'
 	cloneAndBlur()
 }
 
