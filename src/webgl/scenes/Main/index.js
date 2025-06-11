@@ -166,6 +166,7 @@ export default class Main {
 		// animate machine out
 		// start shooter
 		this._machine.animateInnerMachineOut()
+		this._machineManager.isLeverLocked = true
 
 		gsap.delayedCall(1.5, () => {
 			this._shooterManager.startGame()
@@ -180,6 +181,7 @@ export default class Main {
 		console.log('start round', this._machineManager.round)
 
 		this._machineManager.quota = this._machineManager.quota += 400
+		this._machineManager.isLeverLocked = false
 	}
 
 	endGame() { }
@@ -190,12 +192,14 @@ export default class Main {
 		this._hands.show()
 		if (this._machine) this._machine.animateInnerMachineOut()
 		if (this._hands) this._hands.setupFight()
+		this._machineManager.isLeverLocked = true
 	}
 
 	respawn() {
 		console.log('RESPAWN')
 		this._machineManager.quota = this._machineManager.quota += 400
 		this._machineManager.spinTokens = 3
+		this._machineManager.isLeverLocked = false
 	}
 
 	loseFinal() {
