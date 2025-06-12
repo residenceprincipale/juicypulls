@@ -178,6 +178,7 @@ export default class Main {
 			event: 'x1',
 			receiver: 'bulbs',
 		})
+		this._machineManager._multiplier = 1
 		// animate machine out
 		// start shooter
 		this._machine.animateInnerMachineOut()
