@@ -100,6 +100,8 @@ export default class Gun {
             duration: 0.8,
             ease: "back.out(1.7)"
         })
+
+        this._startBreathingAnimation()
     }
 
     animateGunOut() {
@@ -226,22 +228,24 @@ export default class Gun {
         this._breathingTimelineX?.kill()
 
         // Create a simple looping breathing animation
-        const breathingIntensity = 0.007 // How much the gun moves
+        const breathingIntensity = 0.001 // How much the gun moves
         const breathingSpeed = 2 // Duration of one breath cycle in seconds
 
         // Vertical breathing movement (continuous loop)
-        this._breathingTimelineY = gsap.to(this._model.position, {
-            y: breathingIntensity,
-            duration: breathingSpeed / 2,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1
-        })
+        // this._breathingTimelineY = gsap.to(this._parentObject.position, {
+        //     y: "+=0.01",
+        //     duration: breathingSpeed / 2,
+        //     ease: "sine.inOut",
+        //     yoyo: true,
+        //     repeat: -1
+        // })
 
-        // Slight rotation breathing (continuous loop)
-        const baseRotationX = this._model.rotation.x
-        this._breathingTimelineX = gsap.to(this._model.rotation, {
-            x: baseRotationX + 0.005,
+        // Slight rotation breathing (continuous loop) 
+
+        // FIX ROTATION AND BREATHE CURSOR
+        const baseRotationX = this._parentObject.rotation.x
+        this._breathingTimelineX = gsap.to(this._parentObject.rotation, {
+            x: "+=0.1",
             duration: breathingSpeed / 2,
             ease: "sine.inOut",
             yoyo: true,

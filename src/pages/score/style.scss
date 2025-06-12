@@ -243,16 +243,5 @@ video {
 	scale: 1.25;
 	transform: translateY(-3rem);
 	display: initial;
-}
-
-.screamer-video {
-	// position: absolute;
-	// inset: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 2;
-
-
-	mix-blend-mode: screen;
-
+	display: none;
 }
