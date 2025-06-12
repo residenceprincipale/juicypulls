@@ -3,7 +3,7 @@ export function flickerAnimation(element) {
 	function flicker() {
 		if (stopped) return
 		if (Math.random() < 0.3) {
-			element.style.opacity = 0.5 + Math.random() * 0.3
+			element.style.opacity = 0.8 + Math.random() * 0.3
 			setTimeout(
 				() => {
 					if (stopped) return

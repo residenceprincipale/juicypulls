@@ -103,6 +103,10 @@ async function jackpot({ symbol, count }) {
 				ease: 'steps(3)',
 			})
 			scoreBackground.showAnimation()
+			stopCurrentFlicker = flickerAnimation(currentElement)
+			stopQuotaFlicker = flickerAnimation(quotaElement)
+			stopBankFlicker = flickerAnimation(bankElement)
+			stopTokensFlicker = flickerAnimation(tokensElement)
 		}
 	}
 	switch (symbol) {
