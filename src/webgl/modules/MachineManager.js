@@ -333,17 +333,20 @@ export default class MachineManager {
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
 			if (this._machine.wheels.filter((wheel) => wheel.isLocked).length >= 2) {
-				this._subliminalTimeout = setTimeout(() => {
-					const messages = ['SPIN MORE', 'DONT STOP NOW', 'KEEP SPINNING', 'JUST A LITTLE MORE']
-					socket.send({
-						event: 'show-subliminal',
-						receiver: 'game',
-						data: {
-							message: messages[Math.floor(Math.random() * messages.length)],
-						},
-					})
-					this._subliminalTimeout = null
-				}, Math.random() * 10000)
+				this._subliminalTimeout = setTimeout(
+					() => {
+						const messages = ['SPIN MORE', 'DONT STOP NOW', 'KEEP SPINNING', 'JUST A LITTLE MORE']
+						socket.send({
+							event: 'show-subliminal',
+							receiver: 'game',
+							data: {
+								message: messages[Math.floor(Math.random() * messages.length)],
+							},
+						})
+						this._subliminalTimeout = null
+					},
+					Math.random() * 10000 + 5000,
+				)
 			}
 
 			const nonLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
@@ -592,9 +595,7 @@ export default class MachineManager {
 					parseInt(firstWheelSymbol.replace('+', '').replace('-', '')) * (firstWheelSymbol.startsWith('+') ? 1 : -1)
 				this._collectedPoints = Math.max(0, this._collectedPoints + points * (secondWheelSymbol.replace('x', '') || 1))
 				this._updateCollectedPointsDisplay()
-				// gsap.delayedCall(2, () => {
-				// 	this._collect()
-				// })
+				this._collect()
 				break
 		}
 	}
@@ -795,6 +796,12 @@ export default class MachineManager {
 		this._resetWheels()
 		this._machine.turnOffInnerLeds()
 		this._machine.flickerOnceOuterLeds()
+
+		this._isLeverLocked = true
+
+		gsap.delayedCall(2, () => {
+			this._isLeverLocked = false
+		})
 	}
 
 	/**
