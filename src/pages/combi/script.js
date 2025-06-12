@@ -3,6 +3,7 @@ import Experience from 'core/Experience.js'
 import { MAIN_ROULETTE_CONFIG } from 'webgl/modules/MachineManager.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 import { gsap } from 'gsap'
+import { flickerAnimation } from '@/scripts/uiAnimations.js'
 
 const autoShow = false
 const canvasElement = document.querySelector('canvas#webgl')
@@ -70,6 +71,7 @@ function createCell(cell, yIndex, xIndex) {
 	cellElement.dataset.row = yIndex
 	cellElement.dataset.column = xIndex
 	cellElement.dataset.content = cell
+	flickerAnimation(cellElement)
 
 	const borderElement = document.createElement('div')
 	borderElement.classList.add('combi__item-border')

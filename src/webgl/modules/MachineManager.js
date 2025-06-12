@@ -326,11 +326,6 @@ export default class MachineManager {
 				this._rollingPoints = 0
 				this._updatePointsDisplay()
 
-				socket.send({
-					event: 'reset-combi',
-					receiver: 'combi',
-				})
-
 				this._farkle()
 				return
 			}
