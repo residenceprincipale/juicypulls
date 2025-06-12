@@ -9,7 +9,7 @@ export default {
         }
     },
     "uRoughnessIntensity": {
-        "value": 1
+        "value": 3.38
     },
     "uAlbedoMap": {
         "value": "gunArmAlbedo"
@@ -21,7 +21,7 @@ export default {
         }
     },
     "uAlbedoIntensity": {
-        "value": 1.34
+        "value": 1.61
     },
     "uTime": {
         "value": 0
@@ -30,13 +30,13 @@ export default {
         "value": 1
     },
     "uDiffuseIntensity": {
-        "value": 0.74
+        "value": 1
     },
     "uSpecularIntensity": {
-        "value": 0.13999999999999999
+        "value": 0.07999999999999999
     },
     "uShininess": {
-        "value": 50
+        "value": 100.00000000000001
     },
     "uOpacity": {
         "value": 1
@@ -45,7 +45,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#ffffff"
+        "value": "#effffc"
     },
     "uSpecularColor": {
         "value": "#ffffff"

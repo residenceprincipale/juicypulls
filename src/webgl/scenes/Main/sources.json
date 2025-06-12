@@ -163,7 +163,7 @@
 	},
 	{
 		"name": "gunArmModel",
-		"path": "/models/gun-arm.glb"
+		"path": "/models/gun-arm-v1.glb"
 	},
 	{
 		"name": "gunArmAlbedo",

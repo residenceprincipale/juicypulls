@@ -86,7 +86,10 @@ export default class Gun {
 
     shoot() {
         if (this._animation) {
-            this._animation.playAnimation('SHOOT')
+            this._animation.playAnimation('armAnimation', {
+                start: 0.15,
+                speed: 1.3,
+            })
         }
     }
 
@@ -180,7 +183,7 @@ export default class Gun {
         // Reset model position since parent handles positioning
         this._model.position.set(0, 0, 0)
         this._model.scale.set(1, 1, 1)
-        this._model.rotation.set(0, 0, 0)
+        this._model.rotation.set(0, -0.13, 0)
         // Start in normal position (not hidden)
 
         // TEMPORRAY: disable frustrum culling
@@ -194,7 +197,7 @@ export default class Gun {
 
         this._model.traverse((child) => {
             if (child.isMesh) {
-                if (child.name.includes('skin')) child.material = this._material
+                if (child.name.includes('arm')) child.material = this._material
                 else child.material = this._berettaMaterial
             }
         })
@@ -208,13 +211,13 @@ export default class Gun {
                 model: this._resource.scene,
             })
 
-            // console.log('Gun animations available:', this._resource.animations.map(anim => anim.name))
+            console.log('Gun animations available:', this._resource.animations.map(anim => anim.name))
 
         } else {
             console.log('No animations found in gun resource')
         }
 
-        this._animation.setAnimationProgress('SHOOT', 0)
+        this._animation.setAnimationProgress('armAnimation', 0)
     }
 
     _createEventListeners() {
@@ -239,7 +242,7 @@ export default class Gun {
                 ease: "sine.inOut"
             }, 0)
             .to(this._model.rotation, {
-                z: "+=0.01",
+                z: "+=0.02",
                 duration: breathingSpeed / 2,
                 ease: "sine.inOut"
             }, 0)
@@ -249,7 +252,7 @@ export default class Gun {
                 ease: "sine.inOut"
             }, breathingSpeed / 2)
             .to(this._model.rotation, {
-                z: "-=0.01",
+                z: "-=0.02",
                 duration: breathingSpeed / 2,
                 ease: "sine.inOut"
             }, breathingSpeed / 2)
