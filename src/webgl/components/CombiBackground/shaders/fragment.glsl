@@ -9,8 +9,7 @@ uniform sampler2D uOuter;
 uniform float uOuterOpacity;
 uniform sampler2D uStroke;
 uniform float uStrokeOpacity;
-
-
+uniform vec3 uTint;
 
 vec3 screen(vec3 base, vec3 blend) {
     return 1.0 - (1.0 - base) * (1.0 - blend);
@@ -30,10 +29,10 @@ void main()  {
 
     // Combine the colors using screen blend mode
     color = add(color, ambientColor * uAmbientOpacity);
-    color = add(color, barsColor * uBarsOpacity);
-    color = add(color, innerColor * uInnerOpacity);
-    color = add(color, outerColor * uOuterOpacity);
-    color = add(color, strokeColor * uStrokeOpacity);
+    color = add(color, barsColor * uBarsOpacity * vec4(uTint, 1.0));
+    color = add(color, innerColor * uInnerOpacity );
+    color = add(color, outerColor * uOuterOpacity * vec4(uTint, 1.0) );
+    color = add(color, strokeColor * uStrokeOpacity * vec4(uTint, 1.0) );
 
-	gl_FragColor = color;
+	gl_FragColor = vec4(color.rgb, color.r + color.g + color.b);
 }

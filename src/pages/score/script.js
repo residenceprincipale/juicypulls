@@ -88,7 +88,7 @@ async function jackpot({ symbol, count }) {
 		stopBankFlicker()
 		stopTokensFlicker()
 		gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
-			opacity: 0,
+			autoAlpha: 0,
 			ease: 'rough({strength: 3, points: 10, randomize: true})',
 			duration: 0.25,
 		})
@@ -98,7 +98,7 @@ async function jackpot({ symbol, count }) {
 		jackpotX4VideoElement.onended = () => {
 			jackpotX4VideoContainerElement.style.display = 'none'
 			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
-				opacity: 1,
+				autoAlpha: 1,
 				duration: 0.5,
 				ease: 'steps(3)',
 			})
@@ -133,7 +133,7 @@ function farkle() {
 	if (stopQuotaFlicker) stopQuotaFlicker()
 	scoreBackground.tint = new Color('#ff4726')
 	gsap.to([currentElement, quotaElement], {
-		opacity: 0,
+		autoAlpha: 0,
 		color: '#ff4726',
 		duration: 0.5,
 		onComplete: () => {
@@ -147,7 +147,7 @@ function farkle() {
 	farkleVideoElement.onended = () => {
 		farkleVideoElement.style.display = 'none'
 		gsap.to([currentElement, quotaElement], {
-			opacity: 1,
+			autoAlpha: 1,
 			duration: 0.5,
 			color: '',
 			onUpdate: cloneAndBlur,
