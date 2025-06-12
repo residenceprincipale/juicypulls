@@ -2,7 +2,7 @@ import Experience from 'core/Experience.js'
 import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
 
-import { Mesh, PlaneGeometry, ShaderMaterial } from 'three'
+import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 
@@ -12,6 +12,7 @@ export default class CombiBackground {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
+		this._tint = new Color('white')
 		// this._resource = this._resources.items.environmentModel
 
 		this._createMaterial()
@@ -30,6 +31,26 @@ export default class CombiBackground {
 
 	get material() {
 		return this._material
+	}
+
+	get tint() {
+		return this._tint
+	}
+
+	set tint(value) {
+		this._tint = value
+		gsap.to(this._material.uniforms.uTint.value, {
+			r: value.r,
+			g: value.g,
+			b: value.b,
+			duration: 0.5,
+			ease: `rough({
+				template:none,
+				strength: 3,
+				points:10,
+				randomize:true,
+				})`,
+		})
 	}
 
 	/**
@@ -126,6 +147,7 @@ export default class CombiBackground {
 				uOuterOpacity: { value: 0 },
 				uStroke: { value: this._resources.items.strokeTexture },
 				uStrokeOpacity: { value: 0 },
+				uTint: { value: this._tint },
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragmentShader,
