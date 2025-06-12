@@ -87,4 +87,5 @@ p {
 	height: 100vh;
 	z-index: 2;
 	transform: scale(1.05);
+	display: none;
 }
