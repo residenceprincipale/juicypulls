@@ -159,7 +159,6 @@ socket.on('show', show)
 socket.on('jackpot', jackpot)
 
 function jackpot({ symbol, count }) {
-	if (count < 3) return
 	gsap.to(jackpotVideoElements, {
 		autoAlpha: 1,
 		delay: 0.1,

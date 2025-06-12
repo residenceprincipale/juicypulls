@@ -424,9 +424,8 @@ export default class MachineManager {
 				if (counts[symbol] === expectedCount) {
 					points += MAIN_ROULETTE_CONFIG.combinationPoints[combiKey] * this._multiplier
 					excludedSymbols.push(symbol)
-					// Check if the symbol is a new one, compare counts with lockedCounts
-					if (counts[symbol] - (lockedCounts[symbol] || 0) > 0) {
-						console.log(`New symbol found: ${symbol} with count: ${counts[symbol]}`)
+					// Check if the symbol is new, compare counts with lockedCounts
+					if (counts[symbol] - (lockedCounts[symbol] || 0) > 0 && counts[symbol] >= 3) {
 						socket.send({
 							event: 'jackpot',
 							data: {
@@ -487,7 +486,7 @@ export default class MachineManager {
 			}
 
 			// Check if the symbol is a new one, compare counts with lockedCounts
-			if (counts[symbol] - (lockedCounts[symbol] || 0) > 0) {
+			if (counts[symbol] - (lockedCounts[symbol] || 0) > 0 && counts[symbol] >= 3) {
 				socket.send({
 					event: 'jackpot',
 					data: {

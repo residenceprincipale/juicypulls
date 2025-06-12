@@ -161,6 +161,8 @@ export default class ShooterManager {
 	_handleShoot() {
 		if (!this._isGameActive || this._isShooting) return false
 
+		this._scene.resources.items.pistolAudio.play()
+
 		// Set shooting state to prevent rapid firing
 		this._isShooting = true
 
