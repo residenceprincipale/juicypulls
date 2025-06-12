@@ -109,7 +109,7 @@ export default class Main {
 	startSkipIntro() {
 		this._logo.hide()
 
-		this.startShooter()
+		// this.startShooter()
 		gsap.delayedCall(2, () => {
 			socket.send({
 				event: 'show',
@@ -123,7 +123,6 @@ export default class Main {
 			this._machineManager.quota = 200
 
 			this._machineManager.round = 1
-
 		})
 	}
 
