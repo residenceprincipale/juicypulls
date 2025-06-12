@@ -2,8 +2,10 @@ import Socket from '@/scripts/Socket.js'
 import Experience from 'core/Experience.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 import { gsap } from 'gsap'
+import { RoughEase } from 'gsap/EasePack'
 import { flickerAnimation } from '@/scripts/uiAnimations.js'
 import { Color } from 'three'
+gsap.registerPlugin(RoughEase)
 
 const canvasElement = document.querySelector('canvas#webgl')
 const experience = new Experience(canvasElement)
@@ -29,6 +31,8 @@ const progressBarElement = document.querySelector('.progress-bar')
 const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
 const farkleVideoElement = document.querySelector('.farkle-video')
+const jackpotX4VideoElement = document.querySelector('.jackpot-x4-video')
+const jackpotX4VideoContainerElement = document.querySelector('.jackpot-x4-video-container')
 let lastOverlayElement = null
 let collectedPoints = 0
 let quotaValue = 0
@@ -74,6 +78,48 @@ socket.on('update-collected-points', updateCollectedPoints)
 socket.on('hide', hide)
 socket.on('show', show)
 socket.on('farkle', farkle)
+socket.on('jackpot', jackpot)
+
+async function jackpot({ symbol, count }) {
+	if (count === 4) {
+		jackpotX4VideoContainerElement.style.display = 'initial'
+		stopQuotaFlicker()
+		stopCurrentFlicker()
+		stopBankFlicker()
+		stopTokensFlicker()
+		gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
+			opacity: 0,
+			ease: 'rough({strength: 3, points: 10, randomize: true})',
+			duration: 0.25,
+		})
+		await scoreBackground.hideAnimation(0.1)
+		jackpotX4VideoElement.play()
+
+		jackpotX4VideoElement.onended = () => {
+			jackpotX4VideoContainerElement.style.display = 'none'
+			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
+				opacity: 1,
+				duration: 0.5,
+				ease: 'steps(3)',
+			})
+			scoreBackground.showAnimation()
+		}
+	}
+	switch (symbol) {
+		case '🍋':
+			jackpotX4VideoContainerElement.style.background = '#d9ffd9'
+			break
+		case '🍒':
+			jackpotX4VideoContainerElement.style.background = '#ff99cc'
+			break
+		case '🍊':
+			jackpotX4VideoContainerElement.style.background = '#ffd280'
+			break
+		case '🍇':
+			jackpotX4VideoContainerElement.style.background = '#804d80'
+			break
+	}
+}
 
 function farkle() {
 	farkleVideoElement.style.display = 'initial'
@@ -124,7 +170,7 @@ function hide({ immediate = false } = {}) {
 		quotaElement.style.visibility = 'hidden'
 		bankElement.style.visibility = 'hidden'
 		tokensElement.style.visibility = 'hidden'
-		scoreBackground.hideAnimation(immediate)
+		scoreBackground.hideAnimation(0)
 		cloneAndBlur()
 		return
 	}
@@ -164,7 +210,7 @@ function hide({ immediate = false } = {}) {
 			},
 		},
 	)
-	experience.sceneManager.score.hideAnimation(immediate)
+	experience.sceneManager.score.hideAnimation(immediate ? 0 : null)
 }
 
 function show({ immediate = false } = {}) {
@@ -177,7 +223,7 @@ function show({ immediate = false } = {}) {
 		stopQuotaFlicker = flickerAnimation(quotaElement)
 		stopBankFlicker = flickerAnimation(bankElement)
 		stopTokensFlicker = flickerAnimation(tokensElement)
-		experience.sceneManager.score.showAnimation(immediate)
+		experience.sceneManager.score.showAnimation(0)
 		cloneAndBlur()
 		return
 	}
@@ -221,7 +267,7 @@ function show({ immediate = false } = {}) {
 			},
 		},
 	)
-	experience.sceneManager.score.showAnimation(immediate)
+	experience.sceneManager.score.showAnimation(immediate ? 0 : null)
 }
 function updateRollingPoints({ value }) {
 	const oldValue = parseInt(currentElement.textContent.replace(/[^\d-]/g, '')) || 0

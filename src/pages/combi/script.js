@@ -4,6 +4,7 @@ import { MAIN_ROULETTE_CONFIG } from 'webgl/modules/MachineManager.js'
 import initSecondScreenMessage from '@/scripts/secondScreenMessage.js'
 import { gsap } from 'gsap'
 
+const autoShow = false
 const canvasElement = document.querySelector('canvas#webgl')
 const overlayElement = document.querySelector('.overlay')
 const combiElement = document.querySelector('.combi')
@@ -221,4 +222,10 @@ initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
 // if is an iframe
 if (window.self !== window.top) {
 	document.querySelector('html').style.fontSize = innerHeight * 0.015 + 'px'
+}
+
+if (autoShow) {
+	experience.sceneManager._scene.resources.on('ready', () => {
+		show({ immediate: true })
+	})
 }

@@ -228,3 +228,19 @@ video {
 	mix-blend-mode: screen;
 	display: none;
 }
+
+.jackpot-x4-video-container {
+	background: white;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	display: none;
+}
+.jackpot-x4-video {
+	mix-blend-mode: luminosity;
+	scale: 1.25;
+	transform: translateY(-3rem);
+	display: initial;
+}

@@ -38,5 +38,5 @@ void main()  {
     color = add(color, strokeColor * uStrokeOpacity * vec4(uTint, 1.0) );
     color = add(color, topColor * uTopOpacity);
 
-	gl_FragColor = color;
+	gl_FragColor = vec4(color.rgb, color.r + color.g + color.b );
 }

@@ -76,19 +76,9 @@ export default class ScoreBackground {
 		})
 	}
 
-	showAnimation(immediate = false) {
-		if (immediate) {
-			this._material.uniforms.uAmbientOpacity.value = 1
-			this._material.uniforms.uBarsOpacity.value = 1
-			this._material.uniforms.uBottomLeftOpacity.value = 1
-			this._material.uniforms.uBottomRightOpacity.value = 1
-			this._material.uniforms.uTopOpacity.value = 1
-			this._material.uniforms.uStrokeOpacity.value = 1
-			this.idleAnimation()
-			return
-		}
+	showAnimation(duration = 0.25) {
 		const timeline = gsap.timeline({
-			defaults: { duration: 0.25, ease: 'steps(3)' },
+			defaults: { duration, ease: 'steps(3)' },
 			onComplete: () => {
 				this.idleAnimation()
 			},
@@ -101,29 +91,24 @@ export default class ScoreBackground {
 		timeline.to(this._material.uniforms.uBarsOpacity, { value: 1 })
 	}
 
-	hideAnimation(immediate = false) {
+	async hideAnimation(duration = 0.25) {
 		if (this._idleTween) {
 			this._idleTween.kill()
 			this._idleTween = null
 		}
-		if (immediate) {
-			this._material.uniforms.uAmbientOpacity.value = 0
-			this._material.uniforms.uBarsOpacity.value = 0
-			this._material.uniforms.uBottomLeftOpacity.value = 0
-			this._material.uniforms.uBottomRightOpacity.value = 0
-			this._material.uniforms.uTopOpacity.value = 0
-			this._material.uniforms.uStrokeOpacity.value = 0
-			return
-		}
-		const timeline = gsap.timeline({
-			defaults: { duration: 0.25 },
+
+		return new Promise((resolve) => {
+			const timeline = gsap.timeline({
+				defaults: { duration, ease: "rough({ template: 'none', strength: 2, points: 10 , randomize: true })" },
+				onComplete: resolve,
+			})
+			timeline.to(this._material.uniforms.uAmbientOpacity, { value: 0 })
+			timeline.to(this._material.uniforms.uBarsOpacity, { value: 0 }, '<')
+			timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: 0 })
+			timeline.to(this._material.uniforms.uBottomRightOpacity, { value: 0 })
+			timeline.to(this._material.uniforms.uTopOpacity, { value: 0 }, '<')
+			timeline.to(this._material.uniforms.uStrokeOpacity, { value: 0 }, '<')
 		})
-		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uBarsOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uBottomLeftOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uBottomRightOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uTopOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 0 })
 	}
 
 	idleAnimation() {
