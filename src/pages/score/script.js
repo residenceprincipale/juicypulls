@@ -123,7 +123,7 @@ async function jackpot({ symbol, count }) {
 			jackpotX4VideoContainerElement.style.background = '#804d80'
 			break
 		case '7':
-			jackpotX4VideoContainerElement.style.background = '#00ffff'
+			jackpotX4VideoContainerElement.style.background = '#80ffff'
 			break
 	}
 }
