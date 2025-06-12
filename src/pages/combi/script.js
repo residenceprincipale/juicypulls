@@ -194,9 +194,15 @@ function jackpot({ symbol, count }) {
 			})
 			experience.sceneManager.combi.tint = new Color('#804d80')
 			break
+		case '7':
+			gsap.to(sideElements, {
+				background: '#00ffff',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
+			experience.sceneManager.combi.tint = new Color('#00ffff')
 	}
 
-	gsap.delayedCall(9, () => {
+	gsap.delayedCall(6, () => {
 		gsap.to(jackpotVideoElements, {
 			autoAlpha: 0,
 			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",

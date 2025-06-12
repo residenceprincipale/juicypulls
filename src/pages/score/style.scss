@@ -229,6 +229,11 @@ video {
 	display: none;
 }
 
+.farkle-video {
+	scale: 1.3;
+	transform: translateY(-3rem);
+}
+
 .jackpot-x4-video-container {
 	background: white;
 	position: absolute;

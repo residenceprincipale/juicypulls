@@ -173,6 +173,11 @@ export default class Main {
 	}
 
 	startShooter() {
+		// reset bulbs
+		socket.send({
+			event: 'x1',
+			receiver: 'bulbs',
+		})
 		// animate machine out
 		// start shooter
 		this._machine.animateInnerMachineOut()
