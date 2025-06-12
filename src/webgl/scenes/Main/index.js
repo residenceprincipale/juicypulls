@@ -71,6 +71,9 @@ export default class Main {
 
 			if (this._debug.active) this.setDebug()
 
+			this._isSecondChanceEnabled = false
+			this._hands.hide()
+
 			if (this._debug.tutorialActive || !this._debug.active) {
 				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager, machine: this._machine, scene: this })
 				this.start()
@@ -190,11 +193,15 @@ export default class Main {
 
 	lose() {
 		console.log('LOSE GAME')
-		this._loseCount += 1
-		this._hands.show()
-		if (this._machine) this._machine.animateInnerMachineOut()
-		if (this._hands) this._hands.setupFight()
-		this._machineManager.isLeverLocked = true
+		if (this._isSecondChanceEnabled) {
+			this._loseCount += 1
+			this._hands.show()
+			if (this._machine) this._machine.animateInnerMachineOut()
+			if (this._hands) this._hands.setupFight()
+			this._machineManager.isLeverLocked = true
+		} else {
+			this.loseFinal()
+		}
 	}
 
 	respawn() {

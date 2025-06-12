@@ -74,7 +74,7 @@ export default class BackgroundEnvironment {
         this._model.name = 'background environment'
         this._model.position.set(-4.186, -2.468, -6.599)
         this._model.scale.set(2, 2, 2)
-        this._model.rotation.set(-3.142, 1.712, -3.142)
+        this._model.rotation.set(-3.142, 1.812, -3.142)
 
         this._scene.add(this._model)
 
