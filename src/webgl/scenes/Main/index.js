@@ -219,6 +219,10 @@ export default class Main {
 		this._machineManager.spinWheels([5, 5, 5, 5, 5])
 	}
 
+	trigger777() {
+		this._machineManager.spinWheels([2, 0, 0, 0, 3])
+	}
+
 	update() {
 		const timeData = {
 			deltaTime: this._experience.time.delta,
@@ -267,6 +271,13 @@ export default class Main {
 			})
 			.on('click', () => {
 				this.triggerJackpot()
+			})
+		folder
+			.addButton({
+				title: 'Trigger "777"',
+			})
+			.on('click', () => {
+				this.trigger777()
 			})
 		folder
 			.addButton({

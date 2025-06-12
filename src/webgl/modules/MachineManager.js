@@ -296,13 +296,13 @@ export default class MachineManager {
 		}
 		// Trigger special roulette if needed
 		if (counts['7'] >= 3) {
-			this._triggerSecondRoulette()
 			this._logMessage('Triggering Special Roulette Mechanics!')
 			this._isLeverLocked = true
 			this._rollingPoints = 0
 			this._currentSpins = 0
 			this._updatePointsDisplay()
 			gsap.delayedCall(2, () => {
+				this._triggerSecondRoulette()
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: -1 },

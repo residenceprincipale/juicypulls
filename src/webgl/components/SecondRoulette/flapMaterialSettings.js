@@ -7,12 +7,12 @@ export default {
     },
     "uRoughnessRepeat": {
         "value": {
-            "x": 0.55,
-            "y": 0.8200000000000001
+            "x": 2.57,
+            "y": 1.62
         }
     },
     "uRoughnessIntensity": {
-        "value": 3
+        "value": 3.59
     },
     "uAlbedoMap": {
         "value": "flap-albedo"
@@ -24,14 +24,14 @@ export default {
         }
     },
     "uAlbedoIntensity": {
-        "value": 0.19999999999999998
+        "value": 0.16999999999999998
     },
     "uNormalMap": {
         "value": "flap-normal"
     },
     "uNormalRepeat": {
         "value": {
-            "x": 0.22999999999999998,
+            "x": 0.21,
             "y": 0.39999999999999997
         }
     },
@@ -51,19 +51,19 @@ export default {
         }
     },
     "uMatcapIntensity": {
-        "value": 0.72
+        "value": 0.75
     },
     "uAmbientIntensity": {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 1.5
+        "value": 1.05
     },
     "uSpecularIntensity": {
-        "value": 0.07000000000000003
+        "value": 0.040000000000000036
     },
     "uShininess": {
-        "value": 150
+        "value": 150.09
     },
     "uOpacity": {
         "value": 1
@@ -72,7 +72,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#515151"
+        "value": "#6c6c6c"
     },
     "uSpecularColor": {
         "value": "0xffffff"

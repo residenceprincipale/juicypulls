@@ -3,7 +3,7 @@ export default {
         "value": 0
     },
     "uRoughnessMap": {
-        "value": "secondRouletteRoughness"
+        "value": "metalRoughness"
     },
     "uRoughnessRepeat": {
         "value": {

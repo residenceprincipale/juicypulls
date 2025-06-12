@@ -137,8 +137,8 @@ export default class SecondRoulette {
 		// Drop animation with smoother ease
 		this._inTimeline.to(this._model.position, {
 			x: 0.003,
-			y: 0.082,
-			z: -0.148,
+			y: 0.044,
+			z: -0.164,
 			ease: "power2.out",
 			duration: 0.45,
 		});
@@ -173,7 +173,7 @@ export default class SecondRoulette {
 		this._outTimeline.to(this._model.position, {
 			x: 0.000,
 			y: 0.754,
-			z: -0.174,
+			z: -0.2,
 			ease: "power4.in",
 			duration: 0.5,
 		});
@@ -245,6 +245,8 @@ export default class SecondRoulette {
 		// this._base.rotation.x = 0.3
 
 		this._model.position.set(0.000, 0.754, -0.174)
+		// this._model.position.set(0.003, 0.039, -0.038)
+		this._model.scale.set(0.817, 0.816, 0.816)
 		this._scene.add(this._model)
 	}
 
@@ -335,6 +337,19 @@ export default class SecondRoulette {
 			title: 'Second Roulette',
 			expanded: true,
 		})
+
+		folder.addButton({
+			title: 'Animate Out'
+		}).on('click', () => {
+			this.animateOut()
+		})
+
+		folder.addButton({
+			title: 'Animate In'
+		}).on('click', () => {
+			this.animateIn()
+		})
+
 		addCustomMaterialDebug(folder, rouletteMaterialUniforms, this._resources, this._rouletteMaterial)
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 		addCustomMaterialDebug(folder, flapMaterialUniforms, this._resources, this._flapMaterial)

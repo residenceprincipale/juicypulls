@@ -141,7 +141,7 @@ export default class Machine {
 		this._innerBackTimeline?.kill()
 		this._innerBackTimeline = gsap.timeline()
 		this._innerBackTimeline.to(this._innerMachine.position, {
-			z: -0.45,
+			z: -0.35,
 			ease: 'none',
 			duration: 1,
 		})
@@ -154,7 +154,7 @@ export default class Machine {
 		this._innerFrontTimeline?.kill()
 		this._innerFrontTimeline = gsap.timeline()
 		this._innerFrontTimeline.to(this._innerMachine.position, {
-			z: 0.07,
+			z: 0,
 			ease: 'none',
 			duration: 0.8,
 		})
@@ -643,6 +643,18 @@ export default class Machine {
 			title: 'Animate In'
 		}).on('click', () => {
 			this.animateInnerMachineIn()
+		})
+
+		folder.addButton({
+			title: 'Animate Back'
+		}).on('click', () => {
+			this.animateInnerMachineBack()
+		})
+
+		folder.addButton({
+			title: 'Animate Front'
+		}).on('click', () => {
+			this.animateInnerMachineFront()
 		})
 
 		const color = {
