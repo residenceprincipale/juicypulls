@@ -388,7 +388,7 @@ export default class ShooterManager {
 		this._crosshairBreathingTimeline = gsap.timeline({ repeat: -1, yoyo: true })
 
 		// Subtle breathing movement - much smaller than gun for crosshair
-		const breathingIntensity = 0.003 // Small offset for crosshair breathing
+		const breathingIntensity = 0.006 // Small offset for crosshair breathing
 
 		this._crosshairBreathingTimeline
 			.to(this._crosshairBreathingOffset, {
@@ -461,8 +461,8 @@ export default class ShooterManager {
                 position: fixed;
                 top: 50%;
                 left: 50%;
-                width: 40px;
-                height: 40px;
+                width: 80px;
+                height: 80px;
                 pointer-events: none;
                 z-index: 1000;
                 transform: translate(-50%, -50%);
@@ -477,8 +477,8 @@ export default class ShooterManager {
             .crosshair-horizontal,
             .crosshair-vertical {
                 position: absolute;
-                background: rgba(255, 0, 0, 0.9);
-                border: 4px solid rgba(1, 0, 0, 0.5);
+                background: rgba(255, 255, 255, 0.9);
+                border: 3px solid rgba(255, 255, 255, 0.5);
             }
 
             .crosshair-horizontal {
