@@ -213,15 +213,16 @@ function jackpot({ symbol, count }) {
 function show({ immediate = false } = {}) {
 	if (immediate) {
 		combiElement.style.opacity = 1
+		gsap.set(sideElements, { autoAlpha: 1 })
 		experience.sceneManager.combi.showAnimation(immediate)
 		cloneAndBlur()
 		return
 	}
 	gsap.fromTo(
-		combiElement,
-		{ opacity: 0 },
+		[combiElement, ...sideElements],
+		{ autoAlpha: 0 },
 		{
-			opacity: 1,
+			autoAlpha: 1,
 			duration: 1,
 			delay: 1,
 			onComplete: () => {
@@ -237,6 +238,7 @@ function hide({ immediate = false } = {}) {
 	if (immediate) {
 		combiElement.style.opacity = 0
 		experience.sceneManager.combi.hideAnimation(immediate)
+		gsap.set(sideElements, { autoAlpha: 0 })
 		cloneAndBlur()
 		return
 	}
@@ -252,6 +254,12 @@ function hide({ immediate = false } = {}) {
 			},
 		},
 	)
+	gsap.to(sideElements, {
+		autoAlpha: 0,
+		duration: 0.5,
+		delay: 0.5,
+		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+	})
 
 	experience.sceneManager.combi.hideAnimation(immediate)
 }
