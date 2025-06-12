@@ -377,7 +377,18 @@ export default class MachineManager {
 
 		// Count occurrences of symbols in locked wheels
 		const counts = {}
-		MAIN_ROULETTE_CONFIG.symbolNames.forEach((name) => (counts[name] = 0))
+		const lockedCounts = {}
+		MAIN_ROULETTE_CONFIG.symbolNames.forEach((name) => {
+			counts[name] = 0
+			lockedCounts[name] = 0
+		})
+
+		this._machine.wheels.forEach((wheel, index) => {
+			if (wheel.isLocked) {
+				const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[this._results[index]]
+				lockedCounts[symbolName] = (lockedCounts[symbolName] || 0) + 1
+			}
+		})
 
 		socket.send({
 			event: 'reset-combi',
@@ -413,20 +424,24 @@ export default class MachineManager {
 				if (counts[symbol] === expectedCount) {
 					points += MAIN_ROULETTE_CONFIG.combinationPoints[combiKey] * this._multiplier
 					excludedSymbols.push(symbol)
-					socket.send({
-						event: 'jackpot',
-						data: {
-							symbol: symbol,
-							count: expectedCount,
-						},
-					})
+					// Check if the symbol is a new one, compare counts with lockedCounts
+					if (counts[symbol] - (lockedCounts[symbol] || 0) > 0) {
+						console.log(`New symbol found: ${symbol} with count: ${counts[symbol]}`)
+						socket.send({
+							event: 'jackpot',
+							data: {
+								symbol: symbol,
+								count: counts[symbol],
+							},
+						})
+					}
 				}
 			}
 		}
 
 		// 2. Si aucune combinaison spéciale, calculer les points d'occurrence et individuels
 		// 2.1. Points d'occurrence (paires, triples)
-		points += this._calculateOccurrencePoints(counts, excludedSymbols) * this._multiplier
+		points += this._calculateOccurrencePoints(counts, excludedSymbols, lockedCounts) * this._multiplier
 
 		// 2.2. Points individuels par symbole
 		points += this._calculateIndividualSymbolPoints(counts, excludedSymbols) * this._multiplier
@@ -453,7 +468,7 @@ export default class MachineManager {
 		return points
 	}
 
-	_calculateOccurrencePoints(counts, excludedSymbols = []) {
+	_calculateOccurrencePoints(counts, excludedSymbols = [], lockedCounts) {
 		// Calculate points based on symbol occurrences (pairs, triples, etc.)
 		let occurrencePoints = 0
 
@@ -471,13 +486,16 @@ export default class MachineManager {
 				occurrencePoints += MAIN_ROULETTE_CONFIG.occurrencePoints.quintuple
 			}
 
-			socket.send({
-				event: 'jackpot',
-				data: {
-					symbol: symbol,
-					count: count,
-				},
-			})
+			// Check if the symbol is a new one, compare counts with lockedCounts
+			if (counts[symbol] - (lockedCounts[symbol] || 0) > 0) {
+				socket.send({
+					event: 'jackpot',
+					data: {
+						symbol: symbol,
+						count: count,
+					},
+				})
+			}
 		})
 
 		return occurrencePoints
