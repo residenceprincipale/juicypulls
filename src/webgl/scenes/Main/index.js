@@ -198,6 +198,7 @@ export default class Main {
 			},
 			receiver: ['score'],
 		})
+		this._scene.resources.items.messageAudio.play()
 
 		gsap.delayedCall(1.5, () => {
 			this._shooterManager.startGame()
@@ -218,6 +219,7 @@ export default class Main {
 				},
 				receiver: ['combi'],
 			})
+			this._scene.resources.items.messageAudio.play()
 		})
 	}
 

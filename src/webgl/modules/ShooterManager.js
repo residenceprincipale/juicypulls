@@ -393,26 +393,42 @@ export default class ShooterManager {
 		const breathingIntensity = 0.003 // Small offset for crosshair breathing
 
 		this._crosshairBreathingTimeline
-			.to(this._crosshairBreathingOffset, {
-				y: breathingIntensity,
-				duration: breathingSpeed / 2,
-				ease: "sine.inOut"
-			}, 0)
-			.to(this._crosshairBreathingOffset, {
-				y: -breathingIntensity,
-				duration: breathingSpeed / 2,
-				ease: "sine.inOut"
-			}, breathingSpeed / 2)
-			.to(this._crosshairBreathingOffset, {
-				x: -breathingIntensity * 0.2,
-				duration: breathingSpeed / 2,
-				ease: "sine.inOut"
-			}, 0)
-			.to(this._crosshairBreathingOffset, {
-				x: breathingIntensity * 0.2,
-				duration: breathingSpeed / 2,
-				ease: "sine.inOut"
-			}, breathingSpeed / 2)
+			.to(
+				this._crosshairBreathingOffset,
+				{
+					y: breathingIntensity,
+					duration: breathingSpeed / 2,
+					ease: 'sine.inOut',
+				},
+				0,
+			)
+			.to(
+				this._crosshairBreathingOffset,
+				{
+					y: -breathingIntensity,
+					duration: breathingSpeed / 2,
+					ease: 'sine.inOut',
+				},
+				breathingSpeed / 2,
+			)
+			.to(
+				this._crosshairBreathingOffset,
+				{
+					x: -breathingIntensity * 0.2,
+					duration: breathingSpeed / 2,
+					ease: 'sine.inOut',
+				},
+				0,
+			)
+			.to(
+				this._crosshairBreathingOffset,
+				{
+					x: breathingIntensity * 0.2,
+					duration: breathingSpeed / 2,
+					ease: 'sine.inOut',
+				},
+				breathingSpeed / 2,
+			)
 	}
 
 	_stopCrosshairBreathing() {
@@ -539,6 +555,7 @@ export default class ShooterManager {
 				},
 				receiver: 'score',
 			})
+
 		this._previousGameTimer = this._gameTimer.toFixed(1)
 	}
 

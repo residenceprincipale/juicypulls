@@ -41,6 +41,7 @@ export default class TutorialManager {
 			},
 			receiver: 'combi',
 		})
+		this._scene._scene.resources.items.messageAudio.play()
 	}
 
 	_setupMachineManager() {
@@ -79,6 +80,7 @@ export default class TutorialManager {
 				},
 				receiver: 'score',
 			})
+			this._scene._scene.resources.items.messageAudio.play()
 
 			this._machineManager.sendPointsToTutorial()
 
@@ -110,6 +112,7 @@ export default class TutorialManager {
 			},
 			receiver: 'combi',
 		})
+		this._scene._scene.resources.items.messageAudio.play()
 
 		this._listenToBank = true
 
@@ -143,6 +146,7 @@ export default class TutorialManager {
 				},
 				receiver: 'score',
 			})
+			this._scene._scene.resources.items.messageAudio.play()
 		})
 
 		gsap.delayedCall(2, () => {
@@ -160,6 +164,7 @@ export default class TutorialManager {
 				},
 				receiver: 'combi',
 			})
+			this._scene._scene.resources.items.messageAudio.play()
 
 			this._machineManager.isLeverLocked = false
 			this._listenToLeverStart = true

@@ -115,6 +115,13 @@
 		"autoplay": false
 	},
 	{
+		"name": "messageAudio",
+		"path": "audio/message.mp3",
+		"loop": false,
+		"volume": 0.9,
+		"autoplay": false
+	},
+	{
 		"name": "pistolAudio",
 		"path": "audio/pistol.mp3",
 		"loop": false,
