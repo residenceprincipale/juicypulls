@@ -33,7 +33,10 @@ export const MAIN_ROULETTE_CONFIG = {
 	combinationPoints: {
 		'4🍋': 300,
 		'5🍋': 2000,
-		'5🍇': 900,
+		'4🍊': 350,
+		'3🍇': 300,
+		'4🍇': 400,
+		'5🍇': 500,
 		'3🍒': 150,
 		'4🍒': 500,
 		'5🍒': 600,
@@ -83,6 +86,14 @@ export default class MachineManager {
 
 	set isLeverLocked(value) {
 		this._isLeverLocked = value
+	}
+
+	get isCollectLocked() {
+		return this._isCollectLocked
+	}
+
+	set isCollectLocked(value) {
+		this._isCollectLocked = value
 	}
 
 	get firstSpinDone() {
@@ -823,7 +834,7 @@ export default class MachineManager {
 	}
 
 	_buttonCollectClickHandler(e) {
-		if (!this._isLeverLocked) this._collect()
+		if (!this._isCollectLocked) this._collect()
 	}
 
 	/**

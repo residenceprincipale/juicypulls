@@ -177,6 +177,7 @@ export default class Main {
 		// start shooter
 		this._machine.animateInnerMachineOut()
 		this._machineManager.isLeverLocked = true
+		this._machineManager.isCollectLocked = true
 		socket.send({
 			event: 'show-message',
 			data: {
@@ -223,6 +224,7 @@ export default class Main {
 
 		this._machineManager.quota = this._machineManager.quota += 400
 		this._machineManager.isLeverLocked = false
+		this._machineManager.isCollectLocked = false
 	}
 
 	endGame() {}
