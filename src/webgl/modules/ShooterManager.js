@@ -35,6 +35,7 @@ export default class ShooterManager {
 		// 2D Crosshair settings
 		this._crosshairPosition = { x: 0.5, y: 0.5 } // Normalized screen position (0-1)
 		this._crosshairTargetPosition = { x: 0.5, y: 0.5 } // Target position for smooth movement
+		this._crosshairBreathingOffset = { x: 0, y: 0 } // Breathing animation offset
 		this._crosshairSpeed = 0.024
 		this._crosshairLerpSpeed = 0.15 // How fast crosshair moves to target (0-1)
 		this._aimingZone = {
@@ -108,6 +109,9 @@ export default class ShooterManager {
 		// Show crosshair
 		this._crosshairElement.classList.add('active')
 
+		// Start crosshair breathing animation
+		this._startCrosshairBreathing()
+
 		// Spawn initial targets
 		this._spawnInitialTargets()
 
@@ -123,6 +127,9 @@ export default class ShooterManager {
 
 		// Hide crosshair
 		this._crosshairElement.classList.remove('active')
+
+		// Stop crosshair breathing animation
+		this._stopCrosshairBreathing()
 
 		this._gun.animateGunOut()
 
@@ -289,8 +296,8 @@ export default class ShooterManager {
 		// Lerp current position toward target position
 		const lerpFactor = this._crosshairLerpSpeed
 
-		this._crosshairPosition.x += (this._crosshairTargetPosition.x - this._crosshairPosition.x) * lerpFactor
-		this._crosshairPosition.y += (this._crosshairTargetPosition.y - this._crosshairPosition.y) * lerpFactor
+		this._crosshairPosition.x += (this._crosshairTargetPosition.x + this._crosshairBreathingOffset.x - this._crosshairPosition.x) * lerpFactor
+		this._crosshairPosition.y += (this._crosshairTargetPosition.y + this._crosshairBreathingOffset.y - this._crosshairPosition.y) * lerpFactor
 
 		// Update visual position and gun rotation
 		this._updateCrosshairPosition()
@@ -299,9 +306,9 @@ export default class ShooterManager {
 	_updateCrosshairPosition() {
 		if (!this._crosshairElement) return
 
-		// Convert normalized position to screen pixels
-		const screenX = this._crosshairPosition.x * window.innerWidth
-		const screenY = this._crosshairPosition.y * window.innerHeight
+		// Convert normalized position to screen pixels and add breathing offset
+		const screenX = (this._crosshairPosition.x) * window.innerWidth
+		const screenY = (this._crosshairPosition.y) * window.innerHeight
 
 		this._crosshairElement.style.left = `${screenX}px`
 		this._crosshairElement.style.top = `${screenY}px`
@@ -365,11 +372,44 @@ export default class ShooterManager {
 		)
 	}
 
+	_startCrosshairBreathing() {
+		// Kill any existing breathing animation
+		this._crosshairBreathingTimeline?.kill()
+
+		// Create breathing animation that matches gun's breathing pattern
+		const breathingSpeed = 2 // Duration of one breath cycle in seconds (same as gun)
+
+		this._crosshairBreathingTimeline = gsap.timeline({ repeat: -1, yoyo: true })
+
+		// Subtle breathing movement - much smaller than gun for crosshair
+		const breathingIntensity = 0.003 // Small offset for crosshair breathing
+
+		this._crosshairBreathingTimeline
+			.to(this._crosshairBreathingOffset, {
+				y: breathingIntensity,
+				duration: breathingSpeed / 2,
+				ease: "sine.inOut"
+			}, 0)
+			.to(this._crosshairBreathingOffset, {
+				y: -breathingIntensity,
+				duration: breathingSpeed / 2,
+				ease: "sine.inOut"
+			}, breathingSpeed / 2)
+	}
+
+	_stopCrosshairBreathing() {
+		this._crosshairBreathingTimeline?.kill()
+		// Reset breathing offset
+		this._crosshairBreathingOffset.x = 0
+		this._crosshairBreathingOffset.y = 0
+	}
+
 	dispose() {
 		this.endGame()
 
-		// Kill any pending shooting debounce
+		// Kill any pending shooting debounce and breathing animation
 		gsap.killTweensOf(this)
+		this._crosshairBreathingTimeline?.kill()
 
 		// Remove crosshair element
 		if (this._crosshairElement) {

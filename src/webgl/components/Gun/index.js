@@ -101,13 +101,13 @@ export default class Gun {
             ease: "back.out(1.7)"
         })
 
-        this._startBreathingAnimation()
+        // this._startBreathingAnimation()
     }
 
     animateGunOut() {
         // stop breathing animation
-        this._breathingTimelineY?.kill()
-        this._breathingTimelineX?.kill()
+        // this._breathingTimelineY?.kill()
+        // this._breathingTimelineX?.kill()
 
         this._gunOutTimeline?.kill()
         this._gunOutTimeline = gsap.timeline()
@@ -126,8 +126,7 @@ export default class Gun {
         // Kill all animations
         this._gunInTimeline?.kill()
         this._gunOutTimeline?.kill()
-        this._breathingTimelineY?.kill()
-        this._breathingTimelineX?.kill()
+        this._breathingTimeline?.kill()
 
         // Remove from scene
         if (this._parentObject) {
@@ -224,33 +223,36 @@ export default class Gun {
 
     _startBreathingAnimation() {
         // Kill any existing breathing animation
-        this._breathingTimelineY?.kill()
-        this._breathingTimelineX?.kill()
+        this._breathingTimeline?.kill()
 
-        // Create a simple looping breathing animation
-        const breathingIntensity = 0.001 // How much the gun moves
+        // Create a single timeline for breathing animation
         const breathingSpeed = 2 // Duration of one breath cycle in seconds
 
-        // Vertical breathing movement (continuous loop)
-        // this._breathingTimelineY = gsap.to(this._parentObject.position, {
-        //     y: "+=0.01",
-        //     duration: breathingSpeed / 2,
-        //     ease: "sine.inOut",
-        //     yoyo: true,
-        //     repeat: -1
-        // })
+        this._breathingTimeline = gsap.timeline({ repeat: -1 })
 
-        // Slight rotation breathing (continuous loop) 
-
-        // FIX ROTATION AND BREATHE CURSOR
-        const baseRotationX = this._parentObject.rotation.x
-        this._breathingTimelineX = gsap.to(this._parentObject.rotation, {
-            x: "+=0.1",
-            duration: breathingSpeed / 2,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1
-        })
+        // Animate the model instead of parent to avoid conflicts
+        // Use position.y and rotation.z to avoid conflicting with gun in/out (rotation.x)
+        this._breathingTimeline
+            .to(this._model.position, {
+                y: "+=0.005",
+                duration: breathingSpeed / 2,
+                ease: "sine.inOut"
+            }, 0)
+            .to(this._model.rotation, {
+                z: "+=0.01",
+                duration: breathingSpeed / 2,
+                ease: "sine.inOut"
+            }, 0)
+            .to(this._model.position, {
+                y: "-=0.005",
+                duration: breathingSpeed / 2,
+                ease: "sine.inOut"
+            }, breathingSpeed / 2)
+            .to(this._model.rotation, {
+                z: "-=0.01",
+                duration: breathingSpeed / 2,
+                ease: "sine.inOut"
+            }, breathingSpeed / 2)
     }
 
     _createDebug() {
@@ -306,8 +308,7 @@ export default class Gun {
         breathingFolder.addButton({
             title: 'Stop Breathing'
         }).on('click', () => {
-            this._breathingTimelineY?.kill()
-            this._breathingTimelineX?.kill()
+            this._breathingTimeline?.kill()
         })
 
         // Animation debug controls
