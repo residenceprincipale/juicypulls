@@ -7,8 +7,8 @@ export default {
     },
     "uRoughnessRepeat": {
         "value": {
-            "x": 1,
-            "y": 1
+            "x": 3,
+            "y": 3
         }
     },
     "uRoughnessIntensity": {
@@ -24,7 +24,7 @@ export default {
         }
     },
     "uAlbedoIntensity": {
-        "value": 0.4
+        "value": 2
     },
     "uNormalMap": {
         "value": "secondRouletteNormal"
@@ -37,8 +37,8 @@ export default {
     },
     "uNormalScale": {
         "value": {
-            "x": 2,
-            "y": 2
+            "x": -4.163336342344337e-17,
+            "y": -4.163336342344337e-17
         }
     },
     "uAoMap": {
@@ -52,12 +52,12 @@ export default {
     },
     "uMatcapOffset": {
         "value": {
-            "x": 0,
+            "x": -0.01,
             "y": 0
         }
     },
     "uMatcapIntensity": {
-        "value": 0.97
+        "value": 1.26
     },
     "uAmbientIntensity": {
         "value": 0.18999999999999986

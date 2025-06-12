@@ -159,7 +159,7 @@
 	},
 	{
 		"name": "environmentModel",
-		"path": "/models/environment.glb"
+		"path": "/models/environment-v1.glb"
 	},
 	{
 		"name": "gunArmModel",

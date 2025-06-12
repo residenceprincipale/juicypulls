@@ -72,9 +72,9 @@ export default class BackgroundEnvironment {
         // For demo purposes, use the created mesh as the model
         this._model = this._resource.scene
         this._model.name = 'background environment'
-        this._model.position.set(4.114, -1.468, -2.099)
-        this._model.scale.set(2.094, 2.094, 2.094)
-        this._model.rotation.set(-3.142, 1.512, -3.142)
+        this._model.position.set(-4.186, -2.468, -6.599)
+        this._model.scale.set(2, 2, 2)
+        this._model.rotation.set(-3.142, 1.712, -3.142)
 
         this._scene.add(this._model)
 
