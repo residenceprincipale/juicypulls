@@ -4,214 +4,216 @@ import { MAIN_ROULETTE_CONFIG } from './MachineManager'
 
 const socket = new Socket()
 export default class TutorialManager {
-    constructor(options = {}) {
-        this._machineManager = options.machineManager
-        this._machine = options.machine
-        this._scene = options.scene
+	constructor(options = {}) {
+		this._machineManager = options.machineManager
+		this._machine = options.machine
+		this._scene = options.scene
 
-        socket.connect('tutorial')
+		socket.connect('tutorial')
 
-        this._createEventListeners()
+		this._createEventListeners()
 
-        this._setupMachineManager()
-    }
+		this._setupMachineManager()
+	}
 
-    start() {
-        this._isStarted = true
+	start() {
+		this._isStarted = true
 
-        socket.send({
-            event: 'start-tutorial',
-            data: {},
-        })
+		socket.send({
+			event: 'start-tutorial',
+			data: {},
+		})
 
-        socket.send({
-            event: 'show-message',
-            data: {
-                message: 'PULL THE LEVER',
-                size: 'fullscreen',
-            },
-            receiver: 'score',
-        })
+		socket.send({
+			event: 'show-message',
+			data: {
+				message: 'PULL THE LEVER',
+				size: 'fullscreen',
+			},
+			receiver: 'score',
+		})
 
-        socket.send({
-            event: 'show-message',
-            data: {
-                message: 'PULL THE LEVER',
-                size: 'fullscreen',
-            },
-            receiver: 'combi',
-        })
-    }
+		socket.send({
+			event: 'show-message',
+			data: {
+				message: 'PULL THE LEVER',
+				size: 'fullscreen',
+			},
+			receiver: 'combi',
+		})
+	}
 
-    _setupMachineManager() {
-        this._machineManager.firstSpinDone = false
-        this._machineManager.isLeverLocked = true
-        this._machineManager.spinTokens = 1
-    }
+	_setupMachineManager() {
+		this._machineManager.firstSpinDone = false
+		this._machineManager.isLeverLocked = true
+		this._machineManager.spinTokens = 1
+	}
 
-    _goToHoldStep() {
-        socket.send({
-            event: 'show',
-            receiver: ['combi', 'score'],
-        })
+	_goToHoldStep() {
+		socket.send({
+			event: 'show',
+			receiver: ['combi', 'score'],
+		})
 
-        socket.send({
-            event: 'hide-message',
-            receiver: ['combi', 'score'],
-        })
+		socket.send({
+			event: 'hide-message',
+			receiver: ['combi', 'score'],
+		})
 
-        gsap.delayedCall(1.5, () => {
+		gsap.delayedCall(1.5, () => {
+			socket.send({
+				event: 'show-message',
+				data: {
+					message: 'PRESS BUTTONS TO HOLD WHEELS, \n GET BIG COMBOS',
+					size: 'inner',
+					modifier: [
+						{
+							text: 'BUTTONS',
+							color: 'yellow',
+						},
+						{
+							text: 'COMBOS',
+							color: 'yellow',
+						},
+					],
+				},
+				receiver: 'score',
+			})
 
-            socket.send({
-                event: 'show-message',
-                data: {
-                    message: 'HOLD WHEELS,\nSCORE BIG.',
-                    size: 'inner',
-                    modifier: [
-                        {
-                            text: 'HOLD',
-                            color: 'yellow',
-                        },
-                    ],
-                },
-                receiver: 'score',
-            })
+			this._machineManager.sendPointsToTutorial()
 
+			this._machine.animateWheelBlink({ index: 1, value: true })
+			this._machine.animateWheelBlink({ index: 2, value: true })
+			this._machine.animateWheelBlink({ index: 3, value: true })
+		})
+	}
 
-            this._machineManager.sendPointsToTutorial()
+	_goToBankStep() {
+		this._isBankStep = true
 
-            this._machine.animateWheelBlink({ index: 1, value: true })
-            this._machine.animateWheelBlink({ index: 2, value: true })
-            this._machine.animateWheelBlink({ index: 3, value: true })
-        })
-    }
+		socket.send({
+			event: 'hide-message',
+			receiver: 'score',
+		})
 
-    _goToBankStep() {
-        this._isBankStep = true
+		socket.send({
+			event: 'show-message',
+			data: {
+				message: 'BANK ANYTIME TO REACH QUOTA,\nWATCH YOUR JETONS.',
+				size: 'inner',
+				modifier: [
+					{
+						text: 'BANK',
+						color: 'yellow',
+					},
+				],
+			},
+			receiver: 'combi',
+		})
 
-        socket.send({
-            event: 'hide-message',
-            receiver: 'score',
-        })
+		this._listenToBank = true
 
-        socket.send({
-            event: 'show-message',
-            data: {
-                message: 'BANK ANYTIME TO REACH QUOTA,\nWATCH YOUR JETONS.',
-                size: 'inner',
-                modifier: [
-                    {
-                        text: 'BANK',
-                        color: 'yellow',
-                    },
-                ],
-            },
-            receiver: 'combi',
-        })
+		gsap.delayedCall(1.5, () => {
+			this._machineManager.quota = 1000
+		})
 
-        this._listenToBank = true
+		gsap.delayedCall(2, () => {
+			this._machineManager.spinTokens = 10
+		})
+	}
 
-        gsap.delayedCall(1.5, () => {
-            this._machineManager.quota = 1000
-        })
+	_goToLastStep() {
+		socket.send({
+			event: 'hide-message',
+			receiver: 'combi',
+		})
 
-        gsap.delayedCall(2, () => {
-            this._machineManager.spinTokens = 10
-        })
-    }
+		gsap.delayedCall(1, () => {
+			socket.send({
+				event: 'show-message',
+				data: {
+					message: 'SPIN AT WILL.\nMISS ONCE, LOSE IT ALL.',
+					size: 'inner',
+					// modifier: [
+					//     {
+					//         text: 'YOU WIN!',
+					//         color: 'yellow',
+					//     },
+					// ],
+				},
+				receiver: 'score',
+			})
+		})
 
-    _goToLastStep() {
-        socket.send({
-            event: 'hide-message',
-            receiver: 'combi',
-        })
+		gsap.delayedCall(2, () => {
+			socket.send({
+				event: 'show-message',
+				data: {
+					message: 'NOW PULL THE LEVER TO START',
+					size: 'inner',
+					// modifier: [
+					//     {
+					//         text: 'YOU WIN!',
+					//         color: 'yellow',
+					//     },
+					// ],
+				},
+				receiver: 'combi',
+			})
 
-        gsap.delayedCall(1, () => {
-            socket.send({
-                event: 'show-message',
-                data: {
-                    message: 'SPIN AT WILL.\nMISS ONCE, LOSE IT ALL.',
-                    size: 'inner',
-                    // modifier: [
-                    //     {
-                    //         text: 'YOU WIN!',
-                    //         color: 'yellow',
-                    //     },
-                    // ],
-                },
-                receiver: 'score',
-            })
-        })
+			this._machineManager.isLeverLocked = false
+			this._listenToLeverStart = true
 
-        gsap.delayedCall(2, () => {
-            socket.send({
-                event: 'show-message',
-                data: {
-                    message: 'NOW PULL THE LEVER TO START',
-                    size: 'inner',
-                    // modifier: [
-                    //     {
-                    //         text: 'YOU WIN!',
-                    //         color: 'yellow',
-                    //     },
-                    // ],
-                },
-                receiver: 'combi',
-            })
+			this._scene.startGame()
+		})
+	}
 
-            this._machineManager.isLeverLocked = false
-            this._listenToLeverStart = true
+	_endTutorial() {
+		this._isStarted = false
+		this._listenToLeverStart = false
 
-            this._scene.startGame()
-        })
-    }
+		socket.send({
+			event: 'hide-message',
+			receiver: 'combi',
+		})
 
-    _endTutorial() {
-        this._isStarted = false
-        this._listenToLeverStart = false
+		socket.send({
+			event: 'hide-message',
+			receiver: 'score',
+		})
+	}
 
-        socket.send({
-            event: 'hide-message',
-            receiver: 'combi',
-        })
+	_createEventListeners() {
+		socket.on('lever', this._leverClickHandler.bind(this))
+		socket.on('update-rolling-points', this._updateRollingPoints.bind(this))
+		socket.on('button-collect', this._buttonCollectClickHandler.bind(this))
+	}
 
-        socket.send({
-            event: 'hide-message',
-            receiver: 'score',
-        })
-    }
+	_leverClickHandler() {
+		if (!this._isStarted) return
 
-    _createEventListeners() {
-        socket.on('lever', this._leverClickHandler.bind(this))
-        socket.on('update-rolling-points', this._updateRollingPoints.bind(this))
-        socket.on('button-collect', this._buttonCollectClickHandler.bind(this))
-    }
+		if (!this._machineManager.firstSpinDone) {
+			this._machineManager.firstSpinDone = true
+			this._machineManager.isLeverLocked = true
+			this._machineManager.spinWheels([5, 2, 2, 2, 3])
+			this._goToHoldStep()
+		} else if (this._listenToLeverStart) {
+			this._endTutorial()
+		}
+	}
 
-    _leverClickHandler() {
-        if (!this._isStarted) return
+	_updateRollingPoints(data) {
+		if (this._isBankStep) return
 
-        if (!this._machineManager.firstSpinDone) {
-            this._machineManager.firstSpinDone = true
-            this._machineManager.isLeverLocked = true
-            this._machineManager.spinWheels([5, 2, 2, 2, 3])
-            this._goToHoldStep()
-        } else if (this._listenToLeverStart) {
-            this._endTutorial()
-        }
-    }
+		if (data.value === MAIN_ROULETTE_CONFIG.combinationPoints['3🍒']) {
+			this._goToBankStep()
+		}
+	}
 
-    _updateRollingPoints(data) {
-        if (this._isBankStep) return
-
-        if (data.value === MAIN_ROULETTE_CONFIG.combinationPoints['3🍒']) {
-            this._goToBankStep()
-        }
-    }
-
-    _buttonCollectClickHandler() {
-        if (this._listenToBank) {
-            this._listenToBank = false
-            this._goToLastStep()
-        }
-    }
+	_buttonCollectClickHandler() {
+		if (this._listenToBank) {
+			this._listenToBank = false
+			this._goToLastStep()
+		}
+	}
 }

@@ -465,6 +465,7 @@ export default class MachineManager {
 								count: counts[symbol],
 							},
 						})
+						this._machine.animateJackpot(symbol)
 					}
 				}
 			}
@@ -526,6 +527,7 @@ export default class MachineManager {
 						count: count,
 					},
 				})
+				this._machine.animateJackpot(symbol)
 			}
 		})
 
