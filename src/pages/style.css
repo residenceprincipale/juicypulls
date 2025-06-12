@@ -81,3 +81,10 @@ p {
 	color: white;
 	font-size: 120%;
 }
+
+.screamer-video {
+	width: 100vw;
+	height: 100vh;
+	z-index: 2;
+	mix-blend-mode: screen;
+}
