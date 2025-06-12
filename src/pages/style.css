@@ -1,4 +1,18 @@
 @import '../styles/reset.css';
+
+@font-face {
+	font-family: 'League Gothic';
+	font-style: normal;
+	font-weight: 400;
+	font-stretch: 100%;
+	font-display: swap;
+	src: url(https://fonts.gstatic.com/s/leaguegothic/v11/qFdR35CBi4tvBz81xy7WG7ep-BQAY7Krj7feObpH_9ahg9UYRshmq0s.woff2)
+		format('woff2');
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 #webgl {
 	position: fixed;
 	top: 0;
@@ -46,11 +60,9 @@
 }
 
 .joined-screen {
-	width: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
-	height: 100%;
 	opacity: 0;
 	pointer-events: none;
 	width: 100%;
@@ -80,6 +92,49 @@
 p {
 	color: white;
 	font-size: 120%;
+}
+
+.subliminal-message {
+	position: fixed;
+	background-color: lightgray;
+	color: black;
+	z-index: 1;
+	width: 100vw;
+	height: 100vh;
+	font-size: 200px;
+	justify-content: center;
+	align-items: center;
+	font-family: 'League Gothic', sans-serif;
+	text-align: center;
+	display: none;
+	text-transform: uppercase;
+	animation: turbulence 0.6s infinite steps(5);
+	text-shadow: 0 0 0.3rem;
+	line-height: 0.8;
+	flex-direction: column;
+	span {
+		display: inline-block;
+	}
+}
+
+@supports (filter: url('#turbulence')) {
+	@keyframes turbulence {
+		0% {
+			filter: url('#turbulence');
+		}
+		25% {
+			filter: url('#turbulence1');
+		}
+		50% {
+			filter: url('#turbulence2');
+		}
+		75% {
+			filter: url('#turbulence3');
+		}
+		100% {
+			filter: url('#turbulence4');
+		}
+	}
 }
 
 .screamer-video {

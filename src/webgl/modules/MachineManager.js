@@ -223,6 +223,11 @@ export default class MachineManager {
 	}
 
 	_spinWheels(riggedCombination = null) {
+		// Annule le timeout subliminal si un spin est relancé avant la fin
+		if (this._subliminalTimeout) {
+			clearTimeout(this._subliminalTimeout)
+			this._subliminalTimeout = null
+		}
 		this._anyLockedWheels = false
 
 		this._machine.turnOnInnerLeds()
@@ -327,6 +332,19 @@ export default class MachineManager {
 
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
+			if (this._machine.wheels.filter((wheel) => wheel.isLocked).length >= 2) {
+				this._subliminalTimeout = setTimeout(() => {
+					const messages = ['SPIN MORE', 'DONT STOP NOW', 'KEEP SPINNING', 'JUST A LITTLE MORE']
+					socket.send({
+						event: 'show-subliminal',
+						receiver: 'game',
+						data: {
+							message: messages[Math.floor(Math.random() * messages.length)],
+						},
+					})
+					this._subliminalTimeout = null
+				}, Math.random() * 10000)
+			}
 
 			const nonLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
 			const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
@@ -769,6 +787,10 @@ export default class MachineManager {
 			event: 'button-lights-enabled',
 			data: { value: false, index: -1 },
 			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+		})
+		socket.send({
+			event: 'reset-combi',
+			receiver: 'combi',
 		})
 		this._resetWheels()
 		this._machine.turnOffInnerLeds()
