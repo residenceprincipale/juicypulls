@@ -26,6 +26,7 @@ export default function initSecondScreenMessage(socket, fullscreenCallback, inne
 		const textElement = document.createElement('span')
 		textElement.classList.add('text')
 		textElement.innerText = message
+		let newMessage = message
 
 		if (modifier.length > 0) {
 			modifier.forEach(({ text, color, animation }) => {
@@ -33,7 +34,9 @@ export default function initSecondScreenMessage(socket, fullscreenCallback, inne
 				modifierElement.classList.add('modifier')
 				if (color) modifierElement.style.color = color
 				modifierElement.innerText = text
-				textElement.innerHTML = message.replace(text, modifierElement.outerHTML)
+
+				newMessage = newMessage.replace(text, modifierElement.outerHTML)
+				textElement.innerHTML = newMessage
 
 				const newModifierElement = textElement.querySelector('.modifier:last-child')
 

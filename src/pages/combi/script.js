@@ -266,23 +266,46 @@ function hide({ immediate = false } = {}) {
 
 function fullscreenCallback(textElement) {
 	fullscreenTextElement.appendChild(textElement)
-	canvasElement.style.visibility = 'hidden'
-	combiElement.style.visibility = 'hidden'
-	cloneAndBlur()
+	gsap.fromTo(
+		[canvasElement, combiElement, ...sideElements],
+		{
+			autoAlpha: 1,
+		},
+		{
+			autoAlpha: 0,
+			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			onUpdate: cloneAndBlur,
+		},
+	)
 }
 
 function innerCallback(textElement) {
 	innerTextElement.appendChild(textElement)
-	combiElement.style.visibility = 'hidden'
-	cloneAndBlur()
+	gsap.to(
+		[combiElement, ...sideElements],
+		{ autoAlpha: 1 },
+		{
+			autoAlpha: 0,
+			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			onUpdate: cloneAndBlur,
+		},
+	)
 }
 
 function hideCallback() {
 	fullscreenTextElement.innerHTML = ''
 	innerTextElement.innerHTML = ''
-	canvasElement.style.visibility = 'visible'
-	combiElement.style.visibility = 'visible'
-	cloneAndBlur()
+	gsap.fromTo(
+		[canvasElement, combiElement, ...sideElements],
+		{
+			autoAlpha: 0,
+		},
+		{
+			autoAlpha: 1,
+			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			onUpdate: cloneAndBlur,
+		},
+	)
 }
 
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)

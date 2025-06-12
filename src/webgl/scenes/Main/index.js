@@ -75,7 +75,11 @@ export default class Main {
 			this._hands.hide()
 
 			if (this._debug.tutorialActive || !this._debug.active) {
-				this._tutorialManager = new TutorialManager({ machineManager: this._machineManager, machine: this._machine, scene: this })
+				this._tutorialManager = new TutorialManager({
+					machineManager: this._machineManager,
+					machine: this._machine,
+					scene: this,
+				})
 				this.start()
 
 				this._isPlayingTutorial = true
@@ -172,9 +176,40 @@ export default class Main {
 		// start shooter
 		this._machine.animateInnerMachineOut()
 		this._machineManager.isLeverLocked = true
+		socket.send({
+			event: 'show-message',
+			data: {
+				size: 'inner',
+				message: 'Shooter time',
+				modifier: [
+					{
+						text: 'SHOOT',
+						color: 'red',
+					},
+				],
+			},
+			receiver: ['score'],
+		})
 
 		gsap.delayedCall(1.5, () => {
 			this._shooterManager.startGame()
+			socket.send({
+				event: 'show-message',
+				data: {
+					message: 'USE YOUR BUTTONS. <BR> THEY’RE JUST TARGETS. <BR> 1 TARGET = 1 JETONS.',
+					modifier: [
+						{
+							text: 'BUTTONS',
+							color: 'yellow',
+						},
+						{
+							text: 'JETONS',
+							color: 'yellow',
+						},
+					],
+				},
+				receiver: ['combi'],
+			})
 		})
 	}
 
@@ -189,7 +224,7 @@ export default class Main {
 		this._machineManager.isLeverLocked = false
 	}
 
-	endGame() { }
+	endGame() {}
 
 	lose() {
 		console.log('LOSE GAME')

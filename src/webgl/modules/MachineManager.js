@@ -824,7 +824,7 @@ export default class MachineManager {
 	}
 
 	_buttonCollectClickHandler(e) {
-		this._collect()
+		if (!this._isLeverLocked) this._collect()
 	}
 
 	/**

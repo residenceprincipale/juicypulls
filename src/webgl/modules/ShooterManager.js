@@ -23,7 +23,7 @@ export default class ShooterManager {
 
 		// Game settings
 		this._maxTargets = 3
-		this._gameDuration = this._debug.active ? 340 : 25 // seconds
+		this._gameDuration = this._debug.active ? 25 : 25 // seconds
 		this._isGameActive = false
 		this._gameTimer = 0
 		this._score = 0
@@ -69,7 +69,7 @@ export default class ShooterManager {
 		this._reusableCorners = [new Vector3(), new Vector3(), new Vector3(), new Vector3()]
 
 		this._createCrosshair()
-		this._createTimerUI()
+		// this._createTimerUI()
 		this._setupEventListeners()
 		this._createTargetPool()
 
@@ -149,6 +149,10 @@ export default class ShooterManager {
 		})
 
 		console.log(`Game ended! Final score: ${this._score}`)
+
+		socket.send({
+			event: 'hide-message',
+		})
 
 		this._sceneInstance.endShooter()
 	}
@@ -296,8 +300,10 @@ export default class ShooterManager {
 		// Lerp current position toward target position
 		const lerpFactor = this._crosshairLerpSpeed
 
-		this._crosshairPosition.x += (this._crosshairTargetPosition.x + this._crosshairBreathingOffset.x - this._crosshairPosition.x) * lerpFactor
-		this._crosshairPosition.y += (this._crosshairTargetPosition.y + this._crosshairBreathingOffset.y - this._crosshairPosition.y) * lerpFactor
+		this._crosshairPosition.x +=
+			(this._crosshairTargetPosition.x + this._crosshairBreathingOffset.x - this._crosshairPosition.x) * lerpFactor
+		this._crosshairPosition.y +=
+			(this._crosshairTargetPosition.y + this._crosshairBreathingOffset.y - this._crosshairPosition.y) * lerpFactor
 
 		// Update visual position and gun rotation
 		this._updateCrosshairPosition()
@@ -307,8 +313,8 @@ export default class ShooterManager {
 		if (!this._crosshairElement) return
 
 		// Convert normalized position to screen pixels and add breathing offset
-		const screenX = (this._crosshairPosition.x) * window.innerWidth
-		const screenY = (this._crosshairPosition.y) * window.innerHeight
+		const screenX = this._crosshairPosition.x * window.innerWidth
+		const screenY = this._crosshairPosition.y * window.innerHeight
 
 		this._crosshairElement.style.left = `${screenX}px`
 		this._crosshairElement.style.top = `${screenY}px`
@@ -385,16 +391,24 @@ export default class ShooterManager {
 		const breathingIntensity = 0.003 // Small offset for crosshair breathing
 
 		this._crosshairBreathingTimeline
-			.to(this._crosshairBreathingOffset, {
-				y: breathingIntensity,
-				duration: breathingSpeed / 2,
-				ease: "sine.inOut"
-			}, 0)
-			.to(this._crosshairBreathingOffset, {
-				y: -breathingIntensity,
-				duration: breathingSpeed / 2,
-				ease: "sine.inOut"
-			}, breathingSpeed / 2)
+			.to(
+				this._crosshairBreathingOffset,
+				{
+					y: breathingIntensity,
+					duration: breathingSpeed / 2,
+					ease: 'sine.inOut',
+				},
+				0,
+			)
+			.to(
+				this._crosshairBreathingOffset,
+				{
+					y: -breathingIntensity,
+					duration: breathingSpeed / 2,
+					ease: 'sine.inOut',
+				},
+				breathingSpeed / 2,
+			)
 	}
 
 	_stopCrosshairBreathing() {
@@ -510,7 +524,18 @@ export default class ShooterManager {
 	}
 
 	_updateTimerUI() {
-		this._timerElement.textContent = this._gameTimer.toFixed(2)
+		if (this._timerElement) this._timerElement.textContent = this._gameTimer.toFixed(1)
+
+		if (this._previousGameTimer !== this._gameTimer.toFixed(1))
+			socket.send({
+				event: 'show-message',
+				data: {
+					size: 'inner',
+					message: this._gameTimer.toFixed(1),
+				},
+				receiver: 'score',
+			})
+		this._previousGameTimer = this._gameTimer.toFixed(1)
 	}
 
 	_createTargetPool() {
