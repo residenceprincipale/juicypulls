@@ -275,6 +275,12 @@ export default class Main {
 	triggerJackpot() {
 		this._machineManager.spinWheels([5, 5, 5, 5, 5])
 	}
+	triggerX4() {
+		this._machineManager.spinWheels([3, 3, 3, 3, 5])
+	}
+	triggerX3() {
+		this._machineManager.spinWheels([4, 4, 4, 3, 5])
+	}
 
 	trigger777() {
 		this._machineManager.spinWheels([2, 0, 0, 0, 3])
@@ -328,6 +334,20 @@ export default class Main {
 			})
 			.on('click', () => {
 				this.triggerJackpot()
+			})
+		folder
+			.addButton({
+				title: 'Trigger x3',
+			})
+			.on('click', () => {
+				this.triggerX3()
+			})
+		folder
+			.addButton({
+				title: 'Trigger x4',
+			})
+			.on('click', () => {
+				this.triggerX4()
 			})
 		folder
 			.addButton({
