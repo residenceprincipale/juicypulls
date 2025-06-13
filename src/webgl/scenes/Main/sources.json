@@ -107,7 +107,7 @@
 		"name": "farkleAudio",
 		"path": "audio/farkle.mp3",
 		"loop": false,
-		"volume": 0.9,
+		"volume": 0.8,
 		"autoplay": false
 	},
 	{

@@ -119,6 +119,7 @@ async function jackpot({ symbol, count }) {
 
 		jackpotX4VideoElement.onended = () => {
 			jackpotX4VideoContainerElement.style.display = 'none'
+			jackpotX4VideoElement.style.display = 'none'
 			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
 				autoAlpha: 1,
 				duration: 0.5,
@@ -132,6 +133,7 @@ async function jackpot({ symbol, count }) {
 
 		jackpotX3VideoElement.onended = () => {
 			jackpotX4VideoContainerElement.style.display = 'none'
+			jackpotX3VideoElement.style.display = 'none'
 			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
 				autoAlpha: 1,
 				duration: 0.5,
