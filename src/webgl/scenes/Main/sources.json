@@ -155,6 +155,12 @@
 		"loop": true,
 		"volume": 0.5,
 		"autoplay": true
+	},{
+		"name": "screamerAudio",
+		"path": "audio/screamer.mp3",
+		"loop": false,
+		"volume": 0.1,
+		"autoplay": false
 	},
 	{
 		"name": "secondRouletteModel",

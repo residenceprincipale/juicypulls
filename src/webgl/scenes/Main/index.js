@@ -257,12 +257,15 @@ export default class Main {
 		this._machineManager.isLeverLocked = false
 	}
 
-	loseFinal() {
+	async loseFinal() {
 		console.log('LOSE FINAL')
 
-		this._machine.animateInnerMachineOut()
 		this._machine.turnOffLeds()
+		await this._machine.animateInnerMachineOut()
 		// this._lights.turnOff()
+		socket.send({
+			event: 'lose-final',
+		})
 	}
 
 	triggerFarkle() {

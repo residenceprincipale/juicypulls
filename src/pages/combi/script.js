@@ -16,6 +16,7 @@ const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
 const jackpotVideoElements = document.querySelectorAll('.jackpot-video')
 const sideElements = document.querySelectorAll('.left-side, .right-side')
+const rightScreamerVideoElement = document.querySelector('.right-screamer-video')
 
 const experience = new Experience(canvasElement)
 const socket = new Socket()
@@ -158,6 +159,23 @@ socket.on('hide', hide)
 socket.on('show', show)
 socket.on('jackpot', jackpot)
 socket.on('farkle', farkle)
+socket.on('lose-final', loseFinal)
+
+function loseFinal() {
+	experience.sceneManager.combi.tint = new Color('#ff4726')
+	gsap.to(overlayElement, {
+		autoAlpha: 0,
+		duration: 0.5,
+	})
+
+	rightScreamerVideoElement.style.display = 'initial'
+	rightScreamerVideoElement.play()
+	rightScreamerVideoElement.onended = () => {
+		// hide all
+		rightScreamerVideoElement.style.display = 'none'
+		hide({ immediate: true })
+	}
+}
 
 function farkle() {
 	gsap.to(sideElements, {

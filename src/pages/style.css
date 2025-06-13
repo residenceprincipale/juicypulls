@@ -138,9 +138,10 @@ p {
 }
 
 .screamer-video {
+	position: fixed;
 	width: 100vw;
 	height: 100vh;
 	z-index: 2;
-	transform: scale(1.05);
-	display: none;
+	transform: scale(1.09);
+	visibility: hidden;
 }

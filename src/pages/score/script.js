@@ -33,6 +33,7 @@ const innerTextElement = document.querySelector('.inner-text')
 const farkleVideoElement = document.querySelector('.farkle-video')
 const jackpotX4VideoElement = document.querySelector('.jackpot-x4-video')
 const jackpotX4VideoContainerElement = document.querySelector('.jackpot-x4-video-container')
+const leftScreamerVideoElement = document.querySelector('.left-screamer-video')
 let lastOverlayElement = null
 let collectedPoints = 0
 let quotaValue = 0
@@ -79,6 +80,22 @@ socket.on('hide', hide)
 socket.on('show', show)
 socket.on('farkle', farkle)
 socket.on('jackpot', jackpot)
+socket.on('lose-final', loseFinal)
+
+function loseFinal() {
+	scoreBackground.tint = new Color('#ff4726')
+	gsap.to(overlayElement, {
+		autoAlpha: 0,
+		duration: 0.5,
+	})
+
+	leftScreamerVideoElement.style.display = 'initial'
+	leftScreamerVideoElement.play()
+	leftScreamerVideoElement.onended = () => {
+		leftScreamerVideoElement.style.display = 'none'
+		hide({ immediate: true })
+	}
+}
 
 async function jackpot({ symbol, count }) {
 	if (count === 4) {
