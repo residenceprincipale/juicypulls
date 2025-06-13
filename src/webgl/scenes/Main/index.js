@@ -173,10 +173,17 @@ export default class Main {
 	}
 
 	startShooter() {
+		// reset bulbs
+		socket.send({
+			event: 'x1',
+			receiver: 'bulbs',
+		})
+		this._machineManager._multiplier = 1
 		// animate machine out
 		// start shooter
 		this._machine.animateInnerMachineOut()
 		this._machineManager.isLeverLocked = true
+		this._machineManager.isCollectLocked = true
 		socket.send({
 			event: 'show-message',
 			data: {
@@ -191,6 +198,7 @@ export default class Main {
 			},
 			receiver: ['score'],
 		})
+		this._scene.resources.items.messageAudio.play()
 
 		gsap.delayedCall(1.5, () => {
 			this._shooterManager.startGame()
@@ -211,6 +219,7 @@ export default class Main {
 				},
 				receiver: ['combi'],
 			})
+			this._scene.resources.items.messageAudio.play()
 		})
 	}
 
@@ -223,6 +232,7 @@ export default class Main {
 
 		this._machineManager.quota = this._machineManager.quota += 400
 		this._machineManager.isLeverLocked = false
+		this._machineManager.isCollectLocked = false
 	}
 
 	endGame() {}
@@ -247,11 +257,15 @@ export default class Main {
 		this._machineManager.isLeverLocked = false
 	}
 
-	loseFinal() {
+	async loseFinal() {
 		console.log('LOSE FINAL')
 
-		this._machineManager.turnOffLeds()
-		this._lights.turnOff()
+		this._machine.turnOffLeds()
+		await this._machine.animateInnerMachineOut()
+		// this._lights.turnOff()
+		socket.send({
+			event: 'lose-final',
+		})
 	}
 
 	triggerFarkle() {

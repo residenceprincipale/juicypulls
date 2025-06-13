@@ -90,7 +90,7 @@
 		"name": "ambientAudio",
 		"path": "audio/ambient.mp3",
 		"loop": true,
-		"volume": 0.8,
+		"volume": 0.7,
 		"autoplay": true
 	},
 	{
@@ -115,10 +115,51 @@
 		"autoplay": false
 	},
 	{
+		"name": "messageAudio",
+		"path": "audio/message.mp3",
+		"loop": false,
+		"volume": 0.1,
+		"autoplay": false
+	},
+	{
 		"name": "pistolAudio",
 		"path": "audio/pistol.mp3",
 		"loop": false,
 		"volume": 0.9,
+		"autoplay": false
+	},
+	{
+		"name": "subliminalAudio",
+		"path": "audio/subliminal.mp3",
+		"loop": false,
+		"volume": 0.9,
+		"autoplay": false
+	},
+	{
+		"name": "currentAudio",
+		"path": "audio/current.mp3",
+		"loop": false,
+		"volume": 0.5,
+		"autoplay": false
+	},
+	{
+		"name": "shooterAudio",
+		"path": "audio/shooter.mp3",
+		"loop": false,
+		"volume": 0.06,
+		"autoplay": false
+	},
+	{
+		"name": "musicAudio",
+		"path": "audio/music.mp3",
+		"loop": true,
+		"volume": 0.5,
+		"autoplay": true
+	},{
+		"name": "screamerAudio",
+		"path": "audio/screamer.mp3",
+		"loop": false,
+		"volume": 0.1,
 		"autoplay": false
 	},
 	{

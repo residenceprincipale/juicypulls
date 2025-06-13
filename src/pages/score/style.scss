@@ -229,19 +229,29 @@ video {
 	display: none;
 }
 
+.farkle-video {
+	scale: 1.3;
+	transform: translateY(-3rem);
+}
+
 .jackpot-x4-video-container {
 	background: white;
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
-	z-index: -1;
+	//z-index: -1;
 	display: none;
 }
 
-.jackpot-x4-video {
+.jackpot-x4-video,
+.jackpot-x3-video {
 	mix-blend-mode: luminosity;
 	scale: 1.25;
 	transform: translateY(-3rem);
 	display: initial;
+}
+
+.left-screamer-video {
+	mix-blend-mode: initial;
 }

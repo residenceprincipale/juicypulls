@@ -33,7 +33,10 @@ export const MAIN_ROULETTE_CONFIG = {
 	combinationPoints: {
 		'4🍋': 300,
 		'5🍋': 2000,
-		'5🍇': 900,
+		'4🍊': 350,
+		'3🍇': 300,
+		'4🍇': 400,
+		'5🍇': 500,
 		'3🍒': 150,
 		'4🍒': 500,
 		'5🍒': 600,
@@ -83,6 +86,14 @@ export default class MachineManager {
 
 	set isLeverLocked(value) {
 		this._isLeverLocked = value
+	}
+
+	get isCollectLocked() {
+		return this._isCollectLocked
+	}
+
+	set isCollectLocked(value) {
+		this._isCollectLocked = value
 	}
 
 	get firstSpinDone() {
@@ -212,6 +223,11 @@ export default class MachineManager {
 	}
 
 	_spinWheels(riggedCombination = null) {
+		// Annule le timeout subliminal si un spin est relancé avant la fin
+		if (this._subliminalTimeout) {
+			clearTimeout(this._subliminalTimeout)
+			this._subliminalTimeout = null
+		}
 		this._anyLockedWheels = false
 
 		this._machine.turnOnInnerLeds()
@@ -312,10 +328,30 @@ export default class MachineManager {
 			})
 		}
 
+		socket.send({
+			event: 'anim',
+			receiver: 'bulbs',
+		})
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
+			if (this._machine.wheels.filter((wheel) => wheel.isLocked).length >= 2) {
+				this._subliminalTimeout = setTimeout(
+					() => {
+						const messages = ['SPIN MORE', 'DONT STOP NOW', 'KEEP SPINNING', 'JUST A LITTLE MORE']
+						socket.send({
+							event: 'show-subliminal',
+							receiver: 'game',
+							data: {
+								message: messages[Math.floor(Math.random() * messages.length)],
+							},
+						})
+						this._subliminalTimeout = null
+					},
+					Math.random() * 10000 + 5000,
+				)
+			}
 
 			const nonLockedPoint = this._getPoints({ lockedOnly: false }).pointsBeforeCranium
 			const lockedPoint = this._getPoints({ lockedOnly: true }).pointsBeforeCranium
@@ -433,6 +469,7 @@ export default class MachineManager {
 								count: counts[symbol],
 							},
 						})
+						this._machine.animateJackpot(symbol)
 					}
 				}
 			}
@@ -494,6 +531,7 @@ export default class MachineManager {
 						count: count,
 					},
 				})
+				this._machine.animateJackpot(symbol)
 			}
 		})
 
@@ -563,9 +601,7 @@ export default class MachineManager {
 					parseInt(firstWheelSymbol.replace('+', '').replace('-', '')) * (firstWheelSymbol.startsWith('+') ? 1 : -1)
 				this._collectedPoints = Math.max(0, this._collectedPoints + points * (secondWheelSymbol.replace('x', '') || 1))
 				this._updateCollectedPointsDisplay()
-				// gsap.delayedCall(2, () => {
-				// 	this._collect()
-				// })
+				this._collect()
 				break
 		}
 	}
@@ -759,9 +795,19 @@ export default class MachineManager {
 			data: { value: false, index: -1 },
 			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
 		})
+		socket.send({
+			event: 'reset-combi',
+			receiver: 'combi',
+		})
 		this._resetWheels()
 		this._machine.turnOffInnerLeds()
 		this._machine.flickerOnceOuterLeds()
+
+		this._isLeverLocked = true
+
+		gsap.delayedCall(2, () => {
+			this._isLeverLocked = false
+		})
 	}
 
 	/**
@@ -823,7 +869,7 @@ export default class MachineManager {
 	}
 
 	_buttonCollectClickHandler(e) {
-		if (!this._isLeverLocked) this._collect()
+		if (!this._isCollectLocked) this._collect()
 	}
 
 	/**

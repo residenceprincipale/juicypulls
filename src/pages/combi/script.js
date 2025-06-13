@@ -16,6 +16,7 @@ const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
 const jackpotVideoElements = document.querySelectorAll('.jackpot-video')
 const sideElements = document.querySelectorAll('.left-side, .right-side')
+const rightScreamerVideoElement = document.querySelector('.right-screamer-video')
 
 const experience = new Experience(canvasElement)
 const socket = new Socket()
@@ -157,6 +158,48 @@ socket.on('reset', resetCombi)
 socket.on('hide', hide)
 socket.on('show', show)
 socket.on('jackpot', jackpot)
+socket.on('farkle', farkle)
+socket.on('lose-final', loseFinal)
+
+function loseFinal() {
+	experience.sceneManager.combi.tint = new Color('#ff4726')
+	gsap.to(overlayElement, {
+		autoAlpha: 0,
+		duration: 0.5,
+	})
+
+	rightScreamerVideoElement.style.display = 'initial'
+	rightScreamerVideoElement.play()
+	rightScreamerVideoElement.onended = () => {
+		// hide all
+		rightScreamerVideoElement.style.display = 'none'
+		hide({ immediate: true })
+	}
+}
+
+function farkle() {
+	gsap.to(sideElements, {
+		background: '#ff4726',
+		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+	})
+	experience.sceneManager.combi.tint = new Color('#ff4726')
+	gsap.to(overlayElement, {
+		'--primary-color': '#ff4726',
+		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+	})
+
+	gsap.delayedCall(3, () => {
+		gsap.to(sideElements, {
+			background: '',
+			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+		})
+		gsap.to(overlayElement, {
+			'--primary-color': '',
+			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+		})
+		experience.sceneManager.combi.tint = new Color('white')
+	})
+}
 
 function jackpot({ symbol, count }) {
 	gsap.to(jackpotVideoElements, {
@@ -172,10 +215,18 @@ function jackpot({ symbol, count }) {
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
 			experience.sceneManager.combi.tint = new Color('#d9ffd9')
+			gsap.to(overlayElement, {
+				'--primary-color': '#d9ffd9',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
 			break
 		case '🍒':
 			gsap.to(sideElements, {
 				background: '#ff99cc',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
+			gsap.to(overlayElement, {
+				'--primary-color': '#ff99cc',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
 			experience.sceneManager.combi.tint = new Color('#ff99cc')
@@ -185,6 +236,10 @@ function jackpot({ symbol, count }) {
 				background: '#ffd280',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
+			gsap.to(overlayElement, {
+				'--primary-color': '#ffd280',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
 			experience.sceneManager.combi.tint = new Color('#ffd280')
 			break
 		case '🍇':
@@ -192,17 +247,35 @@ function jackpot({ symbol, count }) {
 				background: '#804d80',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
+			gsap.to(overlayElement, {
+				'--primary-color': '#804d80',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
 			experience.sceneManager.combi.tint = new Color('#804d80')
 			break
+		case '7':
+			gsap.to(sideElements, {
+				background: '#80ffff',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
+			gsap.to(overlayElement, {
+				'--primary-color': '#80ffff',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
+			experience.sceneManager.combi.tint = new Color('#80ffff')
 	}
 
-	gsap.delayedCall(9, () => {
+	gsap.delayedCall(6, () => {
 		gsap.to(jackpotVideoElements, {
 			autoAlpha: 0,
 			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 		})
 		gsap.to(sideElements, {
 			background: '',
+			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+		})
+		gsap.to(overlayElement, {
+			'--primary-color': '',
 			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 		})
 		experience.sceneManager.combi.tint = new Color('white')
@@ -280,7 +353,7 @@ function fullscreenCallback(textElement) {
 
 function innerCallback(textElement) {
 	innerTextElement.appendChild(textElement)
-	gsap.to(
+	gsap.fromTo(
 		[combiElement, ...sideElements],
 		{ autoAlpha: 1 },
 		{

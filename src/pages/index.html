@@ -17,8 +17,33 @@
 				<iframe src="/combi/" height="100%" width="100%" loading="lazy"></iframe>
 			</div>
 		</div>
+		<div class="subliminal-message"></div>
+		<div class="svg-filters">
+			<svg xmlns="http://www.w3.org/2000/svg">
+				<filter id="turbulence">
+					<feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="2" result="turbulence" seed="0"/>
+					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+				<filter id="turbulence1">
+					<feTurbulence type="fractalNoise" baseFrequency=".1" numOctaves="2" result="turbulence" seed="1" />
+					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+				<filter id="turbulence2">
+					<feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="2" result="turbulence" seed="2" />
+					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+				<filter id="turbulence3">
+					<feTurbulence type="fractalNoise" baseFrequency=".1" numOctaves="2" result="turbulence" seed="3" />
+					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+				<filter id="turbulence4">
+					<feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="2" result="turbulence" seed="4" />
+					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R" yChannelSelector="G" />
+				</filter>
+			</svg>
+		</div>
 
-		<video class="screamer-video" src="/videos/screamer.webm" muted autoplay loop></video>
+		<video class="screamer-video" src="/videos/screamer.webm" muted></video>
 
 		<canvas id="webgl"></canvas>
 	</body>

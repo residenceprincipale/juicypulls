@@ -173,46 +173,78 @@ export default class Machine {
 				duration: 0.025,
 				ease: 'power1.out',
 			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.025,
-				ease: 'power1.in',
-			}, 0.1)
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.15)
-			.to(this._outerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.05)
-			.to(this._outerLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.025,
-				ease: 'power1.in',
-			}, 0.12)
-			.to(this._outerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.17)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.08)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.025,
-				ease: 'power1.in',
-			}, 0.14)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.19)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.025,
+					ease: 'power1.in',
+				},
+				0.1,
+			)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.15,
+			)
+			.to(
+				this._outerLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.05,
+			)
+			.to(
+				this._outerLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.025,
+					ease: 'power1.in',
+				},
+				0.12,
+			)
+			.to(
+				this._outerLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.17,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.08,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.025,
+					ease: 'power1.in',
+				},
+				0.14,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.19,
+			)
 
 		return timeline
 	}
@@ -251,31 +283,51 @@ export default class Machine {
 				duration: 0.025,
 				ease: 'power1.out',
 			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.025,
-				ease: 'power1.in',
-			}, 0.09)
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.14)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.06)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.025,
-				ease: 'power1.in',
-			}, 0.13)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.18)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.025,
+					ease: 'power1.in',
+				},
+				0.09,
+			)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.14,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.06,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.025,
+					ease: 'power1.in',
+				},
+				0.13,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.18,
+			)
 
 		return timeline
 	}
@@ -291,31 +343,51 @@ export default class Machine {
 				duration: 0.01,
 				ease: 'power1.out',
 			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.02,
-				ease: 'power1.in',
-			}, 0.09)
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.01,
-				ease: 'power1.out',
-			}, 0.14)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.03,
-				ease: 'power1.out',
-			}, 0.06)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.02,
-				ease: 'power1.in',
-			}, 0.13)
-			.to(this._separatorsLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.01,
-				ease: 'power1.out',
-			}, 0.18)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.02,
+					ease: 'power1.in',
+				},
+				0.09,
+			)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.01,
+					ease: 'power1.out',
+				},
+				0.14,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.03,
+					ease: 'power1.out',
+				},
+				0.06,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.02,
+					ease: 'power1.in',
+				},
+				0.13,
+			)
+			.to(
+				this._separatorsLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.01,
+					ease: 'power1.out',
+				},
+				0.18,
+			)
 
 		return timeline
 	}
@@ -337,16 +409,24 @@ export default class Machine {
 				duration: 0.025,
 				ease: 'power1.out',
 			})
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 0,
-				duration: 0.025,
-				ease: 'power1.in',
-			}, 0.11)
-			.to(this._innerLeds.material.uniforms.uOpacity, {
-				value: 1,
-				duration: 0.025,
-				ease: 'power1.out',
-			}, 0.16)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 0,
+					duration: 0.025,
+					ease: 'power1.in',
+				},
+				0.11,
+			)
+			.to(
+				this._innerLeds.material.uniforms.uOpacity,
+				{
+					value: 1,
+					duration: 0.025,
+					ease: 'power1.out',
+				},
+				0.16,
+			)
 
 		return timeline
 	}
@@ -375,11 +455,66 @@ export default class Machine {
 		})
 
 		// Wait 0.5 seconds then turn back on
-		timeline.to(this._outerLeds.material.uniforms.uOpacity, {
+		timeline.to(
+			this._outerLeds.material.uniforms.uOpacity,
+			{
+				value: 1,
+				duration: 0.1,
+				ease: 'power1.out',
+			},
+			'+=0.5',
+		)
+
+		return timeline
+	}
+
+	animateJackpot(symbol) {
+		const timeline = gsap.timeline()
+
+		timeline.to(this._outerLeds.material.uniforms[`uOpacity`], {
+			value: 0,
+			ease: 'power2.inOut',
+			duration: 0.15,
+		})
+		timeline.call(() => {
+			switch (symbol) {
+				case '🍋':
+					this._outerLeds.material.uniforms[`uColor`].value.set('#b3ffb3')
+					break
+				case '🍒':
+					this._outerLeds.material.uniforms[`uColor`].value.set('#ff66b3')
+					break
+				case '🍊':
+					this._outerLeds.material.uniforms[`uColor`].value.set('#ffb366')
+					break
+				case '🍇':
+					this._outerLeds.material.uniforms[`uColor`].value.set('#b366ff')
+					break
+				default:
+					this._outerLeds.material.uniforms[`uColor`].value.set('#ffe161')
+			}
+		})
+		for (let i = 0; i < 20; i++) {
+			timeline.to(this._outerLeds.material.uniforms[`uOpacity`], {
+				duration: 0.005 * i,
+				value: 1,
+				ease: 'power2.inOut',
+			})
+			timeline.to(this._outerLeds.material.uniforms[`uOpacity`], {
+				duration: 0.005 * i,
+				value: 0,
+				ease: 'power2.inOut',
+			})
+		}
+
+		timeline.call(() => {
+			this._outerLeds.material.uniforms[`uColor`].value.set('#ffffff')
+		})
+		timeline.to(this._outerLeds.material.uniforms[`uOpacity`], {
 			value: 1,
-			duration: 0.1,
-			ease: 'power1.out',
-		}, '+=0.5')
+			ease: 'power2.inOut',
+			duration: 0.3,
+		})
 
 		return timeline
 	}
@@ -403,7 +538,8 @@ export default class Machine {
 		// Create repeating blink timeline
 		const timeline = gsap.timeline({ repeat: -1, yoyo: true })
 
-		timeline.fromTo(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`],
+		timeline.fromTo(
+			this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`],
 			{
 				value: 0,
 			},
@@ -411,7 +547,8 @@ export default class Machine {
 				value: 1,
 				duration: 0.5,
 				ease: 'power2.inOut',
-			})
+			},
+		)
 
 		// Store the timeline so it can be killed later
 		this._wheelBlinkTimelines[index] = timeline
@@ -422,7 +559,7 @@ export default class Machine {
 	animateWheelLock({ index, value, color }) {
 		// if blink and trying to reset, do nothing
 		if (this._wheelBlinkTimelines[index] && color === '#ffffff') {
-			return;
+			return
 		} else if (this._wheelBlinkTimelines[index]) {
 			this._wheelBlinkTimelines[index].kill()
 			this._wheelBlinkTimelines[index] = null
@@ -438,21 +575,33 @@ export default class Machine {
 			ease: 'power1.out',
 		})
 
-		timeline.call(() => {
-			this._innerWheelsLedsMaterial.uniforms[`uLockedColor${index}`].value.set(color || this._defaultWheelLockColor)
-		}, null, value ? '>0.05' : '>0')
+		timeline.call(
+			() => {
+				this._innerWheelsLedsMaterial.uniforms[`uLockedColor${index}`].value.set(color || this._defaultWheelLockColor)
+			},
+			null,
+			value ? '>0.05' : '>0',
+		)
 
-		timeline.to(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`], {
-			value: value ? 0 : 1,
-			duration: 0.04,
-			ease: 'power1.in',
-		}, 0.1)
+		timeline.to(
+			this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`],
+			{
+				value: value ? 0 : 1,
+				duration: 0.04,
+				ease: 'power1.in',
+			},
+			0.1,
+		)
 
-		timeline.to(this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`], {
-			value: value ? 1 : 0,
-			duration: 0.04,
-			ease: 'power1.out',
-		}, 0.15)
+		timeline.to(
+			this._innerWheelsLedsMaterial.uniforms[`uLockedOpacity${index}`],
+			{
+				value: value ? 1 : 0,
+				duration: 0.04,
+				ease: 'power1.out',
+			},
+			0.15,
+		)
 
 		return timeline
 	}
@@ -589,7 +738,7 @@ export default class Machine {
 				uColor: { value: new Color(0xffffff) },
 				uOpacity: { value: 1.0 },
 				uMaskProgressEnd: { value: 0.0 },
-				uMaskProgressStart: { value: 0.0 }
+				uMaskProgressStart: { value: 0.0 },
 			},
 		})
 	}
@@ -622,7 +771,7 @@ export default class Machine {
 	/**
 	 * Events
 	 */
-	_createEventListeners() { }
+	_createEventListeners() {}
 
 	/**
 	 * Debug
@@ -633,32 +782,40 @@ export default class Machine {
 			expanded: true,
 		})
 
-		folder.addButton({
-			title: 'Animate Out'
-		}).on('click', () => {
-			this.animateInnerMachineOut()
-		})
+		folder
+			.addButton({
+				title: 'Animate Out',
+			})
+			.on('click', () => {
+				this.animateInnerMachineOut()
+			})
 
-		folder.addButton({
-			title: 'Animate In'
-		}).on('click', () => {
-			this.animateInnerMachineIn()
-		})
+		folder
+			.addButton({
+				title: 'Animate In',
+			})
+			.on('click', () => {
+				this.animateInnerMachineIn()
+			})
 
-		folder.addButton({
-			title: 'Animate Back'
-		}).on('click', () => {
-			this.animateInnerMachineBack()
-		})
+		folder
+			.addButton({
+				title: 'Animate Back',
+			})
+			.on('click', () => {
+				this.animateInnerMachineBack()
+			})
 
-		folder.addButton({
-			title: 'Animate Front'
-		}).on('click', () => {
-			this.animateInnerMachineFront()
-		})
+		folder
+			.addButton({
+				title: 'Animate Front',
+			})
+			.on('click', () => {
+				this.animateInnerMachineFront()
+			})
 
 		const color = {
-			value: "#000000"
+			value: '#000000',
 		}
 
 		folder.addBinding(color, 'value').on('change', (value) => {
