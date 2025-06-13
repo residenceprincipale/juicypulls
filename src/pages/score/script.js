@@ -153,6 +153,9 @@ async function jackpot({ symbol, count }) {
 				duration: 0.5,
 				ease: 'steps(3)',
 			})
+			socket.send({
+				event: 'jackpot-end',
+			})
 		}
 	} else if (count === 5) {
 		await scoreBackground.hideAnimation(0.1)
@@ -170,6 +173,9 @@ async function jackpot({ symbol, count }) {
 				autoAlpha: 1,
 				duration: 0.5,
 				ease: 'steps(3)',
+			})
+			socket.send({
+				event: 'jackpot-end',
 			})
 		}
 	}
