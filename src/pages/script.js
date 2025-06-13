@@ -30,7 +30,7 @@ function onSubliminalMessage({ message }) {
 	setTimeout(() => {
 		subliminalMessage.style.display = 'none'
 		experience.scene.resources.items.subliminalAudio.stop()
-	}, 200)
+	}, 250)
 }
 
 function onLoseFinal() {

@@ -160,6 +160,13 @@
 		"autoplay": false
 	},
 	{
+		"name": "jackpotAudio",
+		"path": "audio/jackpot.mp3",
+		"loop": false,
+		"volume": 0.8,
+		"autoplay": false
+	},
+	{
 		"name": "secondRouletteModel",
 		"path": "models/second-wheel-model.glb"
 	},

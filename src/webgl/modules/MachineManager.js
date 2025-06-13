@@ -465,6 +465,8 @@ export default class MachineManager {
 								count: counts[symbol],
 							},
 						})
+						this._scene.resources.items.jackpotAudio.play()
+
 						socket.send({
 							event: 'anim',
 							receiver: 'bulbs',
@@ -531,6 +533,7 @@ export default class MachineManager {
 						count: count,
 					},
 				})
+				this._scene.resources.items.jackpotAudio.play()
 				socket.send({
 					event: 'anim',
 					receiver: 'bulbs',
