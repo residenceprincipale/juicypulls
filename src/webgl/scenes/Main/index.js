@@ -110,8 +110,6 @@ export default class Main {
 	startSkipIntro() {
 		this._logo.hide()
 
-		// this.startShooter()
-		// this._machine.animateInnerMachineOut()
 		gsap.delayedCall(2, () => {
 			socket.send({
 				event: 'show',

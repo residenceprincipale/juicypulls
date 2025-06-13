@@ -708,17 +708,19 @@ export default class ShooterManager {
 		}
 
 		// Animate out and return to pool after delay
-		setTimeout(() => {
+		// setTimeout(() => {
+		gsap.delayedCall(0.2, () => {
 			target.animateOut(0.5).then(() => {
 				target.reset()
 				this._returnTargetToPool(target)
 
 				// Spawn new target to maintain count
 				if (this._isGameActive && this._activeTargets.length < this._maxTargets) {
-					this._spawnTarget(0.5) // Small delay before new spawn
+					this._spawnTarget(0.4) // Small delay before new spawn
 				}
 			})
-		}, 800) // Wait a bit before animating out
+		})
+		// }, 800) // Wait a bit before animating out
 
 		console.log(`Target hit! Score: ${this._score}, Position Index: ${target.positionIndex}`)
 	}

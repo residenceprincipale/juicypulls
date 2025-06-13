@@ -60,7 +60,7 @@ export default class LightsMain {
 
         if (immediate) {
             timeline
-                .to([this._lightTop, this._lightLeft, this._lightRight], {
+                .to([this._lightTop, this._lightLeft, this._lightRight, this._lightEnv], {
                     duration: 0,
                     intensity: 0,
                     ease: "none"
@@ -100,6 +100,11 @@ export default class LightsMain {
                     intensity: 0,
                     ease: "sine.out"
                 }, 0.12)
+                .to(this._lightEnv, {
+                    duration: 0.6,
+                    intensity: 0,
+                    ease: "sine.out"
+                }, 0.12)
         }
 
         return timeline
@@ -123,6 +128,11 @@ export default class LightsMain {
                 .to(this._lightRight, {
                     duration: 0,
                     intensity: this._lightSettings[2].intensity.value,
+                    ease: "none"
+                }, 0)
+                .to(this._lightEnv, {
+                    duration: 0,
+                    intensity: this._lightSettings[3].intensity.value,
                     ease: "none"
                 }, 0)
         } else {
@@ -170,6 +180,11 @@ export default class LightsMain {
                     intensity: this._lightSettings[2].intensity.value,
                     ease: "sine.out"
                 })
+                .to(this._lightEnv, {
+                    duration: 0.6,
+                    intensity: this._lightSettings[3].intensity.value,
+                    ease: "sine.out"
+                }, 0.12)
         }
 
         return timeline

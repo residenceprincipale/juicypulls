@@ -128,10 +128,22 @@ export default class BackgroundEnvironment {
      */
     hide() {
         this._model.visible = false
+        this._chaiseAssiseInstancedMesh.visible = false
+        this._chaiseMetalInstancedMesh.visible = false
+        this._colonneInstancedMesh.visible = false
+        this._lightInstancedMesh.visible = false
+        this._lightCubeInstancedMesh.visible = false
+        this._borneInstancedMesh.visible = false
     }
 
     show() {
         this._model.visible = true
+        this._chaiseAssiseInstancedMesh.visible = true
+        this._chaiseMetalInstancedMesh.visible = true
+        this._colonneInstancedMesh.visible = true
+        this._lightInstancedMesh.visible = true
+        this._lightCubeInstancedMesh.visible = true
+        this._borneInstancedMesh.visible = true
     }
 
     /**
@@ -398,6 +410,9 @@ export default class BackgroundEnvironment {
         // Add to scene
         this._scene.add(this._borneInstancedMesh)
 
+        // Hide the reference mesh since we're using instances
+        borneMesh.visible = false
+
         console.log(`Created InstancedMesh with ${instanceCount} borne instances (single draw call)`)
     }
 
@@ -481,6 +496,10 @@ export default class BackgroundEnvironment {
         this._scene.add(this._chaiseAssiseInstancedMesh)
         this._scene.add(this._chaiseMetalInstancedMesh)
 
+        // Hide the reference meshes since we're using instances
+        chaiseAssiseMesh.visible = false
+        chaiseMetalMesh.visible = false
+
         console.log(`Created 2 InstancedMeshes with ${instanceCount} chair instances each (2 draw calls total)`)
     }
 
@@ -545,6 +564,9 @@ export default class BackgroundEnvironment {
 
         // Add to scene
         this._scene.add(this._colonneInstancedMesh)
+
+        // Hide the reference mesh since we're using instances
+        colonneMesh.visible = false
 
         console.log(`Created InstancedMesh with ${instanceCount} column instances (single draw call)`)
     }
@@ -628,6 +650,9 @@ export default class BackgroundEnvironment {
         // Add to scene
         this._scene.add(this._lightInstancedMesh)
         this._scene.add(this._lightCubeInstancedMesh)
+
+        // Hide the reference mesh since we're using instances
+        paternLightMesh.visible = false
 
         console.log(`Created InstancedMesh with ${instanceCount} light instances in a ${xCount}x${zCount} grid (single draw call)`)
     }

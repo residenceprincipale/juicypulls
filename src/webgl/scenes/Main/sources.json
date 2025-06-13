@@ -151,7 +151,8 @@
 		"loop": true,
 		"volume": 0.5,
 		"autoplay": true
-	},{
+	},
+	{
 		"name": "screamerAudio",
 		"path": "audio/screamer.mp3",
 		"loop": false,
@@ -245,9 +246,14 @@
 		"flipY": true
 	},
 	{
-		"name": "targetFaces",
+		"name": "gunTargetFaces",
 		"path": "textures/gun/faces.jpg",
-		"flipY": true
+		"flipY": false,
+		"colorSpace": "srgb"
+	},
+	{
+		"name": "gunTargetPaperModel",
+		"path": "models/target-paper-model.glb"
 	},
 	{
 		"name": "aoBorne",
