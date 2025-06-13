@@ -244,7 +244,8 @@ video {
 	display: none;
 }
 
-.jackpot-x4-video {
+.jackpot-x4-video,
+.jackpot-x3-video {
 	mix-blend-mode: luminosity;
 	scale: 1.25;
 	transform: translateY(-3rem);

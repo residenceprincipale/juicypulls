@@ -32,6 +32,7 @@ const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
 const farkleVideoElement = document.querySelector('.farkle-video')
 const jackpotX4VideoElement = document.querySelector('.jackpot-x4-video')
+const jackpotX3VideoElement = document.querySelector('.jackpot-x3-video')
 const jackpotX4VideoContainerElement = document.querySelector('.jackpot-x4-video-container')
 const leftScreamerVideoElement = document.querySelector('.left-screamer-video')
 let lastOverlayElement = null
@@ -98,17 +99,17 @@ function loseFinal() {
 }
 
 async function jackpot({ symbol, count }) {
+	stopQuotaFlicker()
+	stopCurrentFlicker()
+	stopBankFlicker()
+	stopTokensFlicker()
+	gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
+		autoAlpha: 0,
+		ease: 'rough({strength: 3, points: 10, randomize: true})',
+		duration: 0.25,
+	})
 	if (count === 4) {
 		jackpotX4VideoContainerElement.style.display = 'initial'
-		stopQuotaFlicker()
-		stopCurrentFlicker()
-		stopBankFlicker()
-		stopTokensFlicker()
-		gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
-			autoAlpha: 0,
-			ease: 'rough({strength: 3, points: 10, randomize: true})',
-			duration: 0.25,
-		})
 		await scoreBackground.hideAnimation(0.1)
 		jackpotX4VideoElement.play()
 
@@ -119,13 +120,26 @@ async function jackpot({ symbol, count }) {
 				duration: 0.5,
 				ease: 'steps(3)',
 			})
-			scoreBackground.showAnimation()
-			stopCurrentFlicker = flickerAnimation(currentElement)
-			stopQuotaFlicker = flickerAnimation(quotaElement)
-			stopBankFlicker = flickerAnimation(bankElement)
-			stopTokensFlicker = flickerAnimation(tokensElement)
+		}
+	} else if (count === 3) {
+		jackpotX4VideoContainerElement.style.display = 'initial'
+		await scoreBackground.hideAnimation(0.1)
+		jackpotX3VideoElement.play()
+
+		jackpotX3VideoElement.onended = () => {
+			jackpotX4VideoContainerElement.style.display = 'none'
+			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
+				autoAlpha: 1,
+				duration: 0.5,
+				ease: 'steps(3)',
+			})
 		}
 	}
+	scoreBackground.showAnimation()
+	stopCurrentFlicker = flickerAnimation(currentElement)
+	stopQuotaFlicker = flickerAnimation(quotaElement)
+	stopBankFlicker = flickerAnimation(bankElement)
+	stopTokensFlicker = flickerAnimation(tokensElement)
 	switch (symbol) {
 		case '🍋':
 			jackpotX4VideoContainerElement.style.background = '#d9ffd9'

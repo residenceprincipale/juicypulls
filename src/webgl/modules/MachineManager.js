@@ -328,6 +328,10 @@ export default class MachineManager {
 			})
 		}
 
+		socket.send({
+			event: 'anim',
+			receiver: 'bulbs',
+		})
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
 		gsap.delayedCall(2, () => {
