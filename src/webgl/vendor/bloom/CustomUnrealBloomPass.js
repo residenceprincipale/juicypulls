@@ -331,9 +331,9 @@ class CustomUnrealBloomPass extends Pass {
     _createMaterialIntanceOverride() {
         const material = new ShaderMaterial({
             vertexShader: `
-                #ifdef USE_INSTANCING
-                    attribute mat4 instanceMatrix;
-                #endif
+                // #ifdef USE_INSTANCING
+                //     attribute mat4 instanceMatrix;
+                // #endif
                 
                 void main() {
                     vec4 mvPosition = vec4(position, 1.0);

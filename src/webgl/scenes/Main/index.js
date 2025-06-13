@@ -39,7 +39,8 @@ export default class Main {
 
 			this._backgroundEnvironment = new BackgroundEnvironment()
 			this._gun = new Gun()
-			this._target = new Target()
+			// this._target = new Target()
+			// this._target.animateIn()
 			this._logo = new Logo()
 			this._machine = new Machine()
 			this._secondRoulette = new SecondRoulette()
@@ -110,6 +111,7 @@ export default class Main {
 		this._logo.hide()
 
 		// this.startShooter()
+		// this._machine.animateInnerMachineOut()
 		gsap.delayedCall(2, () => {
 			socket.send({
 				event: 'show',
@@ -235,7 +237,7 @@ export default class Main {
 		this._machineManager.isCollectLocked = false
 	}
 
-	endGame() {}
+	endGame() { }
 
 	lose() {
 		console.log('LOSE GAME')

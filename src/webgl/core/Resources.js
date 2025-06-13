@@ -24,6 +24,9 @@ export default class Resources extends EventEmitter {
 		this.toLoad = this.sources.length
 		this.loaded = 0
 
+		// Asset size logging control - set to false to disable file size fetching and detailed logging
+		this.enableAssetSizeLogging = false
+
 		if (this.toLoad === 0) {
 			this.trigger('ready')
 			return
@@ -81,10 +84,46 @@ export default class Resources extends EventEmitter {
 		this.loaders.exrLoader = new EXRLoader()
 	}
 
+	// Method to fetch file size
+	async getFileSize(url) {
+		try {
+			const response = await fetch(url, { method: 'HEAD' })
+			const contentLength = response.headers.get('content-length')
+			return contentLength ? parseInt(contentLength) : null
+		} catch (error) {
+			console.warn(`Could not fetch size for ${url}:`, error)
+			return null
+		}
+	}
+
+	// Method to format file size
+	formatFileSize(bytes) {
+		if (bytes === null || bytes === undefined) return 'Unknown size'
+		if (bytes === 0) return '0 B'
+
+		const k = 1024
+		const sizes = ['B', 'KB', 'MB', 'GB']
+		const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+	}
+
 	startLoading() {
 		// Load each source
 		for (const source of this.sources) {
+			// Add start time for loading duration (only when asset logging is enabled)
+			if (this.debug.active && this.debug.debugParams.ResourceLog && this.enableAssetSizeLogging) {
+				source.startTime = performance.now()
+			}
+
 			if (source.path instanceof Array) {
+				// For cube textures, get the size of the first face as an estimate (only when asset logging is enabled)
+				if (this.debug.active && this.debug.debugParams.ResourceLog && this.enableAssetSizeLogging) {
+					this.getFileSize(source.path[0]).then(size => {
+						source.fileSize = size ? size * 6 : null // Multiply by 6 for all faces
+					})
+				}
+
 				this.loaders.cubeTextureLoader.load(
 					source.path,
 					(file) => {
@@ -96,6 +135,13 @@ export default class Resources extends EventEmitter {
 					},
 				)
 				continue
+			}
+
+			// Get file size for single file assets (only when asset logging is enabled)
+			if (this.debug.active && this.debug.debugParams.ResourceLog && this.enableAssetSizeLogging) {
+				this.getFileSize(source.path).then(size => {
+					source.fileSize = size
+				})
 			}
 
 			switch (source.path.split('.').pop()) {
@@ -222,6 +268,9 @@ export default class Resources extends EventEmitter {
 		file.name = source.name
 		this.loaded++
 
+		// Calculate loading time
+		const loadTime = source.startTime ? Math.round(performance.now() - source.startTime) : 0
+
 		if (source.flipY !== undefined && source.flipY) {
 			file.flipY = source.flipY
 		}
@@ -230,12 +279,27 @@ export default class Resources extends EventEmitter {
 			file.wrapT = RepeatWrapping
 		}
 
-		if (this.debug.active && this.debug.debugParams.ResourceLog)
-			console.debug(
-				`%c🖼️ ${source.name}%c loaded in ${source.loadTime}ms. (${this.loaded}/${this.toLoad})`,
-				'font-weight: bold',
-				'font-weight: normal',
-			)
+		// Enhanced logging with file size
+		if (this.debug.active && this.debug.debugParams.ResourceLog) {
+			if (this.enableAssetSizeLogging) {
+				const sizeInfo = this.formatFileSize(source.fileSize)
+				const fileType = source.path.split('.').pop().toUpperCase()
+
+				console.debug(
+					`%c📦 ${source.name}%c [${fileType}] - ${sizeInfo} - loaded in ${loadTime}ms (${this.loaded}/${this.toLoad})`,
+					'font-weight: bold; color: white',
+					'font-weight: normal; color: #ccc',
+				)
+			} else {
+				// Simple logging without file size
+				console.debug(
+					`%c🖼️ ${source.name}%c loaded (${this.loaded}/${this.toLoad})`,
+					'font-weight: bold; color: white',
+					'font-weight: normal; color: #ccc',
+				)
+			}
+		}
+
 		if (this.loadingScreenElement) {
 			this.loadingBarElement.style.transform = `scaleX(${this.loaded / this.toLoad})`
 		}
@@ -248,6 +312,33 @@ export default class Resources extends EventEmitter {
 	finishLoading() {
 		if (this.debug.active && this.debug.debugParams.ResourceLog) {
 			console.debug(`✅ Resources loaded!`)
+
+			// Log detailed summary only if asset size logging is enabled
+			if (this.enableAssetSizeLogging) {
+				// Log summary of all assets with sizes
+				const assetSummary = this.sources.map(source => ({
+					name: source.name,
+					size: source.fileSize,
+					type: source.path.split('.').pop().toUpperCase()
+				}))
+					.sort((a, b) => (b.size || 0) - (a.size || 0)) // Sort by size descending
+
+				console.group('📊 Asset Size Summary (Heaviest First):')
+				assetSummary.forEach(asset => {
+					const sizeStr = this.formatFileSize(asset.size)
+					const isLarge = asset.size && asset.size > 1024 * 1024 // > 1MB
+					console.log(
+						`%c${asset.name}%c [${asset.type}] - ${sizeStr}`,
+						isLarge ? 'color: #FF6B6B; font-weight: bold' : 'color: white',
+						'color: #ccc'
+					)
+				})
+				console.groupEnd()
+
+				// Calculate total size
+				const totalSize = this.sources.reduce((sum, source) => sum + (source.fileSize || 0), 0)
+				console.log(`%cTotal assets size: ${this.formatFileSize(totalSize)}`, 'font-weight: bold; color: white')
+			}
 		}
 
 		if (this.loadingScreenElement) this.loadingScreenElement.remove()

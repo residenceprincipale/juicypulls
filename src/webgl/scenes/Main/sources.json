@@ -1,9 +1,5 @@
 [
 	{
-		"name": "grassNormalTexture",
-		"path": "textures/dirt/normal.jpg"
-	},
-	{
 		"name": "wheelAlbedo",
 		"path": "textures/roue-7.png",
 		"flipY": false,
@@ -49,7 +45,7 @@
 	},
 	{
 		"name": "goldMatcap",
-		"path": "textures/matcaps/gold-1.png"
+		"path": "textures/matcaps/gold-1.jpg"
 	},
 	{
 		"name": "metalMatcap",
@@ -207,7 +203,7 @@
 	},
 	{
 		"name": "environmentModel",
-		"path": "/models/environment-v1.glb"
+		"path": "/models/environment-v3.glb"
 	},
 	{
 		"name": "gunArmModel",
@@ -230,12 +226,12 @@
 	},
 	{
 		"name": "gunBerettaRoughness",
-		"path": "textures/gun/beretta-roughness.png",
+		"path": "textures/gun/beretta-roughness.jpg",
 		"flipY": false
 	},
 	{
 		"name": "gunBerettaNormal",
-		"path": "textures/gun/beretta-normal.png",
+		"path": "textures/gun/beretta-normal.jpg",
 		"flipY": false
 	},
 	{
@@ -250,7 +246,59 @@
 	},
 	{
 		"name": "targetFaces",
-		"path": "textures/gun/faces.png",
+		"path": "textures/gun/faces.jpg",
 		"flipY": true
+	},
+	{
+		"name": "aoBorne",
+		"path": "textures/environment/ao-borne.jpg",
+		"flipY": false
+	},
+	{
+		"name": "aoChaise",
+		"path": "textures/environment/ao-chaise.jpg",
+		"flipY": false
+	},
+	{
+		"name": "aoColonne",
+		"path": "textures/environment/ao-colonne.jpg",
+		"flipY": false
+	},
+	{
+		"name": "aoCarpet",
+		"path": "textures/environment/ao-carpet.jpg",
+		"flipY": false
+	},
+	{
+		"name": "albedoCarpet",
+		"path": "textures/environment/albedo-carpet.jpg",
+		"flipY": false,
+		"repeatWrapping": true
+	},
+	{
+		"name": "albedoRoof",
+		"path": "textures/environment/albedo-roof.jpg",
+		"flipY": false,
+		"repeatWrapping": true
+	},
+	{
+		"name": "albedoTables",
+		"path": "textures/environment/albedo-tables.jpg",
+		"flipY": false
+	},
+	{
+		"name": "aoRoof",
+		"path": "textures/environment/ao-roof.jpg",
+		"flipY": false
+	},
+	{
+		"name": "aoLight",
+		"path": "textures/environment/ao-light.jpg",
+		"flipY": false
+	},
+	{
+		"name": "aoTables",
+		"path": "textures/environment/ao-tables.jpg",
+		"flipY": false
 	}
 ]

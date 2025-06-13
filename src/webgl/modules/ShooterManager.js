@@ -23,7 +23,7 @@ export default class ShooterManager {
 
 		// Game settings
 		this._maxTargets = 3
-		this._gameDuration = this._debug.active ? 15 : 25 // secon
+		this._gameDuration = this._debug.active ? 15 : 30 // secon
 		this._isGameActive = false
 		this._gameTimer = 0
 		this._score = 0
@@ -58,10 +58,55 @@ export default class ShooterManager {
 
 		// Spawn positions with random offsets
 		this._positionsArray = [
-			{ start: { x: -2.7, y: -1.05, z: -11.54 }, offset: { x: 0.5, y: 0.1, z: 0 } },
-			{ start: { x: -3.08, y: -1.05, z: -14 }, offset: { x: 0.8, y: 0.1, z: 0 } },
-			{ start: { x: 1.25, y: -1.17, z: -14 }, offset: { x: 0, y: 0, z: 0 } },
-			{ start: { x: -1.8, y: -0.72, z: -19.64 }, offset: { x: 3, y: 0, z: 0 } },
+			{
+				start: { x: -5.0575, y: 0.946, z: -20.947 },
+				offset: { x: 0.3865, y: 0.045, z: 0 },
+				startRotation: { x: 0, y: 0, z: 0 },
+				rotationOffset: { x: 0, y: 0, z: 0.25 },
+				scale: 1
+			},
+			{
+				start: { x: -3.8545, y: -0.9, z: -30.845 },
+				offset: { x: 1.2405, y: 0, z: 0 },
+				startRotation: { x: 0, y: 0, z: 0 },
+				rotationOffset: { x: 0, y: 0, z: 0.1 },
+				scale: 1.313
+			},
+			{
+				start: { x: -5, y: -0.4195, z: -53.098 },
+				offset: { x: 0, y: 0.9455, z: 0 },
+				startRotation: { x: 0, y: 0, z: -0.579 },
+				rotationOffset: { x: 0, y: 0, z: 0 },
+				scale: 1.613
+			},
+			{
+				start: { x: 2.571, y: -1.105, z: -35.779 },
+				offset: { x: 1.35, y: 0, z: 0 },
+				startRotation: { x: 0, y: 0, z: 0 },
+				rotationOffset: { x: 0, y: 0, z: 0.1 },
+				scale: 1.525
+			},
+			{
+				start: { x: 7.999, y: 1.998, z: -35.779 },
+				offset: { x: 0, y: 0, z: 0 },
+				startRotation: { x: 0.008, y: -0.023, z: 0.667 },
+				rotationOffset: { x: 0, y: 0, z: 0 },
+				scale: 1.525
+			},
+			{
+				start: { x: 1.726, y: -0.941, z: -22.639 },
+				offset: { x: 0, y: 0, z: 0 },
+				startRotation: { x: -0.002, y: -0.023, z: -0.081 },
+				rotationOffset: { x: 0, y: 0, z: 0 },
+				scale: 1.368
+			},
+			{
+				start: { x: -0.9675, y: -2.5965, z: -24.487 },
+				offset: { x: 1.6755, y: 0.0145, z: 0 },
+				startRotation: { x: 0, y: 0, z: 0 },
+				rotationOffset: { x: 0, y: 0, z: 0 },
+				scale: 1.291
+			},
 		]
 
 		// Reusable objects for hit detection (avoid garbage collection)
@@ -584,9 +629,23 @@ export default class ShooterManager {
 		}
 
 		const target = this._targetPool.pop()
-		const position = this._getRandomPosition()
+		const { position, rotation, scale, positionIndex } = this._getRandomPosition()
 
 		target.setPosition(position.x, position.y, position.z)
+
+		// Apply random rotation
+		if (target.mesh && target.mesh.rotation) {
+			target.mesh.rotation.x = rotation.x
+			target.mesh.rotation.y = rotation.y
+			target.mesh.rotation.z = rotation.z
+		}
+
+		// Apply fixed scale
+		target.setScale(scale)
+
+		// Store position index for logging
+		target.positionIndex = positionIndex
+
 		this._activeTargets.push(target)
 
 		// Animate in with delay
@@ -623,7 +682,14 @@ export default class ShooterManager {
 			z: posData.start.z + (Math.random() - 0.5) * 2 * posData.offset.z,
 		}
 
-		return finalPosition
+		// Calculate final rotation with random offset
+		const finalRotation = {
+			x: posData.startRotation.x + (Math.random() - 0.5) * 2 * posData.rotationOffset.x,
+			y: posData.startRotation.y + (Math.random() - 0.5) * 2 * posData.rotationOffset.y,
+			z: posData.startRotation.z + (Math.random() - 0.5) * 2 * posData.rotationOffset.z,
+		}
+
+		return { position: finalPosition, rotation: finalRotation, scale: posData.scale, positionIndex: randomIndex }
 	}
 
 	_onTargetHit(target) {
@@ -654,7 +720,7 @@ export default class ShooterManager {
 			})
 		}, 800) // Wait a bit before animating out
 
-		console.log(`Target hit! Score: ${this._score}`)
+		console.log(`Target hit! Score: ${this._score}, Position Index: ${target.positionIndex}`)
 	}
 
 	_returnTargetToPool(target) {

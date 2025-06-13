@@ -25,6 +25,7 @@ export default class Target {
         this._initialPosition = position.clone()
         this._isAnimating = false
         this._isVisible = false
+        this._intendedScale = 1 // Store the intended scale for animations
 
         this._createGeometry()
         this._createMaterial()
@@ -50,6 +51,11 @@ export default class Target {
         return this._isVisible
     }
 
+    set isVisible(value) {
+        this._isVisible = value
+        // this._mesh.visible = value
+    }
+
     get isAnimating() {
         return this._isAnimating
     }
@@ -63,6 +69,13 @@ export default class Target {
      */
     setPosition(x, y, z) {
         this._mesh.position.set(x, y, z)
+        this._updateBoundingBox()
+        console.log('Target position set to', x, y, z)
+    }
+
+    setScale(scale) {
+        this._intendedScale = scale
+        this._mesh.scale.set(scale, scale, scale)
         this._updateBoundingBox()
     }
 
@@ -95,11 +108,11 @@ export default class Target {
 
             // Add a subtle scale animation for more impact
             this._animateInTimeline.fromTo(this._mesh.scale,
-                { x: 0.1, y: 0.1, z: 0.1 },
+                { x: 0.1 * this._intendedScale, y: 0.1 * this._intendedScale, z: 0.1 * this._intendedScale },
                 {
-                    x: 1,
-                    y: 1,
-                    z: 1,
+                    x: this._intendedScale,
+                    y: this._intendedScale,
+                    z: this._intendedScale,
                     duration: duration * 0.6,
                     ease: "back.out(2)"
                 }, 0)
@@ -131,9 +144,9 @@ export default class Target {
 
             // Scale down slightly as it folds
             this._animateOutTimeline.to(this._mesh.scale, {
-                x: 0.8,
-                y: 0.8,
-                z: 0.8,
+                x: 0.8 * this._intendedScale,
+                y: 0.8 * this._intendedScale,
+                z: 0.8 * this._intendedScale,
                 duration: duration * 0.7,
                 ease: "power2.in"
             }, 0)
@@ -175,7 +188,7 @@ export default class Target {
 
         this._mesh.position.copy(this._initialPosition)
         this._mesh.rotation.set(0, 0, 0)
-        this._mesh.scale.set(1, 1, 1)
+        this._mesh.scale.set(this._intendedScale, this._intendedScale, this._intendedScale)
         this._material.opacity = 1
         this._mesh.visible = false
         this._isVisible = false
@@ -235,6 +248,7 @@ export default class Target {
     _createMesh() {
         this._mesh = new Mesh(this._geometry, this._material)
         this._mesh.position.copy(this._initialPosition)
+        this._mesh.scale.set(1.5, 1.5, 1.5)
         this._mesh.name = 'target'
 
         // Start hidden and folded down from bottom

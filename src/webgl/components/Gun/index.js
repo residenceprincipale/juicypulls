@@ -211,8 +211,6 @@ export default class Gun {
                 model: this._resource.scene,
             })
 
-            console.log('Gun animations available:', this._resource.animations.map(anim => anim.name))
-
         } else {
             console.log('No animations found in gun resource')
         }

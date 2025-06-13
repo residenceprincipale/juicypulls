@@ -5,6 +5,8 @@ import addLightDebug from 'utils/addLightDebug.js';
 import settingsLight1 from './lightSettings-1.js';
 import settingsLight2 from './lightSettings-2.js';
 import settingsLight3 from './lightSettings-3.js';
+import settingsLight4 from './lightSettings-4.js';
+import settingsLight5 from './lightSettings-5.js';
 
 import gsap from 'gsap';
 
@@ -23,6 +25,8 @@ export default class LightsMain {
             settingsLight1,
             settingsLight2,
             settingsLight3,
+            settingsLight4,
+            settingsLight5,
         ];
 
 
