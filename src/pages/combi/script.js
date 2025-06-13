@@ -171,6 +171,7 @@ function loseFinal() {
 
 	rightScreamerVideoElement.style.display = 'initial'
 	rightScreamerVideoElement.play()
+	rightScreamerVideoElement.playbackRate = 1.2
 	rightScreamerVideoElement.onended = () => {
 		// hide all
 		rightScreamerVideoElement.style.display = 'none'

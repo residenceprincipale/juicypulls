@@ -264,6 +264,7 @@ export default class Main {
 		// flsah scene lights on start to red and flash red 
 
 		this._machine.turnOffLeds()
+		this._backgroundEnvironment.hide()
 		this._machine.changeOuterLedsColor('#ff0000')
 		await this._machine.animateInnerMachineOut()
 		this._lights.animateLoseFinal()

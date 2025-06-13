@@ -53,13 +53,6 @@ cloneAndBlur()
 
 function cloneAndBlur() {
 	return
-	if (lastOverlayElement) {
-		lastOverlayElement.remove()
-	}
-	const overlayClone = overlayElement.cloneNode(true)
-	overlayClone.classList.add('overlay-blur')
-	scoreElement.parentNode.appendChild(overlayClone)
-	lastOverlayElement = overlayClone
 }
 
 function splitCharacters(element) {
@@ -92,6 +85,7 @@ function loseFinal() {
 	})
 
 	leftScreamerVideoElement.style.display = 'initial'
+	leftScreamerVideoElement.playbackRate = 1.2
 	leftScreamerVideoElement.play()
 	leftScreamerVideoElement.onended = () => {
 		leftScreamerVideoElement.style.display = 'none'

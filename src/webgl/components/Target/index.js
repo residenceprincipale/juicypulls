@@ -69,6 +69,7 @@ export default class Target {
 
     get boundingBox() {
         return this._boundingBox
+
     }
 
     /**
@@ -86,7 +87,7 @@ export default class Target {
 
         // Also update face mesh scale if it exists
         if (this._faceMesh) {
-            this._faceMesh.scale.set(scale * 1.5, scale * 1.5, scale * 1.5)
+            this._faceMesh.scale.set(scale * 2.5, scale * 2.5, scale * 2.5)
         }
 
         this._updateBoundingBox()

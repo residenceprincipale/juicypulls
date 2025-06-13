@@ -216,7 +216,7 @@ export default class LightsMain {
             duration: 0.05,
             intensity: 0.5,
             ease: 'power1.inOut'
-        }, '+=2')
+        }, '+=2.4')
         timeline.to(this._lightTop, {
             intensity: 0.5,
             ease: 'power1.inOut',

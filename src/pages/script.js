@@ -44,12 +44,12 @@ function onLoseFinal() {
 		autoAlpha: 1,
 		duration: 0.5,
 	})
-	screamerVideoElement.playbackRate = 1.4
+	screamerVideoElement.playbackRate = 1.2
 	screamerVideoElement.play()
 
 	// play video x1.5 speed
 
-	gsap.delayedCall(3.1, () => {
+	gsap.delayedCall(3.5, () => {
 		experience.scene.resources.items.screamerAudio.play()
 	})
 	screamerVideoElement.onended = () => {
