@@ -260,8 +260,9 @@ export default class Main {
 	loseFinal() {
 		console.log('LOSE FINAL')
 
-		this._machineManager.turnOffLeds()
-		this._lights.turnOff()
+		this._machine.animateInnerMachineOut()
+		this._machine.turnOffLeds()
+		// this._lights.turnOff()
 	}
 
 	triggerFarkle() {

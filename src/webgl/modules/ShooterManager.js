@@ -118,11 +118,13 @@ export default class ShooterManager {
 		this._gun.animateGunIn()
 
 		console.log('Shooting game started!')
+
+		this._scene.resources.items.shooterAudio.play()
 	}
 
 	endGame() {
 		if (!this._isGameActive) return
-
+		this._scene.resources.items.shooterAudio.stop()
 		this._isGameActive = false
 
 		// Hide crosshair

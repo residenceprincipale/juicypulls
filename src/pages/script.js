@@ -16,6 +16,7 @@ socket.on('show-subliminal', onSubliminalMessage)
 
 function onSubliminalMessage({ message }) {
 	const occurence = 5
+	experience.scene.resources.items.subliminalAudio.play()
 
 	subliminalMessage.innerHTML = Array.from({ length: occurence }, () => {
 		const randomX = Math.random() * 600 - 300
@@ -25,5 +26,6 @@ function onSubliminalMessage({ message }) {
 
 	setTimeout(() => {
 		subliminalMessage.style.display = 'none'
+		experience.scene.resources.items.subliminalAudio.stop()
 	}, 200)
 }
