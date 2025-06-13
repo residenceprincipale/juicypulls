@@ -33,6 +33,7 @@ const innerTextElement = document.querySelector('.inner-text')
 const farkleVideoElement = document.querySelector('.farkle-video')
 const jackpotX4VideoElement = document.querySelector('.jackpot-x4-video')
 const jackpotX3VideoElement = document.querySelector('.jackpot-x3-video')
+const jackpotX5VideoElement = document.querySelector('.jackpot-x5-video')
 const jackpotX4VideoContainerElement = document.querySelector('.jackpot-x4-video-container')
 const leftScreamerVideoElement = document.querySelector('.left-screamer-video')
 let lastOverlayElement = null
@@ -141,6 +142,24 @@ async function jackpot({ symbol, count }) {
 		jackpotX3VideoElement.onended = () => {
 			jackpotX4VideoContainerElement.style.display = 'none'
 			gsap.set(jackpotX3VideoElement, {
+				autoAlpha: 0,
+			})
+			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
+				autoAlpha: 1,
+				duration: 0.5,
+				ease: 'steps(3)',
+			})
+		}
+	} else if (count === 5) {
+		await scoreBackground.hideAnimation(0.1)
+		jackpotX5VideoElement.play()
+		gsap.set(jackpotX5VideoElement, {
+			autoAlpha: 1,
+		})
+
+		jackpotX5VideoElement.onended = () => {
+			jackpotX4VideoContainerElement.style.display = 'none'
+			gsap.set(jackpotX5VideoElement, {
 				autoAlpha: 0,
 			})
 			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
