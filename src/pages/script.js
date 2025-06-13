@@ -16,6 +16,12 @@ const screamerVideoElement = document.querySelector('.screamer-video')
 
 socket.on('show-subliminal', onSubliminalMessage)
 socket.on('lose-final', onLoseFinal)
+socket.on('jackpot', () => {
+	experience.scene.resources.items.jackpotAudio.play()
+})
+socket.on('jackpot-end', () => {
+	experience.scene.resources.items.jackpotAudio.stop()
+})
 
 function onSubliminalMessage({ message }) {
 	const occurence = 5

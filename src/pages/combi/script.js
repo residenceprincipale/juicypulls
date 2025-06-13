@@ -158,6 +158,7 @@ socket.on('reset', resetCombi)
 socket.on('hide', hide)
 socket.on('show', show)
 socket.on('jackpot', jackpot)
+socket.on('jackpot-end', jackpotEnd)
 socket.on('farkle', farkle)
 socket.on('lose-final', loseFinal)
 
@@ -264,22 +265,22 @@ function jackpot({ symbol, count }) {
 			})
 			experience.sceneManager.combi.tint = new Color('#80ffff')
 	}
+}
 
-	gsap.delayedCall(6, () => {
-		gsap.to(jackpotVideoElements, {
-			autoAlpha: 0,
-			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
-		})
-		gsap.to(sideElements, {
-			background: '',
-			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
-		})
-		gsap.to(overlayElement, {
-			'--primary-color': '',
-			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
-		})
-		experience.sceneManager.combi.tint = new Color('white')
+function jackpotEnd() {
+	gsap.to(jackpotVideoElements, {
+		autoAlpha: 0,
+		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 	})
+	gsap.to(sideElements, {
+		background: '',
+		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+	})
+	gsap.to(overlayElement, {
+		'--primary-color': '',
+		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+	})
+	experience.sceneManager.combi.tint = new Color('white')
 }
 
 function show({ immediate = false } = {}) {
