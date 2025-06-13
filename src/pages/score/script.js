@@ -102,6 +102,11 @@ let isFirstJackpot = true
 async function jackpot({ symbol, count }) {
 	if (isFirstJackpot) {
 		isFirstJackpot = false
+		setTimeout(() => {
+			socket.send({
+				event: 'jackpot-end',
+			})
+		}, 3000)
 		return
 	}
 	stopQuotaFlicker()
