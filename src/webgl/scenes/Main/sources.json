@@ -149,7 +149,7 @@
 		"name": "musicAudio",
 		"path": "audio/music.mp3",
 		"loop": true,
-		"volume": 0.3,
+		"volume": 0.15,
 		"autoplay": true
 	},
 	{
