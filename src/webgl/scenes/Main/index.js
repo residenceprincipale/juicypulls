@@ -235,7 +235,7 @@ export default class Main {
 		this._machineManager.isCollectLocked = false
 	}
 
-	endGame() { }
+	endGame() {}
 
 	lose() {
 		console.log('LOSE GAME')
@@ -262,7 +262,7 @@ export default class Main {
 
 		this._machine.turnOffLeds()
 		await this._machine.animateInnerMachineOut()
-		// this._lights.turnOff()
+		this._lights.turnOff()
 		socket.send({
 			event: 'lose-final',
 		})
