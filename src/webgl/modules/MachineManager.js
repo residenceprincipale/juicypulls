@@ -559,11 +559,10 @@ export default class MachineManager {
 	}
 
 	async _spinSecondRouletteWheels() {
-		// this._secondRouletteResults = Array(SECOND_ROULETTE_CONFIG.numWheels)
-		// 	.fill(0)
-		// 	.map(() => Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments))
-		//always multiplier x1 for the second roulette
-		this._secondRouletteResults = [0, Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments)] // Always multiplier x1 for the second roulette
+		this._secondRouletteResults = Array(SECOND_ROULETTE_CONFIG.numWheels)
+			.fill(0)
+			.map(() => Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments))
+		// this._secondRouletteResults = [0, Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments)] // Always multiplier x1 for the second roulette
 
 		// Animate the wheels
 		await this._animateWheelSpin(

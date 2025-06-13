@@ -89,6 +89,9 @@ function loseFinal() {
 	leftScreamerVideoElement.play()
 	leftScreamerVideoElement.onended = () => {
 		leftScreamerVideoElement.style.display = 'none'
+		gsap.set(overlayElement, {
+			autoAlpha: 1,
+		})
 		hide({ immediate: true })
 	}
 }
