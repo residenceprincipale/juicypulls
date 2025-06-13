@@ -114,7 +114,7 @@
 		"name": "messageAudio",
 		"path": "audio/message.mp3",
 		"loop": false,
-		"volume": 0.1,
+		"volume": 0.5,
 		"autoplay": false
 	},
 	{
@@ -149,14 +149,14 @@
 		"name": "musicAudio",
 		"path": "audio/music.mp3",
 		"loop": true,
-		"volume": 0.5,
+		"volume": 0.3,
 		"autoplay": true
 	},
 	{
 		"name": "screamerAudio",
 		"path": "audio/screamer.mp3",
 		"loop": false,
-		"volume": 0.1,
+		"volume": 0.5,
 		"autoplay": false
 	},
 	{

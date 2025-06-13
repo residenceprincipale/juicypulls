@@ -328,10 +328,6 @@ export default class MachineManager {
 			})
 		}
 
-		socket.send({
-			event: 'anim',
-			receiver: 'bulbs',
-		})
 		this._animateWheelSpin(this._machine.wheels, this._results, MAIN_ROULETTE_CONFIG.segments)
 
 		gsap.delayedCall(2, () => {
@@ -469,6 +465,10 @@ export default class MachineManager {
 								count: counts[symbol],
 							},
 						})
+						socket.send({
+							event: 'anim',
+							receiver: 'bulbs',
+						})
 						this._machine.animateJackpot(symbol)
 					}
 				}
@@ -530,6 +530,10 @@ export default class MachineManager {
 						symbol: symbol,
 						count: count,
 					},
+				})
+				socket.send({
+					event: 'anim',
+					receiver: 'bulbs',
 				})
 				this._machine.animateJackpot(symbol)
 			}

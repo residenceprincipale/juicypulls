@@ -97,8 +97,12 @@ function loseFinal() {
 		hide({ immediate: true })
 	}
 }
-
+let isFirstJackpot = true
 async function jackpot({ symbol, count }) {
+	if (isFirstJackpot) {
+		isFirstJackpot = false
+		return
+	}
 	stopQuotaFlicker()
 	stopCurrentFlicker()
 	stopBankFlicker()
