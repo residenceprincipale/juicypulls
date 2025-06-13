@@ -2,8 +2,20 @@ export default {
     "uTime": {
         "value": 0
     },
+    "uAlbedoMap": {
+        "value": "albedoCarpet"
+    },
+    "uAlbedoRepeat": {
+        "value": {
+            "x": 60,
+            "y": 30.000000000000004
+        }
+    },
+    "uAlbedoIntensity": {
+        "value": 0.61
+    },
     "uAOMap": {
-        "value": "aoRoof"
+        "value": "aoCarpet"
     },
     "uAOMapIntensity": {
         "value": 3
@@ -30,13 +42,13 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 4
+        "value": 3
     },
     "uSpecularIntensity": {
-        "value": 0.22000000000000003
+        "value": 0.09000000000000002
     },
     "uShininess": {
-        "value": 100
+        "value": 49.99999999999999
     },
     "uOpacity": {
         "value": 1
@@ -45,7 +57,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#8b522e"
+        "value": "#741a02"
     },
     "uSpecularColor": {
         "value": "0xffffff"

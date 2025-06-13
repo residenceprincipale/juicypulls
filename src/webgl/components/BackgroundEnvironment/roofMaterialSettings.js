@@ -7,12 +7,12 @@ export default {
     },
     "uAlbedoRepeat": {
         "value": {
-            "x": 60,
+            "x": 30,
             "y": 30.000000000000004
         }
     },
     "uAlbedoIntensity": {
-        "value": 1
+        "value": 2
     },
     "uAOMap": {
         "value": "aoRoof"
@@ -42,7 +42,7 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 3
+        "value": 4
     },
     "uSpecularIntensity": {
         "value": 0.09000000000000002
@@ -57,7 +57,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#851c00"
+        "value": "#000000"
     },
     "uSpecularColor": {
         "value": "0xffffff"

@@ -190,6 +190,40 @@ export default class LightsMain {
         return timeline
     }
 
+    animateLoseFinal() {
+        // make top light flicker to red color with a timeline
+        const timeline = gsap.timeline()
+
+        timeline.to(this._lightTop, {
+            intensity: 0,
+            ease: 'power1.inOut',
+            duration: 0.1
+        })
+        timeline.call(() => {
+            this._lightTop.color.set('#ff0000')
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.05,
+            intensity: 0.1,
+            ease: 'power1.inOut'
+        })
+        timeline.to(this._lightTop, {
+            duration: 0.05,
+            intensity: 0,
+            ease: 'power1.inOut'
+        },)
+        timeline.to(this._lightTop, {
+            duration: 0.05,
+            intensity: 0.5,
+            ease: 'power1.inOut'
+        }, '+=2')
+        timeline.to(this._lightTop, {
+            intensity: 0.5,
+            ease: 'power1.inOut',
+            duration: 0.05
+        })
+    }
+
     /**
      * Private
      */

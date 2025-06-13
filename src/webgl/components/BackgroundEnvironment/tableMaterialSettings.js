@@ -54,10 +54,10 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 0.9999999999999999
+        "value": 0.6699999999999999
     },
     "uSpecularIntensity": {
-        "value": 0.19999999999999998
+        "value": 0.06999999999999998
     },
     "uShininess": {
         "value": 150

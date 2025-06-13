@@ -30,7 +30,7 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 1.1
+        "value": 0.9900000000000001
     },
     "uSpecularIntensity": {
         "value": 1
@@ -45,7 +45,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#9b9a92"
+        "value": "#96947f"
     },
     "uSpecularColor": {
         "value": "0xffffff"

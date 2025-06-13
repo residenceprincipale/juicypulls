@@ -45,10 +45,10 @@ export default {
         "value": 0.9999999999999999
     },
     "uSpecularIntensity": {
-        "value": 0.03999999999999998
+        "value": 0.00999999999999998
     },
     "uShininess": {
-        "value": 100
+        "value": 50
     },
     "uOpacity": {
         "value": 1
@@ -57,7 +57,7 @@ export default {
         "value": "0xffffff"
     },
     "uDiffuseColor": {
-        "value": "#61483c"
+        "value": "#4f382d"
     },
     "uSpecularColor": {
         "value": "0xffffff"

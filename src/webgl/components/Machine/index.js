@@ -468,6 +468,21 @@ export default class Machine {
 		return timeline
 	}
 
+	changeOuterLedsColor(color) {
+		const timeline = gsap.timeline()
+
+		// add a triple flicker effect using the flickerOnceOuterLeds function
+		timeline.add(this.flickerOnceOuterLeds())
+
+		timeline.call(() => {
+			this._outerLeds.material.uniforms[`uColor`].value.set(color)
+		})
+
+		timeline.add(this.flickerOnceOuterLeds())
+
+		return timeline
+	}
+
 	animateJackpot(symbol) {
 		const timeline = gsap.timeline()
 
@@ -478,6 +493,9 @@ export default class Machine {
 		})
 		timeline.call(() => {
 			switch (symbol) {
+				case 'red':
+					this._outerLeds.material.uniforms[`uColor`].value.set('#ff0000')
+					break
 				case '🍋':
 					this._outerLeds.material.uniforms[`uColor`].value.set('#b3ffb3')
 					break
@@ -641,6 +659,7 @@ export default class Machine {
 			}
 			if (child.name.includes('inner-wheels-metal')) {
 				this._innerMachine = child
+				// this._innerMachine.position.set(0, -10, 0)
 			}
 			if (child.name.includes('led')) {
 				child.material = this._ledsMaterial.clone()
@@ -771,7 +790,7 @@ export default class Machine {
 	/**
 	 * Events
 	 */
-	_createEventListeners() {}
+	_createEventListeners() { }
 
 	/**
 	 * Debug

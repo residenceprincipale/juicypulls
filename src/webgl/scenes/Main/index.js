@@ -235,7 +235,7 @@ export default class Main {
 		this._machineManager.isCollectLocked = false
 	}
 
-	endGame() {}
+	endGame() { }
 
 	lose() {
 		console.log('LOSE GAME')
@@ -260,9 +260,13 @@ export default class Main {
 	async loseFinal() {
 		console.log('LOSE FINAL')
 
+		// turn outer leds to red
+		// flsah scene lights on start to red and flash red 
+
 		this._machine.turnOffLeds()
+		this._machine.changeOuterLedsColor('#ff0000')
 		await this._machine.animateInnerMachineOut()
-		this._lights.turnOff()
+		this._lights.animateLoseFinal()
 		socket.send({
 			event: 'lose-final',
 		})

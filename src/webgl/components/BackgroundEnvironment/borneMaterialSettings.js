@@ -12,7 +12,7 @@ export default {
         }
     },
     "uRoughnessIntensity": {
-        "value": 0.9999999999999999
+        "value": 1.2299999999999998
     },
     "uAOMap": {
         "value": "aoBorne"
@@ -42,13 +42,13 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 0.9999999999999999
+        "value": 1.4199999999999997
     },
     "uSpecularIntensity": {
-        "value": 1
+        "value": 0.78
     },
     "uShininess": {
-        "value": 250
+        "value": 200
     },
     "uOpacity": {
         "value": 1

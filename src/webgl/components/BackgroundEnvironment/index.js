@@ -324,6 +324,12 @@ export default class BackgroundEnvironment {
         this._modelMeshes.tableGreen.material = this._tableMaterial
 
         this._modelMeshes.tableMetal.material.dispose()
+        // // create a matcap material
+        // this._tableMetalMaterial = new MeshMatcapMaterial({
+        //     matcap: this._resources.items.metalMatcapShiny,
+        //     name: 'Table Metal Material',
+        //     color: new Color('#666666'),
+        // })
         this._modelMeshes.tableMetal.material = this._tableMaterial
 
         this._modelMeshes.tableWood.material.dispose()
@@ -646,6 +652,7 @@ export default class BackgroundEnvironment {
         // Update the instanced meshes
         this._lightInstancedMesh.instanceMatrix.needsUpdate = true
         this._lightCubeInstancedMesh.instanceMatrix.needsUpdate = true
+        this._lightCubeInstancedMesh.userData.renderBloom = true
 
         // Add to scene
         this._scene.add(this._lightInstancedMesh)

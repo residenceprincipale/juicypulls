@@ -44,9 +44,14 @@ function onLoseFinal() {
 		autoAlpha: 1,
 		duration: 0.5,
 	})
+	screamerVideoElement.playbackRate = 1.4
 	screamerVideoElement.play()
 
-	experience.scene.resources.items.screamerAudio.play()
+	// play video x1.5 speed
+
+	gsap.delayedCall(3.1, () => {
+		experience.scene.resources.items.screamerAudio.play()
+	})
 	screamerVideoElement.onended = () => {
 		experience.scene.resources.items.screamerAudio.stop()
 		Object.keys(experience.scene.resources.items).forEach((item) => {

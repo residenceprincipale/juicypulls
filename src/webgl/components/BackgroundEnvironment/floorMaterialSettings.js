@@ -12,7 +12,7 @@ export default {
         }
     },
     "uAlbedoIntensity": {
-        "value": 0.66
+        "value": 0.61
     },
     "uAOMap": {
         "value": "aoCarpet"
@@ -42,7 +42,7 @@ export default {
         "value": 0.9999999999999999
     },
     "uDiffuseIntensity": {
-        "value": 0.9999999999999999
+        "value": 3
     },
     "uSpecularIntensity": {
         "value": 0.09000000000000002
