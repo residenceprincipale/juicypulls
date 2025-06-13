@@ -112,14 +112,19 @@ async function jackpot({ symbol, count }) {
 		ease: 'rough({strength: 3, points: 10, randomize: true})',
 		duration: 0.25,
 	})
+	jackpotX4VideoContainerElement.style.display = 'initial'
 	if (count === 4) {
-		jackpotX4VideoContainerElement.style.display = 'initial'
 		await scoreBackground.hideAnimation(0.1)
+		gsap.set(jackpotX4VideoElement, {
+			autoAlpha: 1,
+		})
 		jackpotX4VideoElement.play()
 
 		jackpotX4VideoElement.onended = () => {
 			jackpotX4VideoContainerElement.style.display = 'none'
-			jackpotX4VideoElement.style.display = 'none'
+			gsap.set(jackpotX4VideoElement, {
+				autoAlpha: 0,
+			})
 			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
 				autoAlpha: 1,
 				duration: 0.5,
@@ -127,13 +132,17 @@ async function jackpot({ symbol, count }) {
 			})
 		}
 	} else if (count === 3) {
-		jackpotX4VideoContainerElement.style.display = 'initial'
 		await scoreBackground.hideAnimation(0.1)
 		jackpotX3VideoElement.play()
+		gsap.set(jackpotX3VideoElement, {
+			autoAlpha: 1,
+		})
 
 		jackpotX3VideoElement.onended = () => {
 			jackpotX4VideoContainerElement.style.display = 'none'
-			jackpotX3VideoElement.style.display = 'none'
+			gsap.set(jackpotX3VideoElement, {
+				autoAlpha: 0,
+			})
 			gsap.to([currentElement, quotaElement, tokensElement, bankElement], {
 				autoAlpha: 1,
 				duration: 0.5,
