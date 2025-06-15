@@ -93,6 +93,7 @@ function loseFinal() {
 			autoAlpha: 1,
 		})
 		hide({ immediate: true })
+		scoreBackground.tint = new Color('white')
 	}
 }
 let isFirstJackpot = true

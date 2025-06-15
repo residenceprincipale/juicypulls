@@ -179,6 +179,7 @@ function loseFinal() {
 			autoAlpha: 1,
 		})
 		hide({ immediate: true })
+		experience.sceneManager.combi.tint = new Color('white')
 	}
 }
 
