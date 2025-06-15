@@ -73,10 +73,10 @@ export default class Resources extends EventEmitter {
 		this.loaders = {}
 		this.loaders.gltfLoader = new GLTFLoader()
 		const dracoLoader = new DRACOLoader()
-		dracoLoader.setDecoderPath('/draco/')
+		dracoLoader.setDecoderPath(`./draco/`)
 		this.loaders.gltfLoader.setDRACOLoader(dracoLoader)
 		this.loaders.ktx2Loader = new KTX2Loader()
-		this.loaders.ktx2Loader.setTranscoderPath('/basis/')
+		this.loaders.ktx2Loader.setTranscoderPath(`./basis/`)
 		this.loaders.ktx2Loader.detectSupport(new WebGLRenderer())
 		this.loaders.textureLoader = new TextureLoader()
 		this.loaders.cubeTextureLoader = new CubeTextureLoader()
@@ -119,7 +119,7 @@ export default class Resources extends EventEmitter {
 			if (source.path instanceof Array) {
 				// For cube textures, get the size of the first face as an estimate (only when asset logging is enabled)
 				if (this.debug.active && this.debug.debugParams.ResourceLog && this.enableAssetSizeLogging) {
-					this.getFileSize(source.path[0]).then(size => {
+					this.getFileSize(source.path[0]).then((size) => {
 						source.fileSize = size ? size * 6 : null // Multiply by 6 for all faces
 					})
 				}
@@ -139,7 +139,7 @@ export default class Resources extends EventEmitter {
 
 			// Get file size for single file assets (only when asset logging is enabled)
 			if (this.debug.active && this.debug.debugParams.ResourceLog && this.enableAssetSizeLogging) {
-				this.getFileSize(source.path).then(size => {
+				this.getFileSize(source.path).then((size) => {
 					source.fileSize = size
 				})
 			}
@@ -316,21 +316,22 @@ export default class Resources extends EventEmitter {
 			// Log detailed summary only if asset size logging is enabled
 			if (this.enableAssetSizeLogging) {
 				// Log summary of all assets with sizes
-				const assetSummary = this.sources.map(source => ({
-					name: source.name,
-					size: source.fileSize,
-					type: source.path.split('.').pop().toUpperCase()
-				}))
+				const assetSummary = this.sources
+					.map((source) => ({
+						name: source.name,
+						size: source.fileSize,
+						type: source.path.split('.').pop().toUpperCase(),
+					}))
 					.sort((a, b) => (b.size || 0) - (a.size || 0)) // Sort by size descending
 
 				console.group('📊 Asset Size Summary (Heaviest First):')
-				assetSummary.forEach(asset => {
+				assetSummary.forEach((asset) => {
 					const sizeStr = this.formatFileSize(asset.size)
 					const isLarge = asset.size && asset.size > 1024 * 1024 // > 1MB
 					console.log(
 						`%c${asset.name}%c [${asset.type}] - ${sizeStr}`,
 						isLarge ? 'color: #FF6B6B; font-weight: bold' : 'color: white',
-						'color: #ccc'
+						'color: #ccc',
 					)
 				})
 				console.groupEnd()

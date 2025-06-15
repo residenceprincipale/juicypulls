@@ -1,27 +1,26 @@
 {
-	"name": "threejs-vite-starter",
-	"description": "A starter template for Three.js with Vite",
+	"name": "flipette",
+	"description": "Machine à sous avec interfaces multiécrans",
 	"private": false,
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"type": "module",
+	"main": "electron/main.cjs",
 	"scripts": {
 		"server": "node server/index.js",
 		"dev": "vite --port 3000 --host",
 		"build": "vite build",
 		"preview": "vite preview",
-		"dev:kinect": "concurrently \"cd server && source ~/libfreenect2/build/kinect-env/bin/activate && export DYLD_LIBRARY_PATH=~/libfreenect2/build/lib:$DYLD_LIBRARY_PATH && export LD_LIBRARY_PATH=~/libfreenect2/build/lib:$LD_LIBRARY_PATH && python kinect_client.py\" \"vite --port 3000 --host\""
+		"dev:kinect": "concurrently \"cd server && source ~/libfreenect2/build/kinect-env/bin/activate && export DYLD_LIBRARY_PATH=~/libfreenect2/build/lib:$DYLD_LIBRARY_PATH && export LD_LIBRARY_PATH=~/libfreenect2/build/lib:$LD_LIBRARY_PATH && python kinect_client.py\" \"vite --port 3000 --host\"",
+		"electron:dev": "concurrently \"npm run dev\" \"cross-env NODE_ENV=development electron .\"",
+		"electron:build": "npm run build && electron-builder",
+		"electron:start": "cross-env NODE_ENV=production electron ."
 	},
 	"dependencies": {
-		"@recast-navigation/three": "^0.39.0",
-		"delaunator": "^5.0.1",
 		"gsap": "^3.12.7",
 		"howler": "^2.2.4",
 		"postprocessing": "^6.37.2",
-		"recast-navigation": "^0.39.0",
-		"sass": "^1.89.1",
 		"serialport": "^13.0.0",
 		"three": "^0.172.0",
-		"tweakpane-undo-redo-plugin": "github:cosmicshelter/tweakpane-undo-redo-plugin",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {
@@ -29,10 +28,15 @@
 		"@tweakpane/plugin-essentials": "0.2.1",
 		"@types/three": "^0.172.0",
 		"concurrently": "^8.0.0",
+		"cross-env": "^7.0.3",
+		"electron": "^25.9.8",
+		"electron-builder": "^24.13.3",
+		"sass": "^1.89.1",
 		"stats.js": "^0.17.0",
 		"tweakpane": "^4.0.5",
 		"tweakpane-plugin-file-import": "^1.1.1",
 		"tweakpane-plugin-media": "^1.0.3",
+		"tweakpane-undo-redo-plugin": "github:cosmicshelter/tweakpane-undo-redo-plugin",
 		"vite": "^6.0.11",
 		"vite-plugin-glslify": "^2.2.0"
 	}

@@ -1,22 +1,22 @@
 [
 	{
 		"name": "ambientTexture",
-		"path": "/textures/combi/ambient.webp"
+		"path": "../textures/combi/ambient.webp"
 	},
 	{
 		"name": "barsTexture",
-		"path": "/textures/combi/bars.webp"
+		"path": "../textures/combi/bars.webp"
 	},
 	{
 		"name": "innerTexture",
-		"path": "/textures/combi/inner.webp"
+		"path": "../textures/combi/inner.webp"
 	},
 	{
 		"name": "outerTexture",
-		"path": "/textures/combi/outer.webp"
+		"path": "../textures/combi/outer.webp"
 	},
 	{
 		"name": "strokeTexture",
-		"path": "/textures/combi/stroke.webp"
+		"path": "../textures/combi/stroke.webp"
 	}
 ]

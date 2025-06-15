@@ -1,0 +1,64 @@
+{
+  "appId": "com.flipette.app",
+  "productName": "Flipette",
+  "directories": {
+    "output": "dist-electron",
+    "buildResources": "public"
+  },
+  "files": [
+    "dist/**/*",
+    "electron/**/*",
+    "server/**/*",
+    "public/**/*",
+    "node_modules/**/*",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "dist",
+      "to": "app/dist",
+      "filter": ["**/*"]
+    },
+    {
+      "from": "server",
+      "to": "app/server",
+      "filter": ["**/*"]
+    },
+    {
+      "from": "public",
+      "to": "app/public",
+      "filter": ["**/*"]
+    }
+  ],
+  "mac": {
+    "category": "public.app-category.games",
+    "target": ["dmg"],
+    "icon": "public/icon.png"
+  },
+  "dmg": {
+    "contents": [
+      {
+        "x": 130,
+        "y": 220
+      },
+      {
+        "x": 410,
+        "y": 220,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ],
+    "icon": "public/icon.png",
+    "iconSize": 100
+  },
+  "win": {
+    "target": ["nsis"],
+    "icon": "public/icon.png"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "icon": "public/icon.png"
+  }
+}
+
+

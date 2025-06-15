@@ -5,6 +5,7 @@ import path from 'path'
 export default defineConfig({
 	root: 'src/pages',
 	publicDir: path.resolve(__dirname, 'public'),
+	base: './', // Utiliser des chemins relatifs au lieu de chemins absolus
 	build: {
 		outDir: path.resolve(__dirname, 'dist'),
 		rollupOptions: {
