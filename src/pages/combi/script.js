@@ -389,9 +389,7 @@ function hideCallback() {
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
 
 // if is an iframe
-if (window.self !== window.top) {
-	document.querySelector('html').style.fontSize = innerHeight * 0.015 + 'px'
-}
+document.querySelector('html').style.fontSize = innerHeight * 0.015625 + 'px'
 
 if (autoShow) {
 	experience.sceneManager._scene.resources.on('ready', () => {

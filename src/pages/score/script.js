@@ -411,7 +411,7 @@ function updateCollectedPoints({ value }) {
 		},
 	)
 	// Update progress bar
-	const progress = collectedPoints / quotaValue
+	const progress = value / quotaValue
 	gsap.to(progressBarElement, {
 		scaleX: progress,
 		duration: 0.6,
@@ -569,10 +569,7 @@ function hideCallback() {
 
 initSecondScreenMessage(socket, fullscreenCallback, innerCallback, hideCallback)
 
-// if is an iframe
-if (window.self !== window.top) {
-	document.querySelector('html').style.fontSize = innerHeight * 0.015 + 'px'
-}
+document.querySelector('html').style.fontSize = innerHeight * 0.015625 + 'px'
 
 // if autoShow is true, show the score immediately
 if (autoShow) {
