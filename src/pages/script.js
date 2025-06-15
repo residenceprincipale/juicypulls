@@ -63,3 +63,26 @@ function onLoseFinal() {
 		})
 	}
 }
+
+if (window.location.hash === '') {
+	addEventListener('keydown', (e) => {
+		const keyToIndex = { '&': 0, é: 1, '"': 2, "'": 3, '(': 4 }
+		if (e.key in keyToIndex) {
+			const index = keyToIndex[e.key]
+
+			socket.send({
+				event: 'button',
+				data: { index },
+			})
+		} else if (e.key === 'Enter') {
+			socket.send({
+				event: 'button-collect',
+			})
+		} else if (e.key === ' ') {
+			e.preventDefault() // Empêche le scroll par défaut de la barre d'espace
+			socket.send({
+				event: 'lever',
+			})
+		}
+	})
+}

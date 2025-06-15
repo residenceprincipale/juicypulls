@@ -211,11 +211,11 @@
 	},
 	{
 		"name": "environmentModel",
-		"path": "/models/environment-v3.glb"
+		"path": "models/environment-v3.glb"
 	},
 	{
 		"name": "gunArmModel",
-		"path": "/models/gun-arm-v1.glb"
+		"path": "models/gun-arm-v1.glb"
 	},
 	{
 		"name": "gunArmAlbedo",
