@@ -1,15 +1,15 @@
 import Experience from 'core/Experience.js'
 import Socket from '@/scripts/Socket.js'
 import gsap from 'gsap'
+const canvasElement = document.querySelector('canvas#webgl')
 
-const experience = new Experience(document.querySelector('canvas#webgl'))
+const experience = new Experience(canvasElement)
 
 const socket = new Socket()
 socket.connect('game')
 
 if (!window.location.hash.includes('debug')) {
-	const canvas = document.querySelector('canvas#webgl')
-	canvas.style.cursor = 'none'
+	canvasElement.style.cursor = 'none'
 }
 const subliminalMessage = document.querySelector('.subliminal-message')
 const screamerVideoElement = document.querySelector('.screamer-video')
@@ -57,7 +57,8 @@ function onLoseFinal() {
 		Object.keys(experience.scene.resources.items).forEach((item) => {
 			item.includes('Audio') && experience.scene.resources.items[item].stop()
 		})
-		document.body.style.display = 'none'
+		canvasElement.style.display = 'none'
+		screamerVideoElement.style.display = 'none'
 		socket.on('lever', () => {
 			window.location.reload()
 		})
