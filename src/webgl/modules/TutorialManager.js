@@ -47,6 +47,7 @@ export default class TutorialManager {
 	_setupMachineManager() {
 		this._machineManager.firstSpinDone = false
 		this._machineManager.isLeverLocked = true
+		this._machineManager.isCollectLocked = true
 		this._machineManager.spinTokens = 1
 	}
 
@@ -114,6 +115,7 @@ export default class TutorialManager {
 		})
 		this._scene._scene.resources.items.messageAudio.play()
 
+		this._machineManager.isCollectLocked = false
 		this._listenToBank = true
 
 		gsap.delayedCall(1.5, () => {
@@ -167,6 +169,7 @@ export default class TutorialManager {
 			this._scene._scene.resources.items.messageAudio.play()
 
 			this._machineManager.isLeverLocked = false
+			this._machineManager.isCollectLocked = false
 			this._listenToLeverStart = true
 
 			this._scene.startGame()
@@ -200,6 +203,7 @@ export default class TutorialManager {
 		if (!this._machineManager.firstSpinDone) {
 			this._machineManager.firstSpinDone = true
 			this._machineManager.isLeverLocked = true
+			this._machineManager.isCollectLocked = true
 			this._machineManager.spinWheels([5, 2, 2, 2, 3])
 			this._goToHoldStep()
 		} else if (this._listenToLeverStart) {
