@@ -235,7 +235,7 @@ export default class Main {
 		this._machineManager.isCollectLocked = false
 	}
 
-	endGame() { }
+	endGame() {}
 
 	lose() {
 		console.log('LOSE GAME')
@@ -261,7 +261,7 @@ export default class Main {
 		console.log('LOSE FINAL')
 
 		// turn outer leds to red
-		// flsah scene lights on start to red and flash red 
+		// flsah scene lights on start to red and flash red
 
 		this._machine.turnOffLeds()
 		this._backgroundEnvironment.hide()
@@ -270,6 +270,9 @@ export default class Main {
 		this._lights.animateLoseFinal()
 		socket.send({
 			event: 'lose-final',
+			data: {
+				leaderboardPoints: this._machineManager.collectedPoints + this._machineManager.quota,
+			},
 		})
 	}
 

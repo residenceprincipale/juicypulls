@@ -5,6 +5,7 @@ import { gsap } from 'gsap'
 import { RoughEase } from 'gsap/EasePack'
 import { flickerAnimation } from '@/scripts/uiAnimations.js'
 import { Color } from 'three'
+import Leaderboard from '@/scripts/Leaderboard.js'
 gsap.registerPlugin(RoughEase)
 
 const canvasElement = document.querySelector('canvas#webgl')
@@ -16,6 +17,8 @@ experience.sceneManager._scene.resources.on('ready', () => {
 
 const socket = new Socket()
 socket.connect('score')
+const leaderboard = new Leaderboard(socket)
+leaderboard.showLeaderboard()
 
 const autoShow = false
 const overlayElement = document.querySelector('.overlay')
@@ -77,7 +80,7 @@ socket.on('farkle', farkle)
 socket.on('jackpot', jackpot)
 socket.on('lose-final', loseFinal)
 
-function loseFinal() {
+function loseFinal({ leaderboardPoints }) {
 	scoreBackground.tint = new Color('#ff4726')
 	gsap.to(overlayElement, {
 		autoAlpha: 0,
@@ -94,6 +97,7 @@ function loseFinal() {
 		})
 		hide({ immediate: true })
 		scoreBackground.tint = new Color('white')
+		leaderboard.handleGameOver(leaderboardPoints)
 	}
 }
 let isFirstJackpot = true
@@ -540,6 +544,7 @@ function reset() {
 }
 
 function fullscreenCallback(textElement) {
+	leaderboard.hideLeaderboard()
 	fullscreenTextElement.appendChild(textElement)
 	currentElement.style.visibility = 'hidden'
 	bankElement.style.visibility = 'hidden'
@@ -550,6 +555,7 @@ function fullscreenCallback(textElement) {
 }
 
 function innerCallback(textElement) {
+	leaderboard.hideLeaderboard()
 	innerTextElement.appendChild(textElement)
 	currentElement.style.visibility = 'hidden'
 	quotaElement.style.visibility = 'hidden'
