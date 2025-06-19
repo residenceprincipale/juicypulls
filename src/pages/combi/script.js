@@ -16,6 +16,7 @@ const fullscreenTextElement = document.querySelector('.fullscreen-text')
 const innerTextElement = document.querySelector('.inner-text')
 const jackpotVideoElements = document.querySelectorAll('.jackpot-video')
 const sideElements = document.querySelectorAll('.left-side, .right-side')
+const sideBackgroundElements = document.querySelectorAll('.left-side .background, .right-side .background')
 const rightScreamerVideoElement = document.querySelector('.right-screamer-video')
 
 const experience = new Experience(canvasElement)
@@ -184,7 +185,7 @@ function loseFinal() {
 }
 
 function farkle() {
-	gsap.to(sideElements, {
+	gsap.to(sideBackgroundElements, {
 		background: '#ff4726',
 		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 	})
@@ -195,7 +196,7 @@ function farkle() {
 	})
 
 	gsap.delayedCall(3, () => {
-		gsap.to(sideElements, {
+		gsap.to(sideBackgroundElements, {
 			background: '',
 			ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 		})
@@ -216,7 +217,7 @@ function jackpot({ symbol, count }) {
 
 	switch (symbol) {
 		case '🍋':
-			gsap.to(sideElements, {
+			gsap.to(sideBackgroundElements, {
 				background: '#d9ffd9',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
@@ -227,7 +228,7 @@ function jackpot({ symbol, count }) {
 			})
 			break
 		case '🍒':
-			gsap.to(sideElements, {
+			gsap.to(sideBackgroundElements, {
 				background: '#ff99cc',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
@@ -238,7 +239,7 @@ function jackpot({ symbol, count }) {
 			experience.sceneManager.combi.tint = new Color('#ff99cc')
 			break
 		case '🍊':
-			gsap.to(sideElements, {
+			gsap.to(sideBackgroundElements, {
 				background: '#ffd280',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
@@ -249,7 +250,7 @@ function jackpot({ symbol, count }) {
 			experience.sceneManager.combi.tint = new Color('#ffd280')
 			break
 		case '🍇':
-			gsap.to(sideElements, {
+			gsap.to(sideBackgroundElements, {
 				background: '#804d80',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
@@ -260,7 +261,7 @@ function jackpot({ symbol, count }) {
 			experience.sceneManager.combi.tint = new Color('#804d80')
 			break
 		case '7':
-			gsap.to(sideElements, {
+			gsap.to(sideBackgroundElements, {
 				background: '#80ffff',
 				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 			})
@@ -277,7 +278,7 @@ function jackpotEnd() {
 		autoAlpha: 0,
 		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 	})
-	gsap.to(sideElements, {
+	gsap.to(sideBackgroundElements, {
 		background: '',
 		ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
 	})
@@ -394,5 +395,52 @@ document.querySelector('html').style.fontSize = innerHeight * 0.015625 + 'px'
 if (autoShow) {
 	experience.sceneManager._scene.resources.on('ready', () => {
 		show({ immediate: true })
+	})
+}
+
+socket.on('x2', () => handleMultiplier(2))
+socket.on('x3', () => handleMultiplier(3))
+socket.on('x4', () => handleMultiplier(4))
+
+function handleMultiplier(value) {
+	gsap.to(sideBackgroundElements, {
+		scaleY: 1,
+		duration: 0.3,
+		ease: 'linear',
+	})
+	const duration = 100 / value
+	const keyframes = []
+	const colors = ['#ff66ad', '#ffc966', '#4dffff', '#80ff80']
+	for (let i = 0; i < colors.length; i++) {
+		keyframes.push({
+			background: colors[i],
+			duration: 0.1,
+		})
+	}
+	const colorTimeline = gsap.to(sideBackgroundElements, {
+		keyframes,
+		repeat: 20,
+		ease: 'linear',
+	})
+
+	gsap.to(sideBackgroundElements, {
+		scaleY: 0,
+		ease: 'linear',
+		duration,
+		onUpdate: function () {
+			colorTimeline.timeScale(this.progress() * 2)
+		},
+		onComplete: () => {
+			gsap.to(sideBackgroundElements, {
+				scaleY: 1,
+				duration: 0.3,
+				ease: 'linear',
+			})
+			colorTimeline.kill()
+			gsap.to(sideBackgroundElements, {
+				background: '',
+				ease: "rough({ template: 'none', strength: 2, points: 10, randomize: true })",
+			})
+		},
 	})
 }
