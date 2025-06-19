@@ -213,6 +213,7 @@ export default class BackgroundEnvironment {
                 USE_MATCAP: true,
                 USE_AO: true,
             },
+            selectedLights: ['lightEnv'] // Only use the environment light
         })
     }
 
@@ -224,6 +225,7 @@ export default class BackgroundEnvironment {
                 USE_MATCAP: true,
                 USE_AO: true,
             },
+            selectedLights: ['lightEnv'] // Only use the environment light
         })
 
         this._chairBottomMaterial = new PhongCustomMaterial({

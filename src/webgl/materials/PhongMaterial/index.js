@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import defaultVertexShader from './shaders/vertex.glsl';
 import defaultFragmentShader from './shaders/fragment.glsl';
-import Experience from 'core/Experience.js'
-
+import Experience from 'core/Experience.js';
+import { getLightsManager } from 'webgl/modules/lightsManager.js';
+import SelectiveLightsParsFragment from './shaders/chunks/selective_lights_pars_fragment.glsl';
+import SelectiveLightsFragment from './shaders/chunks/selective_lights_fragment.glsl';
 
 export class PhongCustomMaterial extends THREE.ShaderMaterial {
     constructor({
@@ -12,9 +14,14 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
         uniforms = {},
         parameters = {},
         name = 'CustomPhongMaterial',
+        selectedLights = null, // Array of light names to use, e.g., ['lightTop', 'lightLeft'] or null for all lights
     } = {}) {
         const experience = new Experience()
         const resources = experience.scene.resources
+
+        // register chunks
+        THREE.ShaderChunk['selective_lights_pars_fragment'] = SelectiveLightsParsFragment;
+        THREE.ShaderChunk['selective_lights_fragment'] = SelectiveLightsFragment;
 
         const processedUniforms = {};
         for (const key in uniforms) {
@@ -39,6 +46,28 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
             }
         }
 
+        // Get lights manager and convert light names to indices
+        const lightsManager = getLightsManager();
+        const selectedLightIndices = lightsManager.getLightIndices(selectedLights);
+
+        // Prepare light selection uniforms and defines
+        const maxLights = 8; // Common maximum for most WebGL implementations
+        const lightSelectionUniforms = {};
+        const selectiveDefines = {};
+
+        if (selectedLightIndices !== null) {
+            // Create boolean array uniform for selected lights
+            const useLights = new Array(maxLights).fill(0);
+            selectedLightIndices.forEach(index => {
+                if (index < maxLights) useLights[index] = 1;
+            });
+            lightSelectionUniforms.uUseLights = { value: useLights };
+            selectiveDefines.USE_SELECTIVE_LIGHTS = '';
+        } else {
+            // Use all lights by default - no define needed
+            const useLights = new Array(maxLights).fill(1);
+            lightSelectionUniforms.uUseLights = { value: useLights };
+        }
 
         const defaultUniforms = THREE.UniformsUtils.merge([
             THREE.UniformsLib.lights,
@@ -54,6 +83,7 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
                 uSpecularColor: { value: new THREE.Color(0xffffff) },
                 uEmissiveColor: { value: new THREE.Color(0x000000) }
             },
+            lightSelectionUniforms
         ]);
 
         const mergedUniforms = THREE.UniformsUtils.merge([
@@ -65,12 +95,59 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
             vertexShader,
             fragmentShader,
             uniforms: mergedUniforms,
-            defines: { ...defines },
+            defines: { ...defines, ...selectiveDefines },
             lights: true,
             fog: true,
             transparent: true,
             name,
             ...parameters
         });
+
+        // Store the selected lights and lights manager for potential future updates
+        this.selectedLightNames = selectedLights;
+        this.lightsManager = lightsManager;
+    }
+
+    /**
+     * Method to update selected lights at runtime using light names
+     * @param {string[]|null} selectedLightNames - Array of light names like ['lightTop', 'lightLeft'] or null for all lights
+     */
+    setSelectiveLights(selectedLightNames) {
+        this.selectedLightNames = selectedLightNames;
+        const selectedLightIndices = this.lightsManager.getLightIndices(selectedLightNames);
+        const maxLights = 8;
+
+        // Update uniform array
+        const useLights = new Array(maxLights).fill(0);
+        if (selectedLightIndices !== null) {
+            selectedLightIndices.forEach(index => {
+                if (index < maxLights) useLights[index] = 1;
+            });
+            // Add define for selective lighting
+            this.defines.USE_SELECTIVE_LIGHTS = '';
+        } else {
+            // Use all lights - remove define
+            useLights.fill(1);
+            delete this.defines.USE_SELECTIVE_LIGHTS;
+        }
+
+        this.uniforms.uUseLights.value = useLights;
+        this.needsUpdate = true;
+    }
+
+    /**
+     * Get the currently selected light names
+     * @returns {string[]|null} Array of selected light names or null if all lights are used
+     */
+    getSelectedLights() {
+        return this.selectedLightNames;
+    }
+
+    /**
+     * Get all available light names
+     * @returns {string[]} Array of all available light names
+     */
+    getAvailableLightNames() {
+        return this.lightsManager.getAvailableLightNames();
     }
 }

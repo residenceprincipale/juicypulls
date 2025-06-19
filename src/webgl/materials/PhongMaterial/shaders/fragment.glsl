@@ -75,6 +75,8 @@ uniform vec3 uEmissiveColor;
 	uniform vec2 uNormalScale;
 #endif
 
+#include <selective_lights_pars_fragment>
+
 #ifdef USE_MATCAP
 	vec3 matcap(float roughness) {
 		vec3 newNormal = normalize(vNormal);
@@ -86,7 +88,6 @@ uniform vec3 uEmissiveColor;
 		uv.x += uMatcapOffset.x;
 		uv.y += uMatcapOffset.y;
 		vec3 final = texture2D(uMatcapMap, uv).rgb;
-		
 		return final;
 	}
 #endif
@@ -171,9 +172,7 @@ void main() {
 	material.specularShininess = uShininess;
 	material.specularStrength = uSpecularIntensity * roughness;
 
-	#include <lights_fragment_begin>
-	#include <lights_fragment_maps>
-	#include <lights_fragment_end>
+	#include <selective_lights_fragment>
 
 	vec3 finalColor = (reflectedLight.directDiffuse * uDiffuseIntensity ) + (reflectedLight.indirectDiffuse * uAmbientIntensity) + reflectedLight.directSpecular + reflectedLight.indirectSpecular + uEmissiveColor;
 
