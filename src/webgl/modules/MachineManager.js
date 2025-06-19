@@ -156,6 +156,18 @@ export default class MachineManager {
 		this._round = value
 	}
 
+	set multiplier(value) {
+		this._multiplier = value
+		socket.send({
+			event: `x${this._multiplier}`,
+			receiver: ['bulbs', 'combi'],
+		})
+	}
+
+	get multiplier() {
+		return this._multiplier
+	}
+
 	/**
 	 * Public
 	 */
@@ -563,7 +575,7 @@ export default class MachineManager {
 	async _spinSecondRouletteWheels() {
 		this._secondRouletteResults = Array(SECOND_ROULETTE_CONFIG.numWheels)
 			.fill(0)
-			.map(() => Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments))
+			.map(() => (Math.random() < 0.25 ? 0 : Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments)))
 		// this._secondRouletteResults = [0, Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments)] // Always multiplier x1 for the second roulette
 
 		// Animate the wheels
@@ -593,8 +605,13 @@ export default class MachineManager {
 		const secondWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis2[this._secondRouletteResults[1]]
 		switch (firstWheelSymbol) {
 			case 'multiplier':
-				socket.send({ event: secondWheelSymbol, receiver: 'bulbs' })
-				this._multiplier = parseInt(secondWheelSymbol.replace('x', '') || 1)
+				const value = parseInt(secondWheelSymbol.replace('x', '') || 1)
+				const duration = 100 / value
+
+				this.multiplier = value
+				gsap.delayedCall(duration, () => {
+					this.multiplier = 1
+				})
 				break
 			case 'token':
 				this._spinTokens += parseInt(secondWheelSymbol.replace('x', '') || 1)
