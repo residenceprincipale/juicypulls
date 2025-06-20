@@ -208,6 +208,8 @@ export default class BackgroundEnvironment {
         this._borneMaterial = new PhongCustomMaterial({
             uniforms: borneMaterialSettings,
             name: 'Borne Material',
+            useSelectiveLights: true,
+            lights: ['lightEnvTwo'],
             defines: {
                 USE_ROUGHNESS: true,
                 USE_MATCAP: true,
@@ -419,7 +421,7 @@ export default class BackgroundEnvironment {
         // Hide the reference mesh since we're using instances
         borneMesh.visible = false
 
-        console.log(`Created InstancedMesh with ${instanceCount} borne instances (single draw call)`)
+        // console.log(`Created InstancedMesh with ${instanceCount} borne instances (single draw call)`)
     }
 
     _createChairInstances() {
@@ -506,7 +508,7 @@ export default class BackgroundEnvironment {
         chaiseAssiseMesh.visible = false
         chaiseMetalMesh.visible = false
 
-        console.log(`Created 2 InstancedMeshes with ${instanceCount} chair instances each (2 draw calls total)`)
+        // console.log(`Created 2 InstancedMeshes with ${instanceCount} chair instances each (2 draw calls total)`)
     }
 
     _createColumnInstances() {
@@ -574,7 +576,7 @@ export default class BackgroundEnvironment {
         // Hide the reference mesh since we're using instances
         colonneMesh.visible = false
 
-        console.log(`Created InstancedMesh with ${instanceCount} column instances (single draw call)`)
+        // console.log(`Created InstancedMesh with ${instanceCount} column instances (single draw call)`)
     }
 
     _createLightInstances() {
@@ -661,7 +663,7 @@ export default class BackgroundEnvironment {
         // Hide the reference mesh since we're using instances
         paternLightMesh.visible = false
 
-        console.log(`Created InstancedMesh with ${instanceCount} light instances in a ${xCount}x${zCount} grid (single draw call)`)
+        // console.log(`Created InstancedMesh with ${instanceCount} light instances in a ${xCount}x${zCount} grid (single draw call)`)
     }
 
     _recreateLightInstances() {

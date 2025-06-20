@@ -39,13 +39,13 @@ export default {
         "value": -2.3245294578089215e-16
     },
     "uAmbientIntensity": {
-        "value": 0.9999999999999999
+        "value": 0.08999999999999987
     },
     "uDiffuseIntensity": {
-        "value": 3
+        "value": 0.9999999999999999
     },
     "uSpecularIntensity": {
-        "value": 0.09000000000000002
+        "value": 1
     },
     "uShininess": {
         "value": 49.99999999999999

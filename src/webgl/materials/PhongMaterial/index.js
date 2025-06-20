@@ -3,6 +3,13 @@ import defaultVertexShader from './shaders/vertex.glsl';
 import defaultFragmentShader from './shaders/fragment.glsl';
 import Experience from 'core/Experience.js'
 
+// Import custom shader chunks
+import customLightsPhongParsFragment from '../../shaders/chunks/lights_phong_selective_pars_fragment.glsl';
+import customLightsPhongFragment from '../../shaders/chunks/lights_selective_fragment_begin.glsl';
+
+// Add custom shader chunks to THREE.ShaderChunk (always used by default)
+THREE.ShaderChunk['custom_lights_phong_pars_fragment'] = customLightsPhongParsFragment;
+THREE.ShaderChunk['custom_lights_phong_fragment'] = customLightsPhongFragment;
 
 export class PhongCustomMaterial extends THREE.ShaderMaterial {
     constructor({
@@ -12,6 +19,8 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
         uniforms = {},
         parameters = {},
         name = 'CustomPhongMaterial',
+        lights = [], // Array of light keys that should affect this material
+        useSelectiveLights = false, // Whether to enable selective lighting for this material
     } = {}) {
         const experience = new Experience()
         const resources = experience.scene.resources
@@ -39,7 +48,6 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
             }
         }
 
-
         const defaultUniforms = THREE.UniformsUtils.merge([
             THREE.UniformsLib.lights,
             THREE.UniformsLib.fog,
@@ -56,21 +64,67 @@ export class PhongCustomMaterial extends THREE.ShaderMaterial {
             },
         ]);
 
-        const mergedUniforms = THREE.UniformsUtils.merge([
+        let mergedUniforms = THREE.UniformsUtils.merge([
             defaultUniforms,
             processedUniforms,
         ]);
+
+        // Handle selective lighting
+        const finalDefines = { ...defines };
+        if (useSelectiveLights && experience.selectiveLightManager) {
+            finalDefines.SELECTIVE_DIR_LIGHTS = '';
+
+            // Get selective light uniforms for this material
+            const selectiveLightUniforms = experience.selectiveLightManager.getMaterialUniforms(lights);
+            console.log('selectiveLightUniforms', selectiveLightUniforms);
+            mergedUniforms = THREE.UniformsUtils.merge([
+                mergedUniforms,
+                selectiveLightUniforms,
+            ]);
+
+            console.log('mergedUniforms', mergedUniforms);
+
+            console.log(`Material "${name}" using selective lights:`, lights);
+        }
 
         super({
             vertexShader,
             fragmentShader,
             uniforms: mergedUniforms,
-            defines: { ...defines },
+            defines: finalDefines,
             lights: true,
             fog: true,
             transparent: true,
             name,
             ...parameters
         });
+
+        // Store configuration for debugging
+        this.selectiveLights = lights;
+        this.useSelectiveLights = useSelectiveLights;
+    }
+
+    /**
+     * Update the selective lights for this material
+     * @param {Array} newLights - Array of light keys
+     */
+    updateSelectiveLights(newLights) {
+        if (!this.useSelectiveLights) {
+            console.warn('Material not configured for selective lighting');
+            return;
+        }
+
+        const experience = new Experience();
+        if (experience.selectiveLightManager) {
+            const selectiveLightUniforms = experience.selectiveLightManager.getMaterialUniforms(newLights);
+
+            // Update uniforms
+            if (this.uniforms.uSelectiveLightsArray) {
+                this.uniforms.uSelectiveLightsArray.value = selectiveLightUniforms.uSelectiveLightsArray.value;
+            }
+
+            this.selectiveLights = newLights;
+            console.log(`Updated material "${this.name}" selective lights:`, newLights);
+        }
     }
 }

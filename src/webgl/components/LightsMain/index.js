@@ -1,6 +1,7 @@
 import Experience from 'core/Experience.js';
 import { DirectionalLight, Color } from 'three';
 import addLightDebug from 'utils/addLightDebug.js';
+import SelectiveLightManager from '@/webgl/modules/SelectiveLightManager.js';
 
 import settingsLight1 from './lightSettings-1.js';
 import settingsLight2 from './lightSettings-2.js';
@@ -29,6 +30,13 @@ export default class LightsMain {
             settingsLight5,
         ];
 
+        // Initialize selective light manager
+        this._selectiveLightManager = new SelectiveLightManager();
+        this._selectiveLightManager.initializeLights(this._lightSettings);
+        this._selectiveLightManager.updateGlobalUniforms();
+
+        // Make the manager available globally through the experience
+        this._experience.selectiveLightManager = this._selectiveLightManager;
 
         if (this._debug.active) this._createDebug();
 

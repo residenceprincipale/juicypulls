@@ -1,7 +1,7 @@
 export default {
     "name": "lightEnvTwo",
     "visible": {
-        "value": false
+        "value": true
     },
     "castShadow": {
         "value": false

@@ -1,6 +1,8 @@
 #define PHONG
 
 varying vec2 vUv;
+varying vec3 vNormal;
+varying vec3 vViewPosition;
 
 uniform float uAmbientIntensity;
 uniform float uDiffuseIntensity;
@@ -37,39 +39,15 @@ uniform vec3 uEmissiveColor;
 	uniform float uAOMapIntensity;
 #endif
 
+// UPDATE DUPLICATED SHADER MATS
+// AND SET CORRECT SELECTIVE LIGHTS
+
 #include <common>
-#include <packing>
-#include <dithering_pars_fragment>
-#include <color_pars_fragment>
-#include <uv_pars_fragment>
 #include <fog_pars_fragment>
 #include <bsdfs>
-#include <lights_pars_begin>
-#include <normal_pars_fragment>
-#include <lights_phong_pars_fragment>
-#include <shadowmap_pars_fragment>
-#include <logdepthbuf_pars_fragment>
-#include <clipping_planes_pars_fragment>
-
-#ifdef USE_MAP
-	#include <map_pars_fragment>
-#endif
-
-#ifdef USE_SPECULARMAP
-	#include <specularmap_pars_fragment>
-#endif
-
-#ifdef USE_ENVMAP
-	#include <envmap_common_pars_fragment>
-	#include <envmap_pars_fragment>
-#endif
-
-#ifdef USE_BUMPMAP
-	#include <bumpmap_pars_fragment>
-#endif
+#include <custom_lights_phong_pars_fragment>
 
 #ifdef USE_NORMAL
-	#include <normalmap_pars_fragment>
 	uniform sampler2D uNormalMap;
 	uniform vec2 uNormalRepeat;
 	uniform vec2 uNormalScale;
@@ -125,24 +103,11 @@ vec2 rotateUV(vec2 uv, float rotation)
 void main() {
 
 	vec4 diffuseColor = vec4(uDiffuseColor, uOpacity);
-	#include <clipping_planes_fragment>
 
 	ReflectedLight reflectedLight = ReflectedLight(
 		vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0)
 	);
 	vec3 totalEmissiveRadiance = uEmissiveColor;
-
-	#include <logdepthbuf_fragment>
-
-	#ifdef USE_MAP
-		#include <map_fragment>
-	#endif
-
-	#include <color_fragment>
-
-	#ifdef USE_SPECULARMAP
-		#include <specularmap_fragment>
-	#endif
 
 	#ifdef USE_ALBEDO
 		vec3 albedo = texture2D( uAlbedoMap, vUv * uAlbedoRepeat ).rgb;
@@ -164,16 +129,14 @@ void main() {
 		roughness = texture2D(uRoughnessMap, vUv * uRoughnessRepeat).r * uRoughnessIntensity;
 	#endif
 
-	// Lighting
+	// Lighting (and not Lightning⚡️)
 	BlinnPhongMaterial material;
 	material.diffuseColor = diffuseColor.rgb;
 	material.specularColor = uSpecularColor;
 	material.specularShininess = uShininess;
 	material.specularStrength = uSpecularIntensity * roughness;
 
-	#include <lights_fragment_begin>
-	#include <lights_fragment_maps>
-	#include <lights_fragment_end>
+	#include <custom_lights_phong_fragment>
 
 	vec3 finalColor = (reflectedLight.directDiffuse * uDiffuseIntensity ) + (reflectedLight.indirectDiffuse * uAmbientIntensity) + reflectedLight.directSpecular + reflectedLight.indirectSpecular + uEmissiveColor;
 
@@ -216,10 +179,6 @@ void main() {
 
 		vec3 matcapColor = matcap(matcapRoughness);
 		finalColor *= clamp((matcapColor - 1.0) * uMatcapIntensity + 1.0, 0.0, 1.0);
-	#endif
-
-	#ifdef USE_ENVMAP
-		#include <envmap_fragment>
 	#endif
 
 	gl_FragColor = clamp(vec4(finalColor, diffuseColor.a), 0., 1.);

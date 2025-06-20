@@ -12,7 +12,7 @@ export default {
         }
     },
     "uRoughnessIntensity": {
-        "value": 0.36999999999999994
+        "value": 2
     },
     "uAOMap": {
         "value": "rouletteAO"
