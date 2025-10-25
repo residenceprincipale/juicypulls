@@ -75,18 +75,7 @@ export default class Main {
 			this._isSecondChanceEnabled = false
 			this._hands.hide()
 
-			if (this._debug.tutorialActive || !this._debug.active) {
-				this._tutorialManager = new TutorialManager({
-					machineManager: this._machineManager,
-					machine: this._machine,
-					scene: this,
-				})
-				this.start()
-
-				this._isPlayingTutorial = true
-			} else {
-				this.startSkipIntro()
-			}
+			this.startSkipIntro()
 		})
 	}
 
@@ -235,7 +224,7 @@ export default class Main {
 		this._machineManager.isCollectLocked = false
 	}
 
-	endGame() { }
+	endGame() {}
 
 	lose() {
 		console.log('LOSE GAME')
@@ -261,7 +250,7 @@ export default class Main {
 		console.log('LOSE FINAL')
 
 		// turn outer leds to red
-		// flsah scene lights on start to red and flash red 
+		// flsah scene lights on start to red and flash red
 
 		this._machine.turnOffLeds()
 		this._backgroundEnvironment.hide()

@@ -91,4 +91,4 @@ export default class SelectiveLightManager {
             THREE.UniformsLib.lights.selectiveDirLights.value = this._lightsArray;
         }
     }
-} 
+}

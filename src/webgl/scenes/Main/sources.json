@@ -313,5 +313,9 @@
 		"name": "aoTables",
 		"path": "textures/environment/ao-tables.jpg",
 		"flipY": false
+	},
+	{
+		"name": "machineModel",
+		"path": "models/machine.glb"
 	}
 ]
