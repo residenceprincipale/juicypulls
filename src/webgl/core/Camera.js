@@ -22,7 +22,7 @@ export default class Camera {
 			frustum: { min: 0.1, max: 200 },
 			position: new Vector3(0.01, 0.01, 1.24),
 			target: new Vector3(0, 0, 0),
-			currentCamera: 'controlsCamera',
+			currentCamera: this.debug.active ? 'controlsCamera' : 'sceneCamera',
 		}
 
 		this.setInstance()
@@ -240,7 +240,7 @@ export default class Camera {
 		positionFolder.addBinding(this.sceneCamera, 'position', {
 			x: { min: -20, max: 20, step: 0.01 },
 			y: { min: -20, max: 20, step: 0.01 },
-			z: { min: -20, max: 20, step: 0.01 }
+			z: { min: -20, max: 20, step: 0.01 },
 		})
 
 		positionFolder
@@ -266,7 +266,7 @@ export default class Camera {
 		rotationFolder.addBinding(this.sceneCamera, 'rotation', {
 			x: { min: -Math.PI, max: Math.PI, step: 0.01 },
 			y: { min: -Math.PI, max: Math.PI, step: 0.01 },
-			z: { min: -Math.PI, max: Math.PI, step: 0.01 }
+			z: { min: -Math.PI, max: Math.PI, step: 0.01 },
 		})
 
 		rotationFolder

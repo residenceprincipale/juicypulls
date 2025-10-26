@@ -63,11 +63,11 @@ export default class Main {
 				machineManager: this._machineManager,
 			})
 
-			if (this._debug.active) {
-				this._machine.isDebugDev = true
-				this._physicalDebug = new PhysicalDebug()
-				this._machineManager._physicalDebug = this._physicalDebug
-			}
+			// if (this._debug.active) {
+			this._machine.isDebugDev = true
+			this._physicalDebug = new PhysicalDebug()
+			this._machineManager._physicalDebug = this._physicalDebug
+			// }
 			this._createEventListeners()
 
 			if (this._debug.active) this.setDebug()

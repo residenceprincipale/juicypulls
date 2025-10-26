@@ -21,6 +21,7 @@ import {
 	DirectionalLight,
 	MeshPhongMaterial,
 	DirectionalLightHelper,
+	Group,
 } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
@@ -39,7 +40,8 @@ export default class Machine {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
-		this._resource = this._resources.items.rouletteModel
+		this._rouletteModel = this._resources.items.rouletteModel.scene
+		this._machineModel = this._resources.items.machineModel.scene
 
 		// this._createLights()
 		this._createRouletteMaterial()
@@ -50,8 +52,6 @@ export default class Machine {
 		this._createLedsMaterial()
 		this._createInnerLedsMaterial()
 		this._createModel()
-
-		this._createEventListeners()
 
 		// this.animateInnerMachineOut()
 
@@ -65,7 +65,7 @@ export default class Machine {
 	 * Getters & Setters
 	 */
 	get model() {
-		return this._model
+		return this._rouletteModel
 	}
 
 	get material() {
@@ -88,11 +88,11 @@ export default class Machine {
 	 * Public
 	 */
 	hide() {
-		this._model.visible = false
+		this._rouletteModel.visible = false
 	}
 
 	show() {
-		this._model.visible = true
+		this._rouletteModel.visible = true
 	}
 
 	animateInnerMachineOut() {
@@ -629,9 +629,15 @@ export default class Machine {
 	 */
 
 	_createModel() {
-		this._model = this._resource.scene
-		this._model.name = 'machine'
-		this._scene.add(this._model)
+		this._machineGroup = new Group({ name: 'machine' })
+		this._machineGroup.position.set(0, -1.4, -1.4)
+		this._scene.add(this._machineGroup)
+
+		this._rouletteModel.position.set(0, 1.33, 0.48)
+		this._rouletteModel.rotation.set(-0.19, 0, 0)
+		this._rouletteModel.scale.setScalar(0.75)
+		this._machineGroup.add(this._rouletteModel)
+		this._machineGroup.add(this._machineModel)
 
 		// Array to store wheel meshes
 		this._wheels = [
@@ -643,7 +649,7 @@ export default class Machine {
 		]
 		this._leds = []
 
-		this._model.traverse((child) => {
+		this._rouletteModel.traverse((child) => {
 			if (!child.isMesh) return
 			if (child.name.includes('metal')) {
 				child.material = this._baseMaterial
@@ -786,11 +792,6 @@ export default class Machine {
 			},
 		})
 	}
-
-	/**
-	 * Events
-	 */
-	_createEventListeners() { }
 
 	/**
 	 * Debug
