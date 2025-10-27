@@ -1,7 +1,8 @@
 import Experience from 'core/Experience.js'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
-import CombiBackground from 'components/CombiBackground/index.js'
+import CombinationsScreen from 'components/CombinationsScreen/index.js'
+import CombinationsScreenManager from '@/webgl/modules/CombinationsScreenManager'
 
 export default class Combi {
 	constructor() {
@@ -10,7 +11,13 @@ export default class Combi {
 		this._scene.resources = new Resources(sources)
 
 		this._scene.resources.on('ready', () => {
-			this.combi = new CombiBackground()
+			this.combinationsScreen = new CombinationsScreen()
+			this.combinationsScreenManager = new CombinationsScreenManager()
+			this.combinationsScreenManager.screen = this.combinationsScreen
 		})
+	}
+
+	update() {
+		if (this.combinationsScreen) this.combinationsScreen.update()
 	}
 }

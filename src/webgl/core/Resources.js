@@ -7,6 +7,19 @@ import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader'
 import { Howl } from 'howler'
+import { VideoTexture } from 'three'
+
+// play() all loaded videos once with first user interaction
+const VIDEOS_ARRAY = []
+const DOCUMENT_CLICK_LISTENER = document.addEventListener(
+	'click',
+	() => {
+		VIDEOS_ARRAY.forEach((video) => {
+			video.play()
+		})
+	},
+	{ once: true },
+)
 
 export default class Resources extends EventEmitter {
 	constructor(sources) {
@@ -234,6 +247,25 @@ export default class Resources extends EventEmitter {
 						autoplay: source.autoplay || false,
 					})
 					this.sourceLoaded(source, audio)
+					break
+				//video
+				case 'mp4':
+				case 'mov':
+					const videoElement = document.createElement('video')
+					videoElement.src = source.path
+					videoElement.muted = 'true'
+					videoElement.autoplay = 'true'
+					videoElement.playsinline = 'true'
+					videoElement.loop = 'true'
+					videoElement.style.display = 'none'
+
+					videoElement.addEventListener('play', function () {
+						this.currentTime = 0.01
+					})
+					VIDEOS_ARRAY.push(videoElement)
+
+					const videoTexture = new VideoTexture(videoElement)
+					this.sourceLoaded(source, videoTexture)
 					break
 				default:
 					console.error(`${source.path} is not a valid source type`)

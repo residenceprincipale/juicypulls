@@ -1,12 +1,19 @@
 import Experience from 'core/Experience.js'
 import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
+import settings from './settings'
 
 import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
 import gsap from 'gsap'
-import addObjectDebug from 'utils/addObjectDebug.js'
+import { RoughEase } from 'gsap/EasePack'
+gsap.registerPlugin(RoughEase)
 
-export default class CombiBackground {
+import addObjectDebug from 'utils/addObjectDebug.js'
+import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
+import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
+import addTransformDebug from '@/webgl/utils/addTransformDebug'
+
+export default class CombinationsScreen {
 	constructor() {
 		this._experience = new Experience()
 		this._scene = this._experience.scene
@@ -20,6 +27,9 @@ export default class CombiBackground {
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
+		this.showAnimation(true)
+
+		this.show()
 	}
 
 	/**
@@ -56,7 +66,6 @@ export default class CombiBackground {
 	/**
 	 * Public
 	 */
-
 	showAnimation(immediate = false) {
 		if (immediate) {
 			this._material.uniforms.uAmbientOpacity.value = 1
@@ -122,36 +131,91 @@ export default class CombiBackground {
 		})
 	}
 
+	show() {
+		this._showTimeline?.kill()
+		this._showTimeline = gsap.timeline()
+		this._showTimeline.to(this._material.uniforms.uScreenLuminosity, {
+			value: 1.0,
+			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+		})
+	}
+
+	hide() {
+		this._hideTimeline?.kill()
+		this._hideTimeline = gsap.timeline()
+		this._hideTimeline.to(this._material.uniforms.uScreenLuminosity, {
+			value: 0.0,
+			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+		})
+	}
+
+	reset() {
+		this._material.uniforms.uHighlightIndex1.value = -1
+		this._material.uniforms.uHighlightIndex2.value = -1
+		this._material.uniforms.uHighlightIndex3.value = -1
+		this._material.uniforms.uHighlightIndex4.value = -1
+		this._material.uniforms.uHighlightIndex5.value = -1
+		this._material.uniforms.uHighlightIndex6.value = -1
+	}
+
+	update() {
+		if (this.material) this.material.uniforms.uTime.value = this._experience.time.elapsed * 0.001
+	}
+
+	displayCombination({ indexRow, indexColumn }) {
+		this._material.uniforms['uHighlightIndex' + indexRow].value = indexColumn
+
+		this._blinkingTimeline?.kill()
+		this._blinkingTimeline = gsap.timeline()
+		this._blinkingTimeline.to(this._material.uniforms['uBlinkingFactor' + indexRow], { value: 1, duration: 0 })
+		this._blinkingTimeline.to(this._material.uniforms['uBlinkingFactor' + indexRow], { value: 0, duration: 0 }, 2)
+	}
+
+	displayMarquee({ tint }) {
+		this._material.uniforms.uMarqueeTint.value.set(tint)
+		console.log(this._material.uniforms.uMarqueeTint.value)
+
+		this._showMarqueeTimeline?.kill()
+		this._showMarqueeTimeline = gsap.timeline()
+		this._showMarqueeTimeline.to(this._material.uniforms.uMarqueeOpacity, {
+			value: 1.0,
+			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+		})
+	}
+
 	/**
 	 * Private
 	 */
-
 	_createModel() {
-		const geometry = new PlaneGeometry(2, 2)
-		this._model = new Mesh(geometry, this._material)
+		this._model = this._resources.items.screenModel.scene.children[0]
+		this._model.rotation.z = Math.PI * 0.5
+		this._model.material = this._material
 		this._model.name = 'combi background'
 
 		this._scene.add(this._model)
 	}
 
 	_createMaterial() {
-		this._material = new ShaderMaterial({
-			uniforms: {
-				uAmbient: { value: this._resources.items.ambientTexture },
-				uAmbientOpacity: { value: 0 },
-				uBars: { value: this._resources.items.barsTexture },
-				uBarsOpacity: { value: 0 },
-				uInner: { value: this._resources.items.innerTexture },
-				uInnerOpacity: { value: 0 },
-				uOuter: { value: this._resources.items.outerTexture },
-				uOuterOpacity: { value: 0 },
-				uStroke: { value: this._resources.items.strokeTexture },
-				uStrokeOpacity: { value: 0 },
-				uTint: { value: this._tint },
+		this._material = new PhongCustomMaterial({
+			uniforms: settings,
+			name: 'Combi Screen Material',
+			transparent: true,
+			defines: {
+				USE_ROUGHNESS: false,
+				USE_MATCAP: true,
+				USE_AO: false,
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragmentShader,
 		})
+
+		// document.addEventListener('click', () => {
+		// 	console.log(this._resources.items.marqueeVideo.source.data)
+		// 	this._resources.items.marqueeVideo.source.data.play()
+		// 	this._resources.items.marqueeVideo.source.data.addEventListener('play', function () {
+		// 		this.currentTime = 1
+		// 	})
+		// })
 	}
 
 	_createEventListeners() {
@@ -161,9 +225,15 @@ export default class CombiBackground {
 	_createDebug() {
 		if (!this._debug.active) return
 
-		addObjectDebug(this._debug.ui, this._model)
+		const debugFolder = this._debug.ui.addFolder({
+			title: 'Combi screen',
+			expanded: true,
+		})
 
 		// Material debug
-		// addCustomMaterialDebug(debugFolder, materialUniforms, this._resources, this._material)
+		addCustomMaterialDebug(debugFolder, settings, this._resources, this._material)
+
+		// Transform controls for the model
+		addTransformDebug(debugFolder, this._model)
 	}
 }
