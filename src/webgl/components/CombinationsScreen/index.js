@@ -173,7 +173,6 @@ export default class CombinationsScreen {
 
 	displayMarquee({ tint }) {
 		this._material.uniforms.uMarqueeTint.value.set(tint)
-		console.log(this._material.uniforms.uMarqueeTint.value)
 
 		this._showMarqueeTimeline?.kill()
 		this._showMarqueeTimeline = gsap.timeline()
@@ -208,14 +207,6 @@ export default class CombinationsScreen {
 			vertexShader: vertexShader,
 			fragmentShader: fragmentShader,
 		})
-
-		// document.addEventListener('click', () => {
-		// 	console.log(this._resources.items.marqueeVideo.source.data)
-		// 	this._resources.items.marqueeVideo.source.data.play()
-		// 	this._resources.items.marqueeVideo.source.data.addEventListener('play', function () {
-		// 		this.currentTime = 1
-		// 	})
-		// })
 	}
 
 	_createEventListeners() {
