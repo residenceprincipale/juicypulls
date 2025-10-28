@@ -22,11 +22,12 @@
 	{
 		"name": "combinationsTexture",
 		"path": "../textures/combi/combinations.jpg",
-		"repeatWrapping": false
+		"repeatWrapping": false,
+		"flipY": false
 	},
 	{
 		"name": "screenModel",
-		"path": "../models/screens/rounded-screen.glb"
+		"path": "../models/screens/combination-screen.glb"
 	},
 	{
 		"name": "glassMatcap",
@@ -34,6 +35,7 @@
 	},
 	{
 		"name": "marqueeVideo",
-		"path": "../videos/jackpot-marquee.mp4"
+		"path": "../videos/jackpot-marquee.mp4",
+		"flipY": false
 	}
 ]

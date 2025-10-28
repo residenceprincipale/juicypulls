@@ -1,9 +1,9 @@
 import Main from './Main'
 import Score from './Score'
-import Combi from './Combi'
+import RightScreen from './RightScreen'
 
 export default {
 	main: Main,
 	score: Score,
-	combi: Combi,
+	rightScreen: RightScreen,
 }

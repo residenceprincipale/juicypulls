@@ -79,5 +79,5 @@ export default class CombinationsScreenManager {
 			title: 'Combinations Screen Manager',
 			expanded: true,
 		})
-	}x
+	}
 }

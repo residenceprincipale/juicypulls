@@ -1,7 +1,10 @@
 import Experience from 'core/Experience.js'
 import vertexShader from './shaders/vertex.glsl'
 import fragmentShader from './shaders/fragment.glsl'
-import settings from './settings'
+
+import screenSettings from './screenSettings'
+import metalSettings from './metalSettings'
+import ledsSettings from './ledsSettings'
 
 import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
 import gsap from 'gsap'
@@ -22,12 +25,11 @@ export default class CombinationsScreen {
 		this._tint = new Color('white')
 		// this._resource = this._resources.items.environmentModel
 
-		this._createMaterial()
+		this._createMaterials()
 		this._createModel()
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
-		this.showAnimation(true)
 
 		this.show()
 	}
@@ -39,17 +41,13 @@ export default class CombinationsScreen {
 		return this._model
 	}
 
-	get material() {
-		return this._material
-	}
-
 	get tint() {
 		return this._tint
 	}
 
 	set tint(value) {
 		this._tint = value
-		gsap.to(this._material.uniforms.uTint.value, {
+		gsap.to(this._screenMaterial.uniforms.uTint.value, {
 			r: value.r,
 			g: value.g,
 			b: value.b,
@@ -66,75 +64,10 @@ export default class CombinationsScreen {
 	/**
 	 * Public
 	 */
-	showAnimation(immediate = false) {
-		if (immediate) {
-			this._material.uniforms.uAmbientOpacity.value = 1
-			this._material.uniforms.uBarsOpacity.value = 1
-			this._material.uniforms.uInnerOpacity.value = 1
-			this._material.uniforms.uOuterOpacity.value = 1
-			this._material.uniforms.uStrokeOpacity.value = 1
-			this.idleAnimation()
-			return
-		}
-		const timeline = gsap.timeline({
-			defaults: { duration: 0.5 },
-			onComplete: () => {
-				this.idleAnimation()
-			},
-		})
-		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uBarsOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uInnerOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uOuterOpacity, { value: 1 })
-		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 1 })
-	}
-
-	hideAnimation(immediate = false) {
-		if (this._idleTimeline) {
-			this._idleTimeline.kill()
-			this._idleTimeline = null
-		}
-		if (immediate) {
-			this._material.uniforms.uAmbientOpacity.value = 0
-			this._material.uniforms.uBarsOpacity.value = 0
-			this._material.uniforms.uInnerOpacity.value = 0
-			this._material.uniforms.uOuterOpacity.value = 0
-			this._material.uniforms.uStrokeOpacity.value = 0
-			return
-		}
-		const timeline = gsap.timeline({ defaults: { duration: 0.25 } })
-		timeline.to(this._material.uniforms.uAmbientOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uBarsOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uInnerOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uOuterOpacity, { value: 0 })
-		timeline.to(this._material.uniforms.uStrokeOpacity, { value: 0 })
-	}
-
-	idleAnimation() {
-		if (this._idleTimeline) {
-			this._idleTimeline.kill()
-		}
-		const timeline = gsap.timeline({ repeat: -1, defaults: { duration: 0.5 } })
-		this._idleTimeline = timeline
-		const steps = [
-			{ uAmbientOpacity: 1, uBarsOpacity: 1, uInnerOpacity: 1, uOuterOpacity: 1, uStrokeOpacity: 1 },
-			{ uAmbientOpacity: 0.75, uBarsOpacity: 0.75, uInnerOpacity: 0.75, uOuterOpacity: 0.75, uStrokeOpacity: 0.75 },
-			{ uAmbientOpacity: 1, uBarsOpacity: 1, uInnerOpacity: 1, uOuterOpacity: 1, uStrokeOpacity: 1 },
-		]
-
-		steps.forEach((step) => {
-			timeline.to(this._material.uniforms.uAmbientOpacity, { value: step.uAmbientOpacity })
-			timeline.to(this._material.uniforms.uBarsOpacity, { value: step.uBarsOpacity })
-			timeline.to(this._material.uniforms.uInnerOpacity, { value: step.uInnerOpacity })
-			timeline.to(this._material.uniforms.uOuterOpacity, { value: step.uOuterOpacity })
-			timeline.to(this._material.uniforms.uStrokeOpacity, { value: step.uStrokeOpacity })
-		})
-	}
-
 	show() {
 		this._showTimeline?.kill()
 		this._showTimeline = gsap.timeline()
-		this._showTimeline.to(this._material.uniforms.uScreenLuminosity, {
+		this._showTimeline.to(this._screenMaterial.uniforms.uScreenLuminosity, {
 			value: 1.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
 		})
@@ -143,40 +76,40 @@ export default class CombinationsScreen {
 	hide() {
 		this._hideTimeline?.kill()
 		this._hideTimeline = gsap.timeline()
-		this._hideTimeline.to(this._material.uniforms.uScreenLuminosity, {
+		this._hideTimeline.to(this._screenMaterial.uniforms.uScreenLuminosity, {
 			value: 0.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
 		})
 	}
 
 	reset() {
-		this._material.uniforms.uHighlightIndex1.value = -1
-		this._material.uniforms.uHighlightIndex2.value = -1
-		this._material.uniforms.uHighlightIndex3.value = -1
-		this._material.uniforms.uHighlightIndex4.value = -1
-		this._material.uniforms.uHighlightIndex5.value = -1
-		this._material.uniforms.uHighlightIndex6.value = -1
+		this._screenMaterial.uniforms.uHighlightIndex1.value = -1
+		this._screenMaterial.uniforms.uHighlightIndex2.value = -1
+		this._screenMaterial.uniforms.uHighlightIndex3.value = -1
+		this._screenMaterial.uniforms.uHighlightIndex4.value = -1
+		this._screenMaterial.uniforms.uHighlightIndex5.value = -1
+		this._screenMaterial.uniforms.uHighlightIndex6.value = -1
 	}
 
 	update() {
-		if (this.material) this.material.uniforms.uTime.value = this._experience.time.elapsed * 0.001
+		if (this._screenMaterial) this._screenMaterial.uniforms.uTime.value = this._experience.time.elapsed * 0.001
 	}
 
 	displayCombination({ indexRow, indexColumn }) {
-		this._material.uniforms['uHighlightIndex' + indexRow].value = indexColumn
+		this._screenMaterial.uniforms['uHighlightIndex' + indexRow].value = indexColumn
 
 		this._blinkingTimeline?.kill()
 		this._blinkingTimeline = gsap.timeline()
-		this._blinkingTimeline.to(this._material.uniforms['uBlinkingFactor' + indexRow], { value: 1, duration: 0 })
-		this._blinkingTimeline.to(this._material.uniforms['uBlinkingFactor' + indexRow], { value: 0, duration: 0 }, 2)
+		this._blinkingTimeline.to(this._screenMaterial.uniforms['uBlinkingFactor' + indexRow], { value: 1, duration: 0 })
+		this._blinkingTimeline.to(this._screenMaterial.uniforms['uBlinkingFactor' + indexRow], { value: 0, duration: 0 }, 2)
 	}
 
 	displayMarquee({ tint }) {
-		this._material.uniforms.uMarqueeTint.value.set(tint)
+		this._screenMaterial.uniforms.uMarqueeTint.value.set(tint)
 
 		this._showMarqueeTimeline?.kill()
 		this._showMarqueeTimeline = gsap.timeline()
-		this._showMarqueeTimeline.to(this._material.uniforms.uMarqueeOpacity, {
+		this._showMarqueeTimeline.to(this._screenMaterial.uniforms.uMarqueeOpacity, {
 			value: 1.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
 		})
@@ -186,17 +119,30 @@ export default class CombinationsScreen {
 	 * Private
 	 */
 	_createModel() {
-		this._model = this._resources.items.screenModel.scene.children[0]
-		this._model.rotation.z = Math.PI * 0.5
-		this._model.material = this._material
-		this._model.name = 'combi background'
+		this._model = this._resources.items.screenModel.scene
+		this._model.traverse((child) => {
+			if (child.name === 'screen') {
+				this._screenMesh = child
+				this._screenMesh.material = this._screenMaterial
+			}
+			if (child.name === 'metal') {
+				this._metalMesh = child
+				this._metalMesh.material = this._metalMaterial
+			}
+			if (child.name === 'leds') {
+				this._ledsMesh = child
+				this._ledsMesh.material = this._ledsMaterial
+			}
+		})
+
+		this._model.name = 'Combination Screen'
 
 		this._scene.add(this._model)
 	}
 
-	_createMaterial() {
-		this._material = new PhongCustomMaterial({
-			uniforms: settings,
+	_createMaterials() {
+		this._screenMaterial = new PhongCustomMaterial({
+			uniforms: screenSettings,
 			name: 'Combi Screen Material',
 			transparent: true,
 			defines: {
@@ -206,6 +152,26 @@ export default class CombinationsScreen {
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragmentShader,
+		})
+
+		this._metalMaterial = new PhongCustomMaterial({
+			uniforms: metalSettings,
+			name: 'Combi Metal Material',
+			defines: {
+				USE_ROUGHNESS: true,
+				USE_MATCAP: true,
+				USE_AO: true,
+			},
+		})
+
+		this._ledsMaterial = new PhongCustomMaterial({
+			uniforms: ledsSettings,
+			name: 'Combi Leds Material',
+			defines: {
+				USE_ROUGHNESS: true,
+				USE_MATCAP: true,
+				USE_AO: true,
+			},
 		})
 	}
 
@@ -222,7 +188,9 @@ export default class CombinationsScreen {
 		})
 
 		// Material debug
-		addCustomMaterialDebug(debugFolder, settings, this._resources, this._material)
+		addCustomMaterialDebug(debugFolder, screenSettings, this._resources, this._screenMaterial)
+		addCustomMaterialDebug(debugFolder, metalSettings, this._resources, this._metalMaterial)
+		addCustomMaterialDebug(debugFolder, ledsSettings, this._resources, this._ledsMaterial)
 
 		// Transform controls for the model
 		addTransformDebug(debugFolder, this._model)

@@ -41,17 +41,6 @@ uniform vec2 uAOMapRepeat;
 uniform float uAOMapIntensity;
 #endif
 
-uniform sampler2D uAmbient;
-uniform float uAmbientOpacity;
-uniform sampler2D uBars;
-uniform float uBarsOpacity;
-uniform sampler2D uInner;
-uniform float uInnerOpacity;
-uniform sampler2D uOuter;
-uniform float uOuterOpacity;
-uniform sampler2D uStroke;
-uniform float uStrokeOpacity;
-uniform vec3 uTint;
 uniform sampler2D uCombinations;
 
 uniform sampler2D uVideoMarquee;
@@ -160,7 +149,7 @@ void main() {
   vec4 diffuseColor = vec4(uDiffuseColor, uOpacity);
 
   // COMBINATIONS
-  vec2 scaledDisplayUv = vUv * 1.2 - 0.1;
+  vec2 scaledDisplayUv = vUv * 0.97 + (1.0 - 0.97) / 2.0;
   vec4 combinationsTexture = texture2D(uCombinations, scaledDisplayUv);
   // crop colored edges from uv scaling
   combinationsTexture.rgb *= step(scaledDisplayUv.x, 0.99);
@@ -171,14 +160,14 @@ void main() {
   float rows = 7.0;
   float columns = 5.0;
 
-  vec2 gridSize = vec2(1.95, 1.32);
+  vec2 gridSize = vec2(1.57, 1.07);
   // automatic centering
   vec2 gridOffset = vec2((gridSize.x - 1.0) / 2.0, (gridSize.y - 1.0) / 2.0);
 
   vec2 combinationGridUv = vUv * gridSize - gridOffset;
   float gridHighlight = 1.0;
 
-  vec2 combinationGrid = vec2(combinationGridUv.x * columns, (1.0 - combinationGridUv.y) * rows);
+  vec2 combinationGrid = vec2(combinationGridUv.x * columns, combinationGridUv.y * rows);
 
   // crop outer parts
   combinationGrid *= step(combinationGridUv.x, 0.99);
@@ -214,22 +203,6 @@ void main() {
   videoMarquee *= step(vUvMarquee.x, 0.99);
   videoMarquee *= step(0.01, vUvMarquee.y);
   diffuseColor += videoMarquee * vec4(uMarqueeTint, 1.0) * vec4(uMarqueeOpacity * 2.0);
-
-  // OUTLINES (TO REMOVE LATER)
-  vec4 ambientColor = texture2D(uAmbient, vUv);
-  vec4 barsColor = texture2D(uBars, vUv);
-  vec4 innerColor = texture2D(uInner, vUv);
-  vec4 outerColor = texture2D(uOuter, vUv);
-  vec4 strokeColor = texture2D(uStroke, vUv);
-  // Combine the colors using screen blend mode
-  vec4 metalColor = vec4(0.0);
-  metalColor = add(metalColor, ambientColor * uAmbientOpacity);
-  metalColor = add(metalColor, barsColor * uBarsOpacity * vec4(uTint, 1.0));
-  metalColor = add(metalColor, innerColor * uInnerOpacity);
-  metalColor = add(metalColor, outerColor * uOuterOpacity * vec4(uTint, 1.0));
-  metalColor = add(metalColor, strokeColor * uStrokeOpacity * vec4(uTint, 1.0));
-
-  // diffuseColor += metalColor;
 
   ReflectedLight reflectedLight = ReflectedLight(
       vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0)
@@ -305,13 +278,13 @@ void main() {
   matcapRoughness += (matcapNoise.r * uMatcapNoiseChannel.r + matcapNoise.g * uMatcapNoiseChannel.g + matcapNoise.b * uMatcapNoiseChannel.b) * uMatcapNoiseIntensity;
   #endif
 
-  vec3 matcapColor = matcap(matcapRoughness);
-  vec3 glassMatcapOverlay = clamp((matcapColor - 1.0) * uMatcapIntensity + 1.0, 0.0, 1.0) * 0.1;
+  vec3 matcapColor = matcap(1.);
+  vec3 glassMatcapOverlay = clamp(matcapColor * 0.05 * uMatcapIntensity, 0.0, 1.0);
   finalColor += glassMatcapOverlay;
-  // finalColor += glassMatcapOverlay * vec3(1.0 - step(0.25, metalColor.r + metalColor.g + metalColor.b));
   #endif
 
   gl_FragColor = clamp(vec4(finalColor, uOpacity), 0., 1.);
+  // gl_FragColor.rg = combinationGrid; // debug grid size if offset
 
   #include <tonemapping_fragment>
   #include <colorspace_fragment>

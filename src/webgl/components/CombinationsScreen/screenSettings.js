@@ -18,16 +18,16 @@ export default {
 		},
 	},
 	uMatcapIntensity: {
-		value: 1.5,
+		value: 0.55,
 	},
 	uAmbientIntensity: {
 		value: 1,
 	},
 	uDiffuseIntensity: {
-		value: 0.9999999999999999,
+		value: 1.0199999999999998,
 	},
 	uSpecularIntensity: {
-		value: 0.6,
+		value: 0.009999999999999966,
 	},
 	uShininess: {
 		value: 300,
@@ -39,49 +39,16 @@ export default {
 		value: 0,
 	},
 	uAmbientColor: {
-		value: '0xffffff',
+		value: '#000000',
 	},
 	uDiffuseColor: {
 		value: '#000000',
 	},
 	uSpecularColor: {
-		value: '#ffffff',
+		value: '#727272',
 	},
 	uEmissiveColor: {
 		value: '0x000000',
-	},
-	uAmbient: {
-		value: 'ambientTexture',
-	},
-	uAmbientOpacity: {
-		value: 0,
-	},
-	uBars: {
-		value: 'barsTexture',
-	},
-	uBarsOpacity: {
-		value: 0,
-	},
-	uInner: {
-		value: 'innerTexture',
-	},
-	uInnerOpacity: {
-		value: 0,
-	},
-	uOuter: {
-		value: 'outerTexture',
-	},
-	uOuterOpacity: {
-		value: 0,
-	},
-	uStroke: {
-		value: 'strokeTexture',
-	},
-	uStrokeOpacity: {
-		value: 0,
-	},
-	uTint: {
-		value: '0xffffff',
 	},
 	uCombinations: {
 		value: 'combinationsTexture',
