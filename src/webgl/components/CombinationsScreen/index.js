@@ -130,6 +130,7 @@ export default class CombinationsScreen {
 				this._metalMesh.material = this._metalMaterial
 			}
 			if (child.name === 'leds') {
+				child.userData.renderBloom = true
 				this._ledsMesh = child
 				this._ledsMesh.material = this._ledsMaterial
 			}
@@ -168,9 +169,9 @@ export default class CombinationsScreen {
 			uniforms: ledsSettings,
 			name: 'Combi Leds Material',
 			defines: {
-				USE_ROUGHNESS: true,
-				USE_MATCAP: true,
-				USE_AO: true,
+				USE_ROUGHNESS: false,
+				USE_MATCAP: false,
+				USE_AO: false,
 			},
 		})
 	}

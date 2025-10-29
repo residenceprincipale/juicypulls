@@ -79,10 +79,10 @@ export default class Renderer {
 
 	getCurrentSceneName() {
 		// Get the current scene name from the scene manager
-		if (this.experience.sceneManager?.sceneName) {
-			return this.experience.sceneManager.sceneName
-		}
-		return 'main' // Default fallback
+		const urlParams = new URLSearchParams(window.location.search)
+		if (urlParams.has('scene')) {
+			return urlParams.get('scene')
+		} else return 'main'
 	}
 
 	createPostProcessing() {
@@ -128,7 +128,7 @@ export default class Renderer {
 			resolution: bloomSettings.resolution,
 			camera: this.camera.instance,
 			scene: this.scene,
-			dpr: this.sizes.pixelRatio
+			dpr: this.sizes.pixelRatio,
 		})
 
 		this.threeComposer.addPass(this.bloomPass)
@@ -178,66 +178,78 @@ export default class Renderer {
 			expanded: false,
 		})
 
-		folder.addBinding(bloomSettings, 'enabled', {
-			label: 'Enabled'
-		}).on('change', (ev) => {
-			if (this.bloomPass) {
-				this.bloomPass.enabled = ev.value
-			}
-			// Recreate post-processing if bloom is toggled
-			this.createPostProcessing()
-		})
+		folder
+			.addBinding(bloomSettings, 'enabled', {
+				label: 'Enabled',
+			})
+			.on('change', (ev) => {
+				if (this.bloomPass) {
+					this.bloomPass.enabled = ev.value
+				}
+				// Recreate post-processing if bloom is toggled
+				this.createPostProcessing()
+			})
 
-		folder.addBinding(bloomSettings, 'strength', {
-			label: 'Strength',
-			min: 0,
-			max: 3,
-			step: 0.01
-		}).on('change', (ev) => {
-			if (this.bloomPass) {
-				this.bloomPass.strength = ev.value
-			}
-		})
+		folder
+			.addBinding(bloomSettings, 'strength', {
+				label: 'Strength',
+				min: 0,
+				max: 3,
+				step: 0.01,
+			})
+			.on('change', (ev) => {
+				if (this.bloomPass) {
+					this.bloomPass.strength = ev.value
+				}
+			})
 
-		folder.addBinding(bloomSettings, 'radius', {
-			label: 'Radius',
-			min: 0,
-			max: 1,
-			step: 0.01
-		}).on('change', (ev) => {
-			if (this.bloomPass) {
-				this.bloomPass.radius = ev.value
-			}
-		})
+		folder
+			.addBinding(bloomSettings, 'radius', {
+				label: 'Radius',
+				min: 0,
+				max: 1,
+				step: 0.01,
+			})
+			.on('change', (ev) => {
+				if (this.bloomPass) {
+					this.bloomPass.radius = ev.value
+				}
+			})
 
-		folder.addBinding(bloomSettings, 'threshold', {
-			label: 'Threshold',
-			min: 0,
-			max: 2,
-			step: 0.01
-		}).on('change', (ev) => {
-			if (this.bloomPass) {
-				this.bloomPass.threshold = ev.value
-			}
-		})
+		folder
+			.addBinding(bloomSettings, 'threshold', {
+				label: 'Threshold',
+				min: 0,
+				max: 2,
+				step: 0.01,
+			})
+			.on('change', (ev) => {
+				if (this.bloomPass) {
+					this.bloomPass.threshold = ev.value
+				}
+			})
 
-		folder.addBinding(bloomSettings, 'smoothWidth', {
-			label: 'Smooth Width',
-			min: 0,
-			max: 2,
-			step: 0.01
-		}).on('change', (ev) => {
-			if (this.bloomPass) {
-				this.bloomPass.smoothWidth = ev.value
-			}
-		})
+		folder
+			.addBinding(bloomSettings, 'smoothWidth', {
+				label: 'Smooth Width',
+				min: 0,
+				max: 2,
+				step: 0.01,
+			})
+			.on('change', (ev) => {
+				if (this.bloomPass) {
+					this.bloomPass.smoothWidth = ev.value
+				}
+			})
 
 		// Add copy settings button
-		folder.addButton({
-			title: 'Copy Settings',
-		}).on('click', () => {
-			this.copyBloomSettings(bloomSettings)
-		})
+		folder
+			.addButton({
+				title: 'Copy Settings',
+			})
+			.on('click', () => {
+				this.copyBloomSettings(bloomSettings)
+			})
 	}
 
 	copyBloomSettings(bloomSettings) {
@@ -255,16 +267,19 @@ export default class Renderer {
 }`
 
 		// Copy to clipboard
-		navigator.clipboard.writeText(settingsCode).then(() => {
-			console.log('✅ Bloom settings copied to clipboard!')
-			console.log(`📋 Settings for '${sceneName}' scene:`)
-			console.log(settingsCode)
+		navigator.clipboard
+			.writeText(settingsCode)
+			.then(() => {
+				console.log('✅ Bloom settings copied to clipboard!')
+				console.log(`📋 Settings for '${sceneName}' scene:`)
+				console.log(settingsCode)
 
-			// Show temporary notification if debug UI supports it
-			this.showCopyNotification('Bloom settings copied to clipboard!')
-		}).catch(err => {
-			console.error('❌ Failed to copy to clipboard:', err)
-		})
+				// Show temporary notification if debug UI supports it
+				this.showCopyNotification('Bloom settings copied to clipboard!')
+			})
+			.catch((err) => {
+				console.error('❌ Failed to copy to clipboard:', err)
+			})
 	}
 
 	showCopyNotification(message) {
@@ -317,7 +332,7 @@ export default class Renderer {
 
 		// Update Three.js composer camera references
 		if (this.threeComposer && this.threeComposer.passes) {
-			this.threeComposer.passes.forEach(pass => {
+			this.threeComposer.passes.forEach((pass) => {
 				if (pass.camera) {
 					pass.camera = this.camera.instance
 				}
@@ -326,7 +341,7 @@ export default class Renderer {
 
 		// Update postprocessing composer camera references
 		if (this.composer && this.composer.passes) {
-			this.composer.passes.forEach(pass => {
+			this.composer.passes.forEach((pass) => {
 				if (pass.camera) {
 					pass.camera = this.camera.instance
 				}

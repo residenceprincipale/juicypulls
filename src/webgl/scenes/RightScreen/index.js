@@ -14,6 +14,8 @@ export default class RightScreen {
 		this._lights = new LightsMain()
 
 		this._scene.resources.on('ready', () => {
+			this._experience.renderer.createPostProcessing()
+
 			this.combinationsScreen = new CombinationsScreen()
 			this.combinationsScreenManager = new CombinationsScreenManager()
 			this.combinationsScreenManager.screen = this.combinationsScreen

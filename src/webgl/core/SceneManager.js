@@ -13,17 +13,18 @@ export default class SceneManager {
 		}
 
 		if (this.experience.canvas.attributes.getNamedItem('scene')) {
-			this.sceneName = this.experience.canvas.attributes.getNamedItem('scene').value
+			this._sceneName = this.experience.canvas.attributes.getNamedItem('scene').value
 		}
 
 		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.has('scene')) {
 			this.sceneName = urlParams.get('scene')
+			console.log(this._sceneName)
 		}
 
 		// if scene name is not in the list, get the first one
-		if (!this.scenes[this.sceneName]) {
-			console.warn(`Scene ${this.sceneName} not found, using ${Object.keys(this.scenes)[0]} instead`)
+		if (!this.scenes[this._sceneName]) {
+			console.warn(`Scene ${this._sceneName} not found, using ${Object.keys(this.scenes)[0]} instead`)
 			this.sceneName = Object.keys(this.scenes)[0]
 		}
 
@@ -31,6 +32,14 @@ export default class SceneManager {
 
 		// create scene
 		return new this.scenes[this.sceneName]()
+	}
+
+	get sceneName() {
+		return this._sceneName
+	}
+
+	set sceneName(value) {
+		this._sceneName = value
 	}
 
 	setDebug() {

@@ -18,16 +18,16 @@ export default {
 		},
 	},
 	uMatcapIntensity: {
-		value: 0.88,
+		value: 1.07,
 	},
 	uAmbientIntensity: {
-		value: 0.19999999999999998,
+		value: 1,
 	},
 	uDiffuseIntensity: {
 		value: 1.9999999999999998,
 	},
 	uSpecularIntensity: {
-		value: 1.58,
+		value: 1.48,
 	},
 	uShininess: {
 		value: 500,
@@ -39,7 +39,7 @@ export default {
 		value: '0xffffff',
 	},
 	uDiffuseColor: {
-		value: '#ff9900',
+		value: '#baa687',
 	},
 	uSpecularColor: {
 		value: '#ffffff',
