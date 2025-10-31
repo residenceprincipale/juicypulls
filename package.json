@@ -21,6 +21,7 @@
 		"sass": "^1.89.1",
 		"serialport": "^13.0.0",
 		"three": "^0.172.0",
+		"three-msdf-text-utils": "^1.2.1",
 		"tweakpane-undo-redo-plugin": "github:cosmicshelter/tweakpane-undo-redo-plugin",
 		"ws": "^8.18.0"
 	},

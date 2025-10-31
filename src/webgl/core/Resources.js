@@ -6,6 +6,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader'
+import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { Howl } from 'howler'
 import { VideoTexture } from 'three'
 
@@ -95,6 +96,7 @@ export default class Resources extends EventEmitter {
 		this.loaders.cubeTextureLoader = new CubeTextureLoader()
 		this.loaders.fbxLoader = new FBXLoader()
 		this.loaders.exrLoader = new EXRLoader()
+		this.loaders.fontLoader = new FontLoader()
 	}
 
 	// Method to fetch file size
@@ -266,6 +268,19 @@ export default class Resources extends EventEmitter {
 
 					const videoTexture = new VideoTexture(videoElement)
 					this.sourceLoaded(source, videoTexture)
+					break
+				//font (for MSDF)
+				case 'json':
+					this.loaders.fontLoader.load(
+						source.path,
+						(file) => {
+							this.sourceLoaded(source, file)
+						},
+						undefined,
+						(error) => {
+							this.sourceError(source, error)
+						},
+					)
 					break
 				default:
 					console.error(`${source.path} is not a valid source type`)

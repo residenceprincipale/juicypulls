@@ -1,0 +1,58 @@
+[
+	{
+		"name": "ambientTexture",
+		"path": "../textures/combi/ambient.webp"
+	},
+	{
+		"name": "barsTexture",
+		"path": "../textures/combi/bars.webp"
+	},
+	{
+		"name": "innerTexture",
+		"path": "../textures/combi/inner.webp"
+	},
+	{
+		"name": "outerTexture",
+		"path": "../textures/combi/outer.webp"
+	},
+	{
+		"name": "strokeTexture",
+		"path": "../textures/combi/stroke.webp"
+	},
+	{
+		"name": "combinationsTexture",
+		"path": "../textures/combi/combinations.jpg",
+		"repeatWrapping": false,
+		"flipY": false
+	},
+	{
+		"name": "screenModel",
+		"path": "../models/screens/score-screen.glb"
+	},
+	{
+		"name": "glassMatcap",
+		"path": "../textures/glassMatcap.jpg"
+	},
+	{
+		"name": "marqueeVideo",
+		"path": "../videos/jackpot-marquee.mp4",
+		"flipY": false
+	},
+	{
+		"name": "leagueGothicFontAtlas",
+		"path": "../fonts/msdf/league-gothic/LeagueGothic-Regular.png",
+		"debug": false,
+		"flipY": true
+	},
+	{
+		"name": "leagueGothicFontFile",
+		"path": "../fonts/msdf/league-gothic/LeagueGothic-Regular.json",
+		"debug": false
+	},
+	{
+		"name": "screenCharactersAtlas",
+		"path": "../textures/score-screen-chars.jpg",
+		"flipY": false,
+		"debug": false
+	}
+]
