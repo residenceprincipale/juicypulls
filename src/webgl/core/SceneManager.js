@@ -19,7 +19,6 @@ export default class SceneManager {
 		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.has('scene')) {
 			this.sceneName = urlParams.get('scene')
-			console.log(this._sceneName)
 		}
 
 		// if scene name is not in the list, get the first one

@@ -32,16 +32,17 @@ export default class PostProcessingSettings {
 					smoothWidth: 0.67,
 					resolution: { x: 256, y: 256 },
 				},
-				// Example for selective bloom:
-				// bloom: {
-				// 	enabled: true,
-				// 	type: 'SELECTIVE', // Only objects with userData.renderBloom = true will bloom
-				// 	strength: 2.0,
-				// 	radius: 0.5,
-				// 	threshold: 0.0, // Not used in selective mode
-				// 	smoothWidth: 1.0, // Not used in selective mode
-				// 	resolution: { x: 256, y: 256 },
-				// }
+			},
+			leftScreen: {
+				bloom: {
+					enabled: true,
+					type: 'SELECTIVE', // 'LUMINOSITY', 'SELECTIVE', 'TEXTURE'
+					strength: 1.67,
+					radius: 0,
+					threshold: 0.04,
+					smoothWidth: 0.67,
+					resolution: { x: 256, y: 256 },
+				},
 			},
 			camera: {
 				bloom: {
@@ -57,7 +58,7 @@ export default class PostProcessingSettings {
 	}
 
 	getSettings(sceneName, effectName) {
-		const scene = this.sceneSettings[sceneName?.toLowerCase()]
+		const scene = this.sceneSettings[sceneName]
 		if (!scene) return null
 
 		return scene[effectName] || null

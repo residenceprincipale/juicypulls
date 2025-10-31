@@ -14,11 +14,11 @@ export default class LeftScreen {
 		this._lights = new LightsMain()
 
 		this._scene.resources.on('ready', () => {
-			// this._experience.renderer.createPostProcessing()
+			this._experience.renderer.createPostProcessing()
 
 			this.scoreScreen = new ScoreScreen()
-			// this.scoreScreenManager = new ScoreScreenManager()
-			// this.scoreScreenManager.screen = this.scoreScreen
+			this.scoreScreenManager = new ScoreScreenManager()
+			this.scoreScreenManager.screen = this.scoreScreen
 		})
 	}
 

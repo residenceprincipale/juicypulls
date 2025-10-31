@@ -10,6 +10,8 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { Howl } from 'howler'
 import { VideoTexture } from 'three'
 
+import gsap from 'gsap'
+
 // play() all loaded videos once with first user interaction
 const VIDEOS_ARRAY = []
 const DOCUMENT_CLICK_LISTENER = document.addEventListener(
@@ -17,6 +19,11 @@ const DOCUMENT_CLICK_LISTENER = document.addEventListener(
 	() => {
 		VIDEOS_ARRAY.forEach((video) => {
 			video.play()
+			gsap.delayedCall(0.1, () => {
+				video.pause()
+				video.currentTime = 0.01
+				// console.log(video)
+			})
 		})
 	},
 	{ once: true },
@@ -262,7 +269,8 @@ export default class Resources extends EventEmitter {
 					videoElement.style.display = 'none'
 
 					videoElement.addEventListener('play', function () {
-						this.currentTime = 0.01
+						this.currentTime = 0.1
+						// this.pause() // pause for perf, you'll need to trigger play then pause when needed on 'videoTexture.source.data'
 					})
 					VIDEOS_ARRAY.push(videoElement)
 
@@ -338,12 +346,6 @@ export default class Resources extends EventEmitter {
 					'font-weight: normal; color: #ccc',
 				)
 			} else {
-				// Simple logging without file size
-				console.debug(
-					`%c🖼️ ${source.name}%c loaded (${this.loaded}/${this.toLoad})`,
-					'font-weight: bold; color: white',
-					'font-weight: normal; color: #ccc',
-				)
 			}
 		}
 

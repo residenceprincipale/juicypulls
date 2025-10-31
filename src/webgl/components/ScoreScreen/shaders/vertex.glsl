@@ -2,37 +2,37 @@
 attribute vec2 uv1;
 
 // Text Attributes
-attribute vec2 layoutUv;
+// attribute vec2 layoutUv;
 
-attribute float lineIndex;
+// attribute float lineIndex;
 
-attribute float lineLettersTotal;
-attribute float lineLetterIndex;
+// attribute float lineLettersTotal;
+// attribute float lineLetterIndex;
 
-attribute float lineWordsTotal;
-attribute float lineWordIndex;
+// attribute float lineWordsTotal;
+// attribute float lineWordIndex;
 
-attribute float wordIndex;
+// attribute float wordIndex;
 
-attribute float letterIndex;
+// attribute float letterIndex;
 
 varying vec3 vViewPosition;
 varying vec2 vUv;
-varying vec2 vUvMarquee;
+// varying vec2 vUvMarquee;
 
-// Text Varyings
-varying vec2 vLayoutUv;
-varying float vLineIndex;
+// // Text Varyings
+// varying vec2 vLayoutUv;
+// varying float vLineIndex;
 
-varying float vLineLettersTotal;
-varying float vLineLetterIndex;
+// varying float vLineLettersTotal;
+// varying float vLineLetterIndex;
 
-varying float vLineWordsTotal;
-varying float vLineWordIndex;
+// varying float vLineWordsTotal;
+// varying float vLineWordIndex;
 
-varying float vWordIndex;
+// varying float vWordIndex;
 
-varying float vLetterIndex;
+// varying float vLetterIndex;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -57,20 +57,20 @@ void main() {
 
   vViewPosition = -mvPosition.xyz;
   vUv = uv;
-  vUvMarquee = uv1;
-  vLayoutUv = layoutUv;
+  // vUvMarquee = uv1;
+  // vLayoutUv = layoutUv;
 
-  vLineIndex = lineIndex;
+  // vLineIndex = lineIndex;
 
-  vLineLettersTotal = lineLettersTotal;
-  vLineLetterIndex = lineLetterIndex;
+  // vLineLettersTotal = lineLettersTotal;
+  // vLineLetterIndex = lineLetterIndex;
 
-  vLineWordsTotal = lineWordsTotal;
-  vLineWordIndex = lineWordIndex;
+  // vLineWordsTotal = lineWordsTotal;
+  // vLineWordIndex = lineWordIndex;
 
-  vWordIndex = wordIndex;
+  // vWordIndex = wordIndex;
 
-  vLetterIndex = letterIndex;
+  // vLetterIndex = letterIndex;
 
   #include <fog_vertex>
 }

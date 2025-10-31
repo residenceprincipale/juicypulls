@@ -4,21 +4,21 @@ import * as TweakpanePluginMedia from 'tweakpane-plugin-media'
 import * as TweakpaneFileImportPlugin from 'tweakpane-plugin-file-import'
 import Stats from 'stats.js'
 import Experience from 'core/Experience.js'
-import addUndoRedoFeature from 'tweakpane-undo-redo-plugin';
-import * as Tweakpane from 'tweakpane';
+import addUndoRedoFeature from 'tweakpane-undo-redo-plugin'
+import * as Tweakpane from 'tweakpane'
 
-addUndoRedoFeature(Tweakpane);
+addUndoRedoFeature(Tweakpane)
 
 /**
  * Debug class with Tweakpane folder state persistence
- * 
+ *
  * Features:
  * - Automatically saves and restores expanded/collapsed state of all Tweakpane folders
  * - All folders default to collapsed (expanded: false) on first creation
  * - Folder states are saved to localStorage and persist between page reloads
  * - Supports nested folders with hierarchical path-based keys
  * - Includes debug controls to view and clear saved states
- * 
+ *
  * Usage:
  * - Folders will automatically have their states managed
  * - Use "Show Folder States" button in Debug Feature Manager to see all tracked folders
@@ -31,34 +31,33 @@ export default class Debug {
 		this.tutorialActive = window.location.hash.includes('tutorial')
 
 		if (this.active) {
-
 			// Create the debug pane with the title
 			this.ui = new Pane({
 				title: '⚙️ Debug',
 				expanded: true,
-			});
+			})
 
 			// Initialize folder state management
 			this.folderStates = new Map()
 			this.initializeFolderStateManager()
 
 			// Retrieve the expanded state from localStorage, default to false
-			let expanded = false;
-			const storedExpanded = localStorage.getItem('debugPaneExpanded');
+			let expanded = false
+			const storedExpanded = localStorage.getItem('debugPaneExpanded')
 			if (storedExpanded !== null) {
-				expanded = storedExpanded === 'true'; // localStorage stores strings
+				expanded = storedExpanded === 'true' // localStorage stores strings
 			} else {
 				// If not present, initialize it in localStorage
-				localStorage.setItem('debugPaneExpanded', 'false');
+				localStorage.setItem('debugPaneExpanded', 'false')
 			}
 
 			this.ui.expanded = expanded // apply later for "this.ui.containerEl_" defined
 			this.ui.element.addEventListener('click', () => {
-				localStorage.setItem('debugPaneExpanded', this.ui.expanded.toString());
+				localStorage.setItem('debugPaneExpanded', this.ui.expanded.toString())
 			})
 
 			const uiContainer = this.ui.containerElem_
-			const uiBindContainer = uiContainer.querySelector(".tp-rotv_c")
+			const uiBindContainer = uiContainer.querySelector('.tp-rotv_c')
 			uiContainer.style.position = 'fixed'
 			uiContainer.style.userSelect = 'none'
 			uiContainer.style.zIndex = '1000'
@@ -102,7 +101,7 @@ export default class Debug {
 			}
 		}
 
-		console.log(`📁 Tweakpane folder state management initialized (${loadedStatesCount} saved states loaded)`)
+		// console.log(`📁 Tweakpane folder state management initialized (${loadedStatesCount} saved states loaded)`)
 
 		// Override the addFolder method on the main UI
 		this.wrapAddFolderMethod(this.ui, 'root')
@@ -141,7 +140,7 @@ export default class Debug {
 				// Override the expanded parameter
 				const folderParams = {
 					...params,
-					expanded: expanded
+					expanded: expanded,
 				}
 
 				// Create the folder with the managed state
@@ -174,7 +173,8 @@ export default class Debug {
 	 */
 	generateFolderKey(path) {
 		// Clean the path and make it a valid key
-		return path.toLowerCase()
+		return path
+			.toLowerCase()
 			.replace(/[^a-z0-9\/]/g, '_')
 			.replace(/\/+/g, '/')
 			.replace(/^\/|\/$/g, '')
@@ -216,7 +216,7 @@ export default class Debug {
 				observer.observe(folder.element, {
 					attributes: true,
 					attributeFilter: ['class'],
-					subtree: true
+					subtree: true,
 				})
 			}
 		}
@@ -308,7 +308,7 @@ export default class Debug {
 		titleElement.childNodes.forEach((child) => {
 			child.style.pointerEvents = 'none'
 		})
-		let move = () => { }
+		let move = () => {}
 		let hasMoved = true
 		const handleMouseDown = (event) => {
 			titleElement.style.cursor = 'grabbing'
@@ -371,7 +371,7 @@ export default class Debug {
 
 		return {
 			right: boundedRight,
-			top: boundedTop
+			top: boundedTop,
 		}
 	}
 
@@ -495,7 +495,7 @@ export default class Debug {
 
 	setDebugManager() {
 		this.debugParams = {
-			SceneLog: true,
+			SceneLog: false,
 			ResourceLog: true,
 			Stats: true,
 			LoadingScreen: true,
@@ -550,7 +550,7 @@ export default class Debug {
 						`📦 %c${object.name ? object.name : `unnamed ${object.type}`}%c added to the scene`,
 						'font-weight: bold; background-color: #ffffff20; padding: 0.1rem 0.3rem; border-radius: 0.3rem',
 						'font-weight: normal',
-						object
+						object,
 					)
 				}
 				return original.apply(this, arguments)

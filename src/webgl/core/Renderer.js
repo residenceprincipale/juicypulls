@@ -62,7 +62,7 @@ export default class Renderer {
 
 	hasPostProcessingPasses() {
 		const sceneName = this.getCurrentSceneName()
-		const sceneSettings = this.postProcessingSettings.sceneSettings[sceneName?.toLowerCase()]
+		const sceneSettings = this.postProcessingSettings.sceneSettings[sceneName]
 
 		if (!sceneSettings) return false
 

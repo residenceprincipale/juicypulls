@@ -50,15 +50,39 @@ export default {
 	uEmissiveColor: {
 		value: '0x000000',
 	},
-	uVideoMarquee: {
-		value: 'marqueeVideo',
+	uVideoFarkle: {
+		value: 'farkleVideo',
 		debug: false,
 	},
-	uMarqueeOpacity: {
+	// uVideoJackpotx3: {
+	// 	value: 'jackpotx3Video',
+	// 	debug: false,
+	// },
+	// uVideoJackpotx4: {
+	// 	value: 'jackpotx4Video',
+	// 	debug: false,
+	// },
+	// uVideoJackpotx5: {
+	// 	value: 'jackpotx5Video',
+	// 	debug: false,
+	// },
+	uFarkleOpacity: {
 		value: 0,
 		debug: false,
 	},
-	uMarqueeTint: {
+	uJackpotx3Opacity: {
+		value: 0,
+		debug: false,
+	},
+	uJackpotx4Opacity: {
+		value: 0,
+		debug: false,
+	},
+	uJackpotx5Opacity: {
+		value: 0,
+		debug: false,
+	},
+	uVideoTint: {
 		value: '0xffffff',
 	},
 	uTime: {

@@ -2,7 +2,6 @@
 
 varying vec2 vUv;
 varying vec2 vUvQuotaBar;
-varying vec2 vUvMarquee;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 
@@ -67,10 +66,10 @@ uniform float uJetonsOpacity;
 uniform sampler2D uCharactersAtlas;
 
 varying float vIsBank;
-varying float vIsQuota;
-varying float vIsQuotaBar;
 varying float vIsJetons;
 varying float vIsScore;
+varying float vIsQuota;
+varying float vIsQuotaBar;
 varying float vNumberDecimal;
 
 #include <common>
@@ -155,7 +154,12 @@ void main() {
 
   float blinkingOpacity = (sin(uTime * uBlinkingSpeed) + 1.0);
 
-  // Map characters
+  //   ADD JACKPOT VIDEOS WITH TINT
+  //   (IN SCREEN SHADER SO HIDE CHARS PROPERLY )
+
+  // PLACE THEM IN THE MACHINE ?
+
+  // Map Numerical Characters
   // (the "+ 0.0001" fixes a mathematical imprecision mystery happening with the fract and floor...)
   float scoreOffset = floor(fract(uScore * vNumberDecimal + 0.0001) * 10.0) * 0.1;
   float quotaOffset = floor(fract(uQuota * vNumberDecimal + 0.0001) * 10.0) * 0.1;
@@ -178,10 +182,11 @@ void main() {
   // overall progress negative color
   float barNegativeFactor = step(0.0, vUvQuotaBar.x); // used as selector of quota bar elements
   // negative mix
-  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0) - diffuseColor.rgb, barNegativeFactor * quotaProgress);
+  vec3 maxWhiteColor = vec3(0.8); // to match the offwhite texture color
+  diffuseColor.rgb = mix(diffuseColor.rgb, maxWhiteColor - diffuseColor.rgb, barNegativeFactor * quotaProgress);
   // white borders mesh color (using main uv position as selector)
   float barBordersFactor = step(1.0, vUv.y);
-  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0), vIsQuotaBar * barBordersFactor);
+  diffuseColor.rgb = mix(diffuseColor.rgb, maxWhiteColor, vIsQuotaBar * barBordersFactor);
 
   ReflectedLight reflectedLight = ReflectedLight(
       vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0)
@@ -262,7 +267,7 @@ void main() {
   finalColor += glassMatcapOverlay;
   #endif
 
-  gl_FragColor = clamp(vec4(finalColor, uOpacity), 0., 1.);
+  gl_FragColor = clamp(vec4(finalColor, uOpacity * uScreenLuminosity), 0., 1.);
   // gl_FragColor = vec4(vIsQuotaBar);
 
   #include <tonemapping_fragment>

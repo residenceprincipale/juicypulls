@@ -16,17 +16,18 @@ export default class ScoreScreenManager {
 		this._debug = this._experience.debug
 
 		const socket = new Socket()
-		socket.connect('combi')
+		socket.connect('score')
 
-		socket.on('update-combi', this._updateCombi)
-		socket.on('reset-combi', this._resetCombi)
-		socket.on('reset', this._resetCombi)
-		// socket.on('hide', this._hide)
-		// socket.on('show', this._show)
-		socket.on('jackpot', this._jackpot)
-		// socket.on('jackpot-end', this._jackpotEnd)
+		socket.on('update-collected-points', this._updateCollectedPoints)
+		socket.on('update-rolling-points', this._updateRollingPoints)
+		socket.on('update-spin-tokens', this._updateSpinTokens)
+		socket.on('update-quota', this._updateQuota)
+		socket.on('reset', this._reset)
+		socket.on('show', this._show)
+		socket.on('hide', this._hide)
 		socket.on('farkle', this._farkle)
-		// socket.on('lose-final', this._loseFinal)
+		socket.on('jackpot', this._jackpot)
+		socket.on('lose-final', this._loseFinal)
 		//
 
 		if (this._debug.active) this._createDebug()
@@ -34,12 +35,8 @@ export default class ScoreScreenManager {
 
 	set screen(value) {
 		this._screen = value
-		const indexRow = 1
-		const indexColumn = 4
 		gsap.delayedCall(1.5, () => {
-			this._screen.displayCombination({ indexRow, indexColumn })
-			this._symbolIndex = indexRow
-			this._jackpot()
+			this._farkle()
 		})
 	}
 
@@ -47,36 +44,58 @@ export default class ScoreScreenManager {
 		return this._screen
 	}
 
-	_resetCombi() {
-		// call reset
+	_hide() {
+		this._screen.hide()
+	}
+	_show() {
+		this._screen.show()
 	}
 
-	_updateCombi({ symbol, value }) {
-		console.log({ symbol, value })
-		const symbolIndex = symbolOrder.indexOf(symbol)
-		const multiplierIndex = multiplierOrder.indexOf(value)
-		if (symbolIndex === -1 || multiplierIndex === -1) {
-			console.warn('Invalid symbol or value:', symbol, value)
-			return
-		}
-		this._symbolIndex = symbolIndex
+	_reset() {
+		this._screen.updateScore(0)
+		this._screen.updateTokens(0)
+		this._screen.updateQuota(0)
+		this._screen.updateBank(0)
+	}
 
-		this._screen.displayCombination({ indexRow: symbolIndex, indexColumn: multiplierIndex })
-
-		// Affichage des points si la combinaison existe
-		const combiKey = `${multiplierIndex + 3}${symbol}` // x1=3, x3=4, x4=5, x5=6 symboles
+	_updateRollingPoints({ value }) {
+		this._screen.updateScore(value)
+	}
+	_updateSpinTokens({ value }) {
+		this._screen.updateTokens(value)
+	}
+	_updateQuota({ value }) {
+		this._screen.updateQuota(value)
+	}
+	_updateCollectedPoints({ value }) {
+		this._screen.updateBank(value)
 	}
 
 	_jackpot() {
 		// TODO: reset le marquee au update combi ? en focntion de la chronologie jsp comment ça marche deja
-		this._screen.displayMarquee({ tint: SYMBOL_TINTS_ARRAY[this._symbolIndex - 1] })
+		// this._screen.displayMarquee({ tint: SYMBOL_TINTS_ARRAY[this._symbolIndex - 1] })
+	}
+
+	_farkle() {
+		this._screen.updateScore(0)
+
+		this._farkleTimeline?.kill()
+		this._farkleTimeline = new gsap.timeline()
+		this._farkleTimeline.add(this._screen.hide(), 0)
+		this._farkleTimeline.add(this._screen.farkle(), 0.1)
+		this._farkleTimeline.add(this._screen.show(), 2)
+		this._farkleTimeline.play()
+	}
+
+	_loseFinal() {
+		this._screen.hide()
 	}
 
 	_createDebug() {
 		if (!this._debug.active) return
 
 		const debugFolder = this._debug.ui.addFolder({
-			title: 'Combinations Screen Manager',
+			title: 'Score Screen Manager',
 			expanded: true,
 		})
 	}

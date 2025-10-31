@@ -34,8 +34,8 @@
 		"path": "../textures/glassMatcap.jpg"
 	},
 	{
-		"name": "marqueeVideo",
-		"path": "../videos/jackpot-marquee.mp4",
+		"name": "farkleVideo",
+		"path": "../videos/compressed/farkle2.mp4",
 		"flipY": false
 	},
 	{

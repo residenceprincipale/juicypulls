@@ -9,7 +9,7 @@ import screenCharactersSettings from './screenCharactersSettings'
 import metalSettings from './metalSettings'
 import ledsSettings from './ledsSettings'
 
-import { MSDFTextMaterial, MSDFTextGeometry } from 'three-msdf-text-utils'
+import { MSDFTextGeometry } from 'three-msdf-text-utils'
 
 import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
 import gsap from 'gsap'
@@ -82,15 +82,35 @@ export default class ScoreScreen {
 			value: 1.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
 		})
+		this._showTimeline.to(
+			this._charactersMaterial.uniforms.uScreenLuminosity,
+			{
+				value: 1.0,
+				ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+			},
+			0,
+		)
+
+		return this._showTimeline
 	}
 
 	hide() {
 		this._hideTimeline?.kill()
 		this._hideTimeline = gsap.timeline()
-		this._hideTimeline.to(this._screenMaterial.uniforms.uScreenLuminosity, {
-			value: 0.0,
-			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
-		})
+		// this._hideTimeline.to(this._screenMaterial.uniforms.uScreenLuminosity, {
+		// 	value: 0.0,
+		// 	ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+		// })
+		this._hideTimeline.to(
+			this._charactersMaterial.uniforms.uScreenLuminosity,
+			{
+				value: 0.0,
+				ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+			},
+			0,
+		)
+
+		return this._hideTimeline
 	}
 
 	updateBank(value) {
@@ -126,6 +146,7 @@ export default class ScoreScreen {
 			},
 		)
 	}
+
 	updateScore(value) {
 		this._charactersMaterial.uniforms.uScore.value = value
 		this._showScoreTimeline?.kill()
@@ -142,6 +163,7 @@ export default class ScoreScreen {
 			},
 		)
 	}
+
 	updateQuota(value) {
 		this._charactersMaterial.uniforms.uQuota.value = value
 		this._showQuotaTimeline?.kill()
@@ -157,6 +179,47 @@ export default class ScoreScreen {
 				duration: 0.6,
 			},
 		)
+	}
+
+	farkle() {
+		this._showFarkleTimeline?.kill()
+		this._showFarkleTimeline = gsap.timeline({
+			onStart: () => {
+				this._resources.items.farkleVideo.source.data.currentTime = 0.01
+				this._resources.items.farkleVideo.source.data.play()
+				console.log('test start')
+			},
+			onComplete: () => {
+				this._resources.items.farkleVideo.source.data.currentTime = 0.01
+				this._resources.items.farkleVideo.source.data.pause()
+				console.log('test complete')
+			},
+		})
+		this._showFarkleTimeline.to(this._screenMaterial.uniforms.uFarkleOpacity, {
+			value: 1.0,
+			ease: 'sine.inOut',
+		})
+		this._showFarkleTimeline.to(
+			this._screenMaterial.uniforms.uFarkleOpacity,
+			{
+				value: 0.0,
+				ease: 'sine.inOut',
+			},
+			3,
+		)
+
+		return this._showFarkleTimeline
+	}
+
+	jackpot({ tint, value }) {
+		this._screenMaterial.uniforms.uVideoTint.value.set(tint)
+
+		this._showJackpotTimeline?.kill()
+		this._showJackpotTimeline = gsap.timeline()
+		this._showJackpotTimeline.to(this._screenMaterial.uniforms['uJackpot' + value + 'Opacity'], {
+			value: 1.0,
+			ease: 'sine.inOut',
+		})
 	}
 
 	update() {
@@ -177,7 +240,6 @@ export default class ScoreScreen {
 			if (child.name === 'screenCharacters') {
 				this._charactersMesh = child
 				this._charactersMesh.material = this._charactersMaterial
-				console.log(this._charactersMesh.geometry.attributes)
 			}
 			if (child.name === 'metal') {
 				this._metalMesh = child

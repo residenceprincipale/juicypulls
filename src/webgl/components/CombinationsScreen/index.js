@@ -106,13 +106,28 @@ export default class CombinationsScreen {
 
 	displayMarquee({ tint }) {
 		this._screenMaterial.uniforms.uMarqueeTint.value.set(tint)
+		this._screenMaterial.uniforms.uVideoMarquee.value.source.data.currentTime = 0.01
+		this._screenMaterial.uniforms.uVideoMarquee.value.source.data.play()
 
 		this._showMarqueeTimeline?.kill()
-		this._showMarqueeTimeline = gsap.timeline()
+		this._showMarqueeTimeline = gsap.timeline({
+			onComplete: () => {
+				this._screenMaterial.uniforms.uVideoMarquee.value.source.data.pause()
+				this._screenMaterial.uniforms.uVideoMarquee.value.source.data.currentTime = 0.01
+			},
+		})
 		this._showMarqueeTimeline.to(this._screenMaterial.uniforms.uMarqueeOpacity, {
 			value: 1.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
 		})
+		this._showMarqueeTimeline.to(
+			this._screenMaterial.uniforms.uMarqueeOpacity,
+			{
+				value: 0.0,
+				ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+			},
+			3.0,
+		)
 	}
 
 	/**

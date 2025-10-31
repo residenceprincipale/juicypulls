@@ -36,7 +36,7 @@ export default {
 		value: 1,
 	},
 	uScreenLuminosity: {
-		value: 1,
+		value: 0,
 	},
 	uAmbientColor: {
 		value: '#000000',

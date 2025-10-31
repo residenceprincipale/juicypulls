@@ -1,7 +1,7 @@
 #define PHONG
 
 varying vec2 vUv;
-varying vec2 vUvMarquee;
+// varying vec2 vUvMarquee;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 
@@ -43,9 +43,15 @@ uniform float uAOMapIntensity;
 
 uniform sampler2D uCombinations;
 
-uniform sampler2D uVideoMarquee;
-uniform float uMarqueeOpacity;
-uniform vec3 uMarqueeTint;
+uniform sampler2D uVideoFarkle;
+uniform sampler2D uVideoJackpotx3;
+uniform sampler2D uVideoJackpotx4;
+uniform sampler2D uVideoJackpotx5;
+uniform float uFarkleOpacity;
+uniform float uJackpotx3Opacity;
+uniform float uJackpotx4Opacity;
+uniform float uJackpotx5Opacity;
+uniform vec3 uVideoTint;
 
 uniform float uTime;
 
@@ -137,11 +143,11 @@ void main() {
   float blinkingOpacity = (sin(uTime * uBlinkingSpeed) + 1.0);
 
   // MARQUEE SIDE VIDEOS
-  // vec4 videoMarquee = texture2D(uVideoMarquee, vUvMarquee);
+  vec4 videoFarkle = texture2D(uVideoFarkle, vUv);
   // videoMarquee *= step(vUvMarquee.x, 0.99);
   // videoMarquee *= step(0.01, vUvMarquee.y);
   // diffuseColor += videoMarquee * vec4(uMarqueeTint, 1.0) * vec4(uMarqueeOpacity * 2.0);
-
+  diffuseColor.rgb = videoFarkle.rgb * uFarkleOpacity;
   ReflectedLight reflectedLight = ReflectedLight(
       vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0)
     );

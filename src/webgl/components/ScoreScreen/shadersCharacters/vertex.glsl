@@ -18,7 +18,6 @@ varying float vNumberDecimal;
 varying vec3 vViewPosition;
 varying vec2 vUv;
 varying vec2 vUvQuotaBar;
-varying vec2 vUvMarquee;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -44,7 +43,6 @@ void main() {
   vViewPosition = -mvPosition.xyz;
   vUv = uv;
   vUvQuotaBar = uv1;
-  vUvMarquee = uv1;
 
   vIsBank = step(0.5, _isbank);
   vIsJetons = step(0.5, _isjetons);
