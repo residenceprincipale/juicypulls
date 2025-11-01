@@ -260,6 +260,7 @@ export default class Resources extends EventEmitter {
 				//video
 				case 'mp4':
 				case 'mov':
+				case 'webm':
 					const videoElement = document.createElement('video')
 					videoElement.src = source.path
 					videoElement.muted = 'true'

@@ -142,12 +142,20 @@ void main() {
 
   float blinkingOpacity = (sin(uTime * uBlinkingSpeed) + 1.0);
 
-  // MARQUEE SIDE VIDEOS
+  // VIDEOS
   vec4 videoFarkle = texture2D(uVideoFarkle, vUv);
-  // videoMarquee *= step(vUvMarquee.x, 0.99);
-  // videoMarquee *= step(0.01, vUvMarquee.y);
+  diffuseColor.rgb += videoFarkle.rgb * uFarkleOpacity;
+
+  vec4 videoJackpotx3 = texture2D(uVideoJackpotx3, vUv);
+  diffuseColor.rgb += videoJackpotx3.rgb * uJackpotx3Opacity * uVideoTint;
+
+  vec4 videoJackpotx4 = texture2D(uVideoJackpotx4, vUv);
+  diffuseColor.rgb += videoJackpotx4.rgb * uJackpotx4Opacity * uVideoTint;
+
+  vec4 videoJackpotx5 = texture2D(uVideoJackpotx5, vUv);
+  diffuseColor.rgb += videoJackpotx5.rgb * uJackpotx5Opacity * uVideoTint;
+
   // diffuseColor += videoMarquee * vec4(uMarqueeTint, 1.0) * vec4(uMarqueeOpacity * 2.0);
-  diffuseColor.rgb = videoFarkle.rgb * uFarkleOpacity;
   ReflectedLight reflectedLight = ReflectedLight(
       vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0)
     );

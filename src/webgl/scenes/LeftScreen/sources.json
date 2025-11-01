@@ -35,7 +35,22 @@
 	},
 	{
 		"name": "farkleVideo",
-		"path": "../videos/compressed/farkle2.mp4",
+		"path": "../videos/farkle.webm",
+		"flipY": false
+	},
+	{
+		"name": "jackpotx3Video",
+		"path": "../videos/jackpot-x3.webm",
+		"flipY": false
+	},
+	{
+		"name": "jackpotx4Video",
+		"path": "../videos/jackpot-x4.webm",
+		"flipY": false
+	},
+	{
+		"name": "jackpotx5Video",
+		"path": "../videos/jackpot-x5.webm",
 		"flipY": false
 	},
 	{

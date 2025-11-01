@@ -36,7 +36,8 @@ export default class ScoreScreenManager {
 	set screen(value) {
 		this._screen = value
 		gsap.delayedCall(1.5, () => {
-			this._farkle()
+			// this._farkle()
+			this._jackpot({ symbol: '🍒', count: 'x3' })
 		})
 	}
 
@@ -71,9 +72,22 @@ export default class ScoreScreenManager {
 		this._screen.updateBank(value)
 	}
 
-	_jackpot() {
-		// TODO: reset le marquee au update combi ? en focntion de la chronologie jsp comment ça marche deja
-		// this._screen.displayMarquee({ tint: SYMBOL_TINTS_ARRAY[this._symbolIndex - 1] })
+	_jackpot({ symbol, count }) {
+		console.log({ symbol, count })
+		const symbolIndex = symbolOrder.indexOf(symbol)
+		const multiplierIndex = multiplierOrder.indexOf(count)
+		if (symbolIndex === -1 || multiplierIndex === -1) {
+			console.warn('Invalid symbol or value:', symbol, count)
+			return
+		}
+
+		this._symbolIndex = symbolIndex
+		const tint = SYMBOL_TINTS_ARRAY[this._symbolIndex - 1]
+		this._jackpotTimeline?.kill()
+		this._jackpotTimeline = new gsap.timeline()
+		this._jackpotTimeline.add(this._screen.hide(), 0)
+		this._jackpotTimeline.add(this._screen.jackpot({ tint, count }), 0.1)
+		this._jackpotTimeline.add(this._screen.show(), 3)
 	}
 
 	_farkle() {
@@ -83,8 +97,7 @@ export default class ScoreScreenManager {
 		this._farkleTimeline = new gsap.timeline()
 		this._farkleTimeline.add(this._screen.hide(), 0)
 		this._farkleTimeline.add(this._screen.farkle(), 0.1)
-		this._farkleTimeline.add(this._screen.show(), 2)
-		this._farkleTimeline.play()
+		this._farkleTimeline.add(this._screen.show(), 2.7)
 	}
 
 	_loseFinal() {

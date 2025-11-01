@@ -187,12 +187,10 @@ export default class ScoreScreen {
 			onStart: () => {
 				this._resources.items.farkleVideo.source.data.currentTime = 0.01
 				this._resources.items.farkleVideo.source.data.play()
-				console.log('test start')
 			},
 			onComplete: () => {
 				this._resources.items.farkleVideo.source.data.currentTime = 0.01
 				this._resources.items.farkleVideo.source.data.pause()
-				console.log('test complete')
 			},
 		})
 		this._showFarkleTimeline.to(this._screenMaterial.uniforms.uFarkleOpacity, {
@@ -211,15 +209,33 @@ export default class ScoreScreen {
 		return this._showFarkleTimeline
 	}
 
-	jackpot({ tint, value }) {
+	jackpot({ tint, count }) {
+		console.log({ tint, count })
 		this._screenMaterial.uniforms.uVideoTint.value.set(tint)
 
 		this._showJackpotTimeline?.kill()
-		this._showJackpotTimeline = gsap.timeline()
-		this._showJackpotTimeline.to(this._screenMaterial.uniforms['uJackpot' + value + 'Opacity'], {
+		this._showJackpotTimeline = gsap.timeline({
+			onStart: () => {
+				this._resources.items['jackpot' + count + 'Video'].source.data.currentTime = 0.01
+				this._resources.items['jackpot' + count + 'Video'].source.data.play()
+			},
+			onComplete: () => {
+				this._resources.items['jackpot' + count + 'Video'].source.data.currentTime = 0.01
+				this._resources.items['jackpot' + count + 'Video'].source.data.pause()
+			},
+		})
+		this._showJackpotTimeline.to(this._screenMaterial.uniforms['uJackpot' + count + 'Opacity'], {
 			value: 1.0,
 			ease: 'sine.inOut',
 		})
+		this._showJackpotTimeline.to(
+			this._screenMaterial.uniforms['uJackpot' + count + 'Opacity'],
+			{
+				value: 0.0,
+				ease: 'sine.inOut',
+			},
+			2.5,
+		)
 	}
 
 	update() {

@@ -54,18 +54,18 @@ export default {
 		value: 'farkleVideo',
 		debug: false,
 	},
-	// uVideoJackpotx3: {
-	// 	value: 'jackpotx3Video',
-	// 	debug: false,
-	// },
-	// uVideoJackpotx4: {
-	// 	value: 'jackpotx4Video',
-	// 	debug: false,
-	// },
-	// uVideoJackpotx5: {
-	// 	value: 'jackpotx5Video',
-	// 	debug: false,
-	// },
+	uVideoJackpotx3: {
+		value: 'jackpotx3Video',
+		debug: false,
+	},
+	uVideoJackpotx4: {
+		value: 'jackpotx4Video',
+		debug: false,
+	},
+	uVideoJackpotx5: {
+		value: 'jackpotx5Video',
+		debug: false,
+	},
 	uFarkleOpacity: {
 		value: 0,
 		debug: false,
