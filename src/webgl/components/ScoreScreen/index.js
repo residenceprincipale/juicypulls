@@ -31,6 +31,7 @@ export default class ScoreScreen {
 		this._resources = this._scene.resources
 		this._tint = new Color('white')
 		// this._resource = this._resources.items.environmentModel
+		//
 
 		this._createMaterials()
 		this._createModel()
@@ -246,22 +247,22 @@ export default class ScoreScreen {
 	 * Private
 	 */
 	_createModel() {
-		this._model = this._resources.items.screenModel.scene
+		this._model = this._resources.items.scoreScreenModel.scene
 		this._model.traverse((child) => {
-			if (child.name === 'screen') {
+			if (child.name === 'screen-score') {
 				this._screenMesh = child
 				this._screenMesh.material = this._screenMaterial
 				// this._screenMesh.material = new MeshBasicMaterial({ color: '#000000' })
 			}
-			if (child.name === 'screenCharacters') {
+			if (child.name === 'screenCharacters-score') {
 				this._charactersMesh = child
 				this._charactersMesh.material = this._charactersMaterial
 			}
-			if (child.name === 'metal') {
+			if (child.name === 'metal-score') {
 				this._metalMesh = child
 				this._metalMesh.material = this._metalMaterial
 			}
-			if (child.name === 'leds') {
+			if (child.name === 'leds-score') {
 				child.userData.renderBloom = true
 				this._ledsMesh = child
 				this._ledsMesh.material = this._ledsMaterial
@@ -269,6 +270,10 @@ export default class ScoreScreen {
 		})
 
 		this._model.name = 'Score Screen'
+
+		this._model.position.set(-0.254, 0.505, -0.792)
+		this._model.scale.set(0.132, 0.132, 0.132)
+		this._model.rotation.set(0.35, 0.0, 0.0)
 
 		this._scene.add(this._model)
 	}

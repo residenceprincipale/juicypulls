@@ -317,5 +317,117 @@
 	{
 		"name": "machineModel",
 		"path": "models/machine.glb"
+	},
+
+	{
+		"name": "ambientTexture",
+		"path": "../textures/combi/ambient.webp"
+	},
+	{
+		"name": "barsTexture",
+		"path": "../textures/combi/bars.webp"
+	},
+	{
+		"name": "innerTexture",
+		"path": "../textures/combi/inner.webp"
+	},
+	{
+		"name": "outerTexture",
+		"path": "../textures/combi/outer.webp"
+	},
+	{
+		"name": "strokeTexture",
+		"path": "../textures/combi/stroke.webp"
+	},
+	{
+		"name": "combinationsTexture",
+		"path": "../textures/combi/combinations.jpg",
+		"repeatWrapping": false,
+		"flipY": false
+	},
+	{
+		"name": "scoreScreenModel",
+		"path": "../models/screens/score-screen.glb"
+	},
+	{
+		"name": "glassMatcap",
+		"path": "../textures/glassMatcap.jpg"
+	},
+	{
+		"name": "farkleVideo",
+		"path": "../videos/farkle.webm",
+		"flipY": false
+	},
+	{
+		"name": "jackpotx3Video",
+		"path": "../videos/jackpot-x3.webm",
+		"flipY": false
+	},
+	{
+		"name": "jackpotx4Video",
+		"path": "../videos/jackpot-x4.webm",
+		"flipY": false
+	},
+	{
+		"name": "jackpotx5Video",
+		"path": "../videos/jackpot-x5.webm",
+		"flipY": false
+	},
+	{
+		"name": "leagueGothicFontAtlas",
+		"path": "../fonts/msdf/league-gothic/LeagueGothic-Regular.png",
+		"debug": false,
+		"flipY": true
+	},
+	{
+		"name": "leagueGothicFontFile",
+		"path": "../fonts/msdf/league-gothic/LeagueGothic-Regular.json",
+		"debug": false
+	},
+	{
+		"name": "screenCharactersAtlas",
+		"path": "../textures/score-screen-chars.jpg",
+		"flipY": false,
+		"debug": false
+	},
+
+	{
+		"name": "ambientTexture",
+		"path": "../textures/combi/ambient.webp"
+	},
+	{
+		"name": "barsTexture",
+		"path": "../textures/combi/bars.webp"
+	},
+	{
+		"name": "innerTexture",
+		"path": "../textures/combi/inner.webp"
+	},
+	{
+		"name": "outerTexture",
+		"path": "../textures/combi/outer.webp"
+	},
+	{
+		"name": "strokeTexture",
+		"path": "../textures/combi/stroke.webp"
+	},
+	{
+		"name": "combinationsTexture",
+		"path": "../textures/combi/combinations.jpg",
+		"repeatWrapping": false,
+		"flipY": false
+	},
+	{
+		"name": "combinationScreenModel",
+		"path": "../models/screens/combination-screen.glb"
+	},
+	{
+		"name": "glassMatcap",
+		"path": "../textures/glassMatcap.jpg"
+	},
+	{
+		"name": "marqueeVideo",
+		"path": "../videos/jackpot-marquee.mp4",
+		"flipY": false
 	}
 ]

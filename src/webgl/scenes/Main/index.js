@@ -17,6 +17,10 @@ import TutorialManager from '@/webgl/modules/TutorialManager'
 import Logo from '@/webgl/components/Logo/index.js'
 
 import Socket from '@/scripts/Socket.js'
+import ScoreScreen from '@/webgl/components/ScoreScreen'
+import ScoreScreenManager from '@/webgl/modules/ScoreScreenManager'
+import CombinationsScreen from '@/webgl/components/CombinationsScreen'
+import CombinationsScreenManager from '@/webgl/modules/CombinationsScreenManager'
 
 const socket = new Socket()
 
@@ -43,6 +47,17 @@ export default class Main {
 			// this._target.animateIn()
 			this._logo = new Logo()
 			this._machine = new Machine()
+
+			// Left Machine Screen
+			this.scoreScreen = new ScoreScreen()
+			this.scoreScreenManager = new ScoreScreenManager()
+			this.scoreScreenManager.screen = this.scoreScreen
+
+			// Right Machine Screen
+			this.combinationsScreen = new CombinationsScreen()
+			this.combinationsScreenManager = new CombinationsScreenManager()
+			this.combinationsScreenManager.screen = this.combinationsScreen
+
 			this._secondRoulette = new SecondRoulette()
 			this._hands = new Hands({ machine: this._machine })
 
@@ -291,6 +306,9 @@ export default class Main {
 		if (this._physicalDebug) this._physicalDebug.update(timeData)
 		if (this._lights) this._lights.update(timeData)
 		if (this._shooterManager) this._shooterManager.update(timeData)
+
+		if (this.scoreScreen) this.scoreScreen.update()
+		if (this.combinationsScreen) this.combinationsScreen.update()
 	}
 
 	_createEventListeners() {

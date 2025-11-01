@@ -9,7 +9,7 @@ socket.connect('game')
 
 if (!window.location.hash.includes('debug')) {
 	const canvas = document.querySelector('canvas#webgl')
-	canvas.style.cursor = 'none'
+	// canvas.style.cursor = 'none'
 }
 const subliminalMessage = document.querySelector('.subliminal-message')
 const screamerVideoElement = document.querySelector('.screamer-video')

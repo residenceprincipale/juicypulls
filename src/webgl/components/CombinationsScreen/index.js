@@ -134,7 +134,7 @@ export default class CombinationsScreen {
 	 * Private
 	 */
 	_createModel() {
-		this._model = this._resources.items.screenModel.scene
+		this._model = this._resources.items.combinationScreenModel.scene
 		this._model.traverse((child) => {
 			if (child.name === 'screen') {
 				this._screenMesh = child
@@ -152,6 +152,9 @@ export default class CombinationsScreen {
 		})
 
 		this._model.name = 'Combination Screen'
+		this._model.position.set(0.26, 0.52, -0.795)
+		this._model.scale.set(0.132, 0.132, 0.132)
+		this._model.rotation.set(0.35, 0.0, 0.0)
 
 		this._scene.add(this._model)
 	}
