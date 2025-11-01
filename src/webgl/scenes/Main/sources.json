@@ -350,10 +350,6 @@
 		"path": "../models/screens/score-screen.glb"
 	},
 	{
-		"name": "glassMatcap",
-		"path": "../textures/glassMatcap.jpg"
-	},
-	{
 		"name": "farkleVideo",
 		"path": "../videos/farkle.webm",
 		"flipY": false
@@ -420,10 +416,6 @@
 	{
 		"name": "combinationScreenModel",
 		"path": "../models/screens/combination-screen.glb"
-	},
-	{
-		"name": "glassMatcap",
-		"path": "../textures/glassMatcap.jpg"
 	},
 	{
 		"name": "marqueeVideo",

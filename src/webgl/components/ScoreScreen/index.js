@@ -330,9 +330,9 @@ export default class ScoreScreen {
 			uniforms: metalSettings,
 			name: 'Score Metal Material',
 			defines: {
-				USE_ROUGHNESS: true,
+				USE_ROUGHNESS: false,
 				USE_MATCAP: true,
-				USE_AO: true,
+				USE_AO: false,
 			},
 		})
 

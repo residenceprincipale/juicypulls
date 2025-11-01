@@ -177,9 +177,9 @@ export default class CombinationsScreen {
 			uniforms: metalSettings,
 			name: 'Combi Metal Material',
 			defines: {
-				USE_ROUGHNESS: true,
+				USE_ROUGHNESS: false,
 				USE_MATCAP: true,
-				USE_AO: true,
+				USE_AO: false,
 			},
 		})
 
