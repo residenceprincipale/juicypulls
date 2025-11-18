@@ -209,7 +209,6 @@ export default class ScoreScreen {
 	}
 
 	jackpot({ tint, count }) {
-		console.log({ tint, count })
 		this._screenMaterial.uniforms.uVideoTint.value.set(tint)
 
 		this._showJackpotTimeline?.kill()

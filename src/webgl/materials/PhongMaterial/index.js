@@ -76,10 +76,10 @@ export class PhongCustomMaterial extends ShaderMaterial {
 
 			// Get selective light uniforms for this material
 			const selectiveLightUniforms = experience.selectiveLightManager.getMaterialUniforms(lights)
-			console.log('selectiveLightUniforms', selectiveLightUniforms)
+			// console.log('selectiveLightUniforms', selectiveLightUniforms)
 			mergedUniforms = UniformsUtils.merge([mergedUniforms, selectiveLightUniforms])
 
-			console.log('mergedUniforms', mergedUniforms)
+			// console.log('mergedUniforms', mergedUniforms)
 
 			console.log(`Material "${name}" using selective lights:`, lights)
 		}

@@ -52,7 +52,6 @@ export default class CombinationsScreenManager {
 	}
 
 	_updateCombi({ symbol, value }) {
-		console.log({ symbol, value })
 		const symbolIndex = symbolOrder.indexOf(symbol)
 		const multiplierIndex = multiplierOrder.indexOf(value)
 		if (symbolIndex === -1 || multiplierIndex === -1) {

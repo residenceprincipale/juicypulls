@@ -73,7 +73,6 @@ export default class ScoreScreenManager {
 	}
 
 	_jackpot({ symbol, count }) {
-		console.log({ symbol, count })
 		const symbolIndex = symbolOrder.indexOf(symbol)
 		const multiplierIndex = multiplierOrder.indexOf(count)
 		if (symbolIndex === -1 || multiplierIndex === -1) {
