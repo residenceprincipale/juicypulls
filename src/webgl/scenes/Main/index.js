@@ -277,6 +277,14 @@ export default class Main {
 		})
 	}
 
+	triggerFlashlightView() {
+		this._camera.instance.position.x = gsap.to(this._camera.instance.position, {
+			x: 1.36,
+			duration: 1,
+			ease: 'Power2.inOut',
+		})
+	}
+
 	triggerFarkle() {
 		this._machineManager.spinWheels([1, 1, 1, 1, 1])
 	}
@@ -333,6 +341,13 @@ export default class Main {
 			title: 'Game Events',
 			expanded: false,
 		})
+		folder
+			.addButton({
+				title: 'Trigger Flashlight',
+			})
+			.on('click', () => {
+				this.triggerFlashlightView()
+			})
 		folder
 			.addButton({
 				title: 'Trigger Farkle',

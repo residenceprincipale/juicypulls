@@ -20,8 +20,6 @@ import addObjectDebug from 'utils/addObjectDebug.js'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
-import { DoubleSide } from 'three'
-import { MeshBasicMaterial } from 'three'
 
 export default class ScoreScreen {
 	constructor() {

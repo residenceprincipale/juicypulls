@@ -20,7 +20,7 @@ export default class ScoreScreenManager {
 
 		socket.on('update-collected-points', this._updateCollectedPoints)
 		socket.on('update-rolling-points', this._updateRollingPoints)
-		socket.on('update-spin-tokens', this._updateSpinTokens)
+		socket.on('update-spin-tokens', this._updateSpinTokens.bind(this))
 		socket.on('update-quota', this._updateQuota)
 		socket.on('reset', this._reset)
 		socket.on('show', this._show)

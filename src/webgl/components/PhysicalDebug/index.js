@@ -14,7 +14,7 @@ import {
 	DirectionalLight,
 	MeshPhongMaterial,
 } from 'three'
-import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
+// import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
@@ -37,7 +37,7 @@ export default class PhysicalDebug {
 		this._createMaterials()
 		this._createModel()
 		this._createInteraction()
-		this._cssScreen = this._createCssScreen()
+		// this._cssScreen = this._createCssScreen()
 
 		this._createEventListeners()
 
@@ -229,7 +229,7 @@ export default class PhysicalDebug {
 
 		// listen to f g h j k and send corresponding index button events to machine and shooter
 		window.addEventListener('keydown', (e) => {
-			const keyToIndex = { '&': 0, 'é': 1, '"': 2, "'": 3, '(': 4 }
+			const keyToIndex = { '&': 0, é: 1, '"': 2, "'": 3, '(': 4 }
 			if (e.key in keyToIndex) {
 				const index = keyToIndex[e.key]
 				if (this._buttonLightsEnabled[index]) {

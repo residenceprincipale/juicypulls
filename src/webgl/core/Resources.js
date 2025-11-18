@@ -1,5 +1,14 @@
 import EventEmitter from 'core/EventEmitter.js'
-import { CubeTexture, CubeTextureLoader, Object3D, Texture, TextureLoader, WebGLRenderer, RepeatWrapping } from 'three'
+import {
+	CubeTexture,
+	CubeTextureLoader,
+	Object3D,
+	Texture,
+	TextureLoader,
+	WebGLRenderer,
+	RepeatWrapping,
+	VideoTexture,
+} from 'three'
 import Experience from 'core/Experience.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
@@ -8,7 +17,6 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader'
 import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { Howl } from 'howler'
-import { VideoTexture } from 'three'
 
 import gsap from 'gsap'
 

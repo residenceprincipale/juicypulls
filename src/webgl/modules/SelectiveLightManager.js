@@ -39,9 +39,9 @@ export default class SelectiveLightManager {
 
 		selectedLights.forEach((light) => {
 			if (!this._lightsArray.some((l) => l.key === light)) {
-				throw new Error(
-					`Light ${light} not found for Selective Lights Meterial setup : light either not visible or doesnt exist`,
-				)
+				// throw new Error(
+				// 	`Light ${light} not found for Selective Lights Meterial setup : light either not visible or doesnt exist`,
+				// )
 			}
 		})
 

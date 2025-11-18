@@ -637,6 +637,13 @@ export default class Machine {
 		this._rouletteModel.rotation.set(-0.19, 0, 0)
 		this._rouletteModel.scale.setScalar(0.75)
 		this._machineGroup.add(this._rouletteModel)
+
+		this._machineModel.traverse((child) => {
+			if (child.isMesh) {
+				child.material = this._baseMaterial
+			}
+		})
+
 		this._machineGroup.add(this._machineModel)
 
 		// Array to store wheel meshes
@@ -699,6 +706,7 @@ export default class Machine {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 				USE_AO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 	}
