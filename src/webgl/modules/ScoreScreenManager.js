@@ -34,9 +34,9 @@ export default class ScoreScreenManager {
 	}
 
 	set screen(value) {
+		// console.log('set screen here', value) BUG HERE SOMETIMES ?
 		this._screen = value
 		gsap.delayedCall(1.5, () => {
-			// this._farkle()
 			this._jackpot({ symbol: '🍒', count: 'x3' })
 		})
 	}

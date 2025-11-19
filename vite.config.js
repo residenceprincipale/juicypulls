@@ -5,8 +5,10 @@ import path from 'path'
 export default defineConfig({
 	root: 'src/pages',
 	publicDir: path.resolve(__dirname, 'public'),
+	assetsInclude: ['**/*.glb', '**/*.gltf'],
 	build: {
 		outDir: path.resolve(__dirname, 'dist'),
+		commonjsOptions: { transformMixedEsModules: true },
 		rollupOptions: {
 			input: {
 				main: path.resolve(__dirname, 'src/pages/index.html'),

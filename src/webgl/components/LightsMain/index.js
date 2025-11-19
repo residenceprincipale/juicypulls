@@ -9,9 +9,13 @@ import settingsLight3 from './lightSettings-3.js'
 import settingsLight4 from './lightSettings-4.js'
 import settingsLight5 from './lightSettings-5.js'
 
+import settingsPointLight1 from './pointLightSettings-1.js'
+
 import gsap from 'gsap'
 
 import Socket from '@/scripts/Socket.js'
+import { PointLight } from 'three'
+import addPointLightDebug from '@/webgl/utils/addPointLightDebug.js'
 
 const socket = new Socket()
 
@@ -23,6 +27,7 @@ export default class LightsMain {
 		this._debug = this._experience.debug
 
 		this._lightSettings = [settingsLight1, settingsLight2, settingsLight3, settingsLight4, settingsLight5]
+		this._pointLightSettings = []
 
 		// Initialize selective light manager
 		this._selectiveLightManager = new SelectiveLightManager()
@@ -35,6 +40,7 @@ export default class LightsMain {
 		if (this._debug.active) this._createDebug()
 
 		this._createLights()
+		this._createPointLights()
 
 		this._createEventListeners()
 	}
@@ -280,6 +286,36 @@ export default class LightsMain {
 	/**
 	 * Private
 	 */
+	_createPointLights() {
+		this._pointLightSettings.forEach((settings) => {
+			console.log('test')
+			const pointLight = new PointLight(
+				new Color(parseInt(settings.color.value)),
+				settings.intensity.value,
+				settings.decay.value,
+			)
+
+			pointLight.visible = settings.visible.value
+			pointLight.castShadow = settings.castShadow.value
+			pointLight.receiveShadow = settings.receiveShadow.value
+
+			pointLight.position.set(settings.position.value.x, settings.position.value.y, settings.position.value.z)
+
+			pointLight.scale.set(settings.scale.value.x, settings.scale.value.y, settings.scale.value.z)
+
+			pointLight.name = settings.name
+			this._scene.add(pointLight)
+
+			// Save the reference dynamically (this._pointLightTop, this._pointLightLeft, etc.)
+			this['_' + settings.name] = pointLight
+
+			// Debug
+			if (this._debug.active) {
+				addPointLightDebug(this._debugFolder, pointLight, settings)
+			}
+		})
+	}
+
 	_createLights() {
 		this._lightSettings.forEach((settings) => {
 			const light = new DirectionalLight(new Color(parseInt(settings.color.value)), settings.intensity.value)

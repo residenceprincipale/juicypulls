@@ -29,9 +29,9 @@ PointLight pointLight;
 for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
 pointLight = pointLights[i];
 
-directLight . direction = normalize(pointLight.position--vViewPosition);
+directLight . direction = normalize(pointLight.position-(vViewPosition*-1.0));
 directLight . color = pointLight . color;
-directLight . color *= getDistanceAttenuation(length(pointLight.position--vViewPosition), pointLight.distance, pointLight.decay);
+directLight . color *= getDistanceAttenuation(length(pointLight.position-(vViewPosition*-1.0)), pointLight.distance, pointLight.decay);
 directLight . visible = ( directLight . color != vec3(0.0)) ;
 
 RE_Direct(directLight, -vViewPosition, normal, normalize(vViewPosition), material, reflectedLight);

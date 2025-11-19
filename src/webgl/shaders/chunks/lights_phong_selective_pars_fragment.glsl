@@ -24,6 +24,17 @@ struct PointLight {
 };
 
 uniform PointLight pointLights[NUM_POINT_LIGHTS];
+
+#define saturate( a ) clamp( a, 0.0, 1.0 )
+
+float getDistanceAttenuation(const in float lightDistance, const in float cutoffDistance, const in float decayExponent) {
+  float distanceFalloff = 1.0 / max(pow(lightDistance, decayExponent), 0.01);
+  if (cutoffDistance > 0.0) {
+    distanceFalloff *= pow2(saturate(1.0 - pow4(lightDistance / cutoffDistance)));
+  }
+  return distanceFalloff;
+}
+
 #endif
 
 struct BlinnPhongMaterial {
