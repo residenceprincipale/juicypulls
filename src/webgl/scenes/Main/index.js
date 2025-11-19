@@ -94,6 +94,12 @@ export default class Main {
 		})
 	}
 
+	dispose() {
+		this._disposeEventListeners()
+		this._lights.dispose()
+		this._backgroundEnvironment.dispose()
+	}
+
 	reset() {
 		// if (this._logo) this._logo.reset()
 	}
@@ -327,6 +333,16 @@ export default class Main {
 
 		// listen to any button input event from socket
 		socket.on('button', this.handleButtonInput.bind(this))
+	}
+
+	_disposeEventListeners() {
+		socket.off('reset', this.reset.bind(this))
+		socket.off('start-round', this.startRound.bind(this))
+		socket.off('complete-round', this.completeRound.bind(this))
+		socket.off('start-shooter', this.startShooter.bind(this))
+
+		// listen to any buttoff input event from socket
+		socket.off('button', this.handleButtonInput.bind(this))
 	}
 
 	handleButtonInput(button) {

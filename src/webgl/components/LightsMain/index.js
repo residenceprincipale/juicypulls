@@ -39,10 +39,17 @@ export default class LightsMain {
 
 		if (this._debug.active) this._createDebug()
 
+		this._lightsArray = []
 		this._createLights()
 		this._createPointLights()
 
 		this._createEventListeners()
+	}
+
+	dispose() {
+		this._lightsArray.forEach((light) => {
+			light.dispose()
+		})
 	}
 
 	/**
@@ -308,6 +315,7 @@ export default class LightsMain {
 
 			// Save the reference dynamically (this._pointLightTop, this._pointLightLeft, etc.)
 			this['_' + settings.name] = pointLight
+			this._lightsArray.push(this['_' + settings.name])
 
 			// Debug
 			if (this._debug.active) {

@@ -4,6 +4,24 @@ import gsap from 'gsap'
 
 const experience = new Experience(document.querySelector('canvas#webgl'))
 
+// ------------------------------------------------------------------
+// HMR hooks
+// ------------------------------------------------------------------
+if (import.meta.hot) {
+	// Called *before* the module is replaced
+	import.meta.hot.accept(() => {
+		console.log('[HMR] Module will be updated – disposing old scene')
+	})
+
+	// Called *after* the module is replaced (i.e. right before the old
+	// instance is garbage‑collected)
+	import.meta.hot.dispose(() => {
+		console.log('[HMR] Disposing old Three.js objects')
+
+		experience.dispose()
+	})
+}
+
 const socket = new Socket()
 socket.connect('game')
 

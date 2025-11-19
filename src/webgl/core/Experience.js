@@ -56,9 +56,11 @@ export default class Experience {
 		this.interactionManager.update()
 	}
 
-	destroy() {
+	dispose() {
 		this.sizes.off('resize')
 		this.time.off('tick')
+
+		this.sceneManager.dispose()
 
 		// Traverse the whole scene
 		this.scene.traverse((child) => {
@@ -73,14 +75,14 @@ export default class Experience {
 					// Test if there is a dispose function
 					if (value && typeof value.dispose === 'function') {
 						value.dispose()
+						// console.log('theresa dispose func')
 					}
 				}
 			}
 		})
-
 		this.camera.dispose()
 		this.renderer.instance.dispose()
 
-		if (this.debug.active) this.debug.ui.destroy()
+		// if (this.debug.active) this.debug.ui.destroy()
 	}
 }

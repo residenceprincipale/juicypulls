@@ -44,6 +44,7 @@ export default class BackgroundEnvironment {
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
 		this._resource = this._resources.items.environmentModel
+		this._materialsArray = []
 		this._modelMeshes = {}
 		this._borneInstancedMesh = null
 		this._chaiseAssiseInstancedMesh = null
@@ -121,6 +122,12 @@ export default class BackgroundEnvironment {
 		return this._lightCubeInstancedMesh
 	}
 
+	dispose() {
+		this._materialsArray.forEach((mat) => {
+			mat.dispose()
+		})
+	}
+
 	/**
 	 * Public
 	 */
@@ -131,6 +138,7 @@ export default class BackgroundEnvironment {
 		this._colonneInstancedMesh.visible = false
 		this._lightInstancedMesh.visible = false
 		this._lightCubeInstancedMesh.visible = false
+
 		this._borneInstancedMesh.visible = false
 	}
 
@@ -213,6 +221,8 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 			},
 		})
+
+		this._materialsArray.push(this._borneMaterial)
 	}
 
 	_createChairMaterials() {
@@ -233,6 +243,8 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 			},
 		})
+
+		this._materialsArray.push(this._chairTopMaterial, this._chairBottomMaterial)
 	}
 
 	_createColumnMaterial() {
@@ -245,6 +257,7 @@ export default class BackgroundEnvironment {
 				USE_ROUGHNESS: true,
 			},
 		})
+		this._materialsArray.push(this._columnMaterial)
 	}
 
 	_createWhiteLightMaterial() {
@@ -252,6 +265,8 @@ export default class BackgroundEnvironment {
 			color: new Color(1, 1, 1), // Pure white
 			name: 'White Light Material',
 		})
+
+		this._materialsArray.push(this._whiteLightMaterial)
 	}
 
 	_createLightMaterial() {
@@ -264,6 +279,7 @@ export default class BackgroundEnvironment {
 				USE_MATCAP: true,
 			},
 		})
+		this._materialsArray.push(this._lightMaterial)
 	}
 
 	_createFloorMaterial() {
@@ -278,6 +294,7 @@ export default class BackgroundEnvironment {
 
 		this._modelMeshes.carpet.material.dispose()
 		this._modelMeshes.carpet.material = this._floorMaterial
+		this._materialsArray.push(this._floorMaterial)
 	}
 
 	_createRoofMaterial() {
@@ -292,6 +309,7 @@ export default class BackgroundEnvironment {
 
 		this._modelMeshes.roof.material.dispose()
 		this._modelMeshes.roof.material = this._roofMaterial
+		this._materialsArray.push(this._roofMaterial)
 	}
 
 	_createPoutreMaterial() {
@@ -306,6 +324,7 @@ export default class BackgroundEnvironment {
 
 		this._modelMeshes.poutre.material.dispose()
 		this._modelMeshes.poutre.material = this._poutreMaterial
+		this._materialsArray.push(this._poutreMaterial)
 	}
 
 	_createTableMaterial() {
@@ -333,6 +352,8 @@ export default class BackgroundEnvironment {
 
 		this._modelMeshes.tableWood.material.dispose()
 		this._modelMeshes.tableWood.material = this._tableMaterial
+
+		this._materialsArray.push(this._tableMaterial)
 	}
 
 	_createStairsMaterial() {
@@ -349,6 +370,8 @@ export default class BackgroundEnvironment {
 
 		this._modelMeshes.stairsMetal.material.dispose()
 		this._modelMeshes.stairsMetal.material = this._stairsMaterial
+
+		this._materialsArray.push(this._stairsMaterial)
 	}
 
 	_createBorneInstances() {
