@@ -75,7 +75,6 @@ export default class Experience {
 					// Test if there is a dispose function
 					if (value && typeof value.dispose === 'function') {
 						value.dispose()
-						// console.log('theresa dispose func')
 					}
 				}
 			}
