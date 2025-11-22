@@ -1,425 +1,425 @@
 [
 	{
 		"name": "wheelAlbedo",
-		"path": "textures/roue-7.png",
+		"path": "./textures/roue-7.png",
 		"flipY": false,
 		"repeatWrapping": true,
 		"colorSpace": "srgb"
 	},
 	{
 		"name": "wheelNormal",
-		"path": "textures/roue-4-normal.jpg",
+		"path": "./textures/roue-4-normal.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "baseRoughness",
-		"path": "textures/baseRoughness1.jpg",
+		"path": "./textures/baseRoughness1.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "metalRoughness",
-		"path": "textures/metal-roughness.jpg",
+		"path": "./textures/metal-roughness.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "wheelsAO",
-		"path": "textures/wheels-ao.jpg",
+		"path": "./textures/wheels-ao.jpg",
 		"flipY": false
 	},
 	{
 		"name": "rouletteAO",
-		"path": "textures/roulette-ao-4.jpg",
+		"path": "./textures/roulette-ao-4.jpg",
 		"flipY": false
 	},
 	{
 		"name": "logoAO",
-		"path": "textures/logo-ao.jpg",
+		"path": "./textures/logo-ao.jpg",
 		"flipY": false
 	},
 	{
 		"name": "glassMatcap",
-		"path": "textures/glassMatcap.jpg"
+		"path": "./textures/glassMatcap.jpg"
 	},
 	{
 		"name": "goldMatcap",
-		"path": "textures/matcaps/gold-1.jpg"
+		"path": "./textures/matcaps/gold-1.jpg"
 	},
 	{
 		"name": "metalMatcap",
-		"path": "textures/matcaps/metal-matcap-3.jpeg"
+		"path": "./textures/matcaps/metal-matcap-3.jpeg"
 	},
 	{
 		"name": "metalMatcap-1",
-		"path": "textures/matcaps/metal-matcap-1.jpeg"
+		"path": "./textures/matcaps/metal-matcap-1.jpeg"
 	},
 	{
 		"name": "metalMatcapShiny",
-		"path": "textures/matcaps/metal-shiny.png"
+		"path": "./textures/matcaps/metal-shiny.png"
 	},
 	{
 		"name": "rouletteModel",
-		"path": "models/roulette-v5.glb"
+		"path": "./models/roulette-v5.glb"
 	},
 	{
 		"name": "handModel",
-		"path": "models/shifumi-hand.glb"
+		"path": "./models/shifumi-hand.glb"
 	},
 	{
 		"name": "handTexture",
-		"path": "textures/hand-albedo.png"
+		"path": "./textures/hand-albedo.png"
 	},
 	{
 		"name": "physicalPartsModel",
-		"path": "models/physical-parts.glb"
+		"path": "./models/physical-parts.glb"
 	},
 	{
 		"name": "spinningAudio",
-		"path": "audio/spinning.mp3",
+		"path": "./audio/spinning.mp3",
 		"loop": false,
 		"volume": 0.8,
 		"autoplay": false
 	},
 	{
 		"name": "ambientAudio",
-		"path": "audio/ambient.mp3",
+		"path": "./audio/ambient.mp3",
 		"loop": true,
 		"volume": 0.7,
 		"autoplay": true
 	},
 	{
 		"name": "buttonAudio",
-		"path": "audio/button.mp3",
+		"path": "./audio/button.mp3",
 		"loop": false,
 		"volume": 0.6,
 		"autoplay": false
 	},
 	{
 		"name": "collectAudio",
-		"path": "audio/collect.mp3",
+		"path": "./audio/collect.mp3",
 		"loop": false,
 		"volume": 0.9,
 		"autoplay": false
 	},
 	{
 		"name": "farkleAudio",
-		"path": "audio/farkle.mp3",
+		"path": "./audio/farkle.mp3",
 		"loop": false,
 		"volume": 0.8,
 		"autoplay": false
 	},
 	{
 		"name": "messageAudio",
-		"path": "audio/message.mp3",
+		"path": "./audio/message.mp3",
 		"loop": false,
 		"volume": 0.5,
 		"autoplay": false
 	},
 	{
 		"name": "pistolAudio",
-		"path": "audio/pistol.mp3",
+		"path": "./audio/pistol.mp3",
 		"loop": false,
 		"volume": 0.9,
 		"autoplay": false
 	},
 	{
 		"name": "subliminalAudio",
-		"path": "audio/subliminal.mp3",
+		"path": "./audio/subliminal.mp3",
 		"loop": false,
 		"volume": 0.9,
 		"autoplay": false
 	},
 	{
 		"name": "currentAudio",
-		"path": "audio/current.mp3",
+		"path": "./audio/current.mp3",
 		"loop": false,
 		"volume": 0.5,
 		"autoplay": false
 	},
 	{
 		"name": "shooterAudio",
-		"path": "audio/shooter.mp3",
+		"path": "./audio/shooter.mp3",
 		"loop": false,
 		"volume": 0.06,
 		"autoplay": false
 	},
 	{
 		"name": "musicAudio",
-		"path": "audio/music.mp3",
+		"path": "./audio/music.mp3",
 		"loop": true,
 		"volume": 0.15,
 		"autoplay": true
 	},
 	{
 		"name": "screamerAudio",
-		"path": "audio/screamer.mp3",
+		"path": "./audio/screamer.mp3",
 		"loop": false,
 		"volume": 0.5,
 		"autoplay": false
 	},
 	{
 		"name": "jackpotAudio",
-		"path": "audio/jackpot.mp3",
+		"path": "./audio/jackpot.mp3",
 		"loop": false,
 		"volume": 0.8,
 		"autoplay": false
 	},
 	{
 		"name": "secondRouletteModel",
-		"path": "models/second-wheel-model.glb"
+		"path": "./models/second-wheel-model.glb"
 	},
 	{
 		"name": "secondRouletteAo",
-		"path": "textures/second-wheel/BASE_ROULETTE_AO.jpg",
+		"path": "./textures/second-wheel/BASE_ROULETTE_AO.jpg",
 		"flipY": false
 	},
 	{
 		"name": "secondRouletteAlbedo",
-		"path": "textures/second-wheel/BASE_ROULETTE_Diffuse.jpg",
+		"path": "./textures/second-wheel/BASE_ROULETTE_Diffuse.jpg",
 		"flipY": false
 	},
 	{
 		"name": "secondRouletteRoughness",
-		"path": "textures/second-wheel/BASE_ROULETTE_Ro.jpg",
+		"path": "./textures/second-wheel/BASE_ROULETTE_Ro.jpg",
 		"flipY": false
 	},
 	{
 		"name": "secondRouletteNormal",
-		"path": "textures/second-wheel/BASE_ROULETTE_TN.jpg",
+		"path": "./textures/second-wheel/BASE_ROULETTE_TN.jpg",
 		"flipY": false
 	},
 	{
 		"name": "flap-albedo",
-		"path": "textures/second-wheel/flap-albedo.jpg",
+		"path": "./textures/second-wheel/flap-albedo.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "flap-normal",
-		"path": "textures/second-wheel/flap-normal.jpg",
+		"path": "./textures/second-wheel/flap-normal.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "secondRouletteInnerAlbedo",
-		"path": "textures/second-wheel/inner-albedo.webp",
+		"path": "./textures/second-wheel/inner-albedo.webp",
 		"flipY": false,
 		"repeatWrapping": true,
 		"colorSpace": "srgb"
 	},
 	{
 		"name": "environmentModel",
-		"path": "/models/environment-v3.glb"
+		"path": ".//models/environment-v3.glb"
 	},
 	{
 		"name": "gunArmModel",
-		"path": "/models/gun-arm-v1.glb"
+		"path": ".//models/gun-arm-v1.glb"
 	},
 	{
 		"name": "gunArmAlbedo",
-		"path": "textures/gun/albedo-arm.jpg",
+		"path": "./textures/gun/albedo-arm.jpg",
 		"flipY": false
 	},
 	{
 		"name": "gunArmRoughness",
-		"path": "textures/gun/roughness-arm.jpg",
+		"path": "./textures/gun/roughness-arm.jpg",
 		"flipY": false
 	},
 	{
 		"name": "gunBerettaAlbedo",
-		"path": "textures/gun/beretta-color.png",
+		"path": "./textures/gun/beretta-color.png",
 		"flipY": false
 	},
 	{
 		"name": "gunBerettaRoughness",
-		"path": "textures/gun/beretta-roughness.jpg",
+		"path": "./textures/gun/beretta-roughness.jpg",
 		"flipY": false
 	},
 	{
 		"name": "gunBerettaNormal",
-		"path": "textures/gun/beretta-normal.jpg",
+		"path": "./textures/gun/beretta-normal.jpg",
 		"flipY": false
 	},
 	{
 		"name": "gunBerettaAo",
-		"path": "textures/gun/beretta-ao.png",
+		"path": "./textures/gun/beretta-ao.png",
 		"flipY": false
 	},
 	{
 		"name": "gunTarget",
-		"path": "textures/gun/cible.png",
+		"path": "./textures/gun/cible.png",
 		"flipY": true
 	},
 	{
 		"name": "gunTargetFaces",
-		"path": "textures/gun/faces.jpg",
+		"path": "./textures/gun/faces.jpg",
 		"flipY": false,
 		"colorSpace": "srgb"
 	},
 	{
 		"name": "gunTargetPaperModel",
-		"path": "models/target-paper-model.glb"
+		"path": "./models/target-paper-model.glb"
 	},
 	{
 		"name": "aoBorne",
-		"path": "textures/environment/ao-borne.jpg",
+		"path": "./textures/environment/ao-borne.jpg",
 		"flipY": false
 	},
 	{
 		"name": "aoChaise",
-		"path": "textures/environment/ao-chaise.jpg",
+		"path": "./textures/environment/ao-chaise.jpg",
 		"flipY": false
 	},
 	{
 		"name": "aoColonne",
-		"path": "textures/environment/ao-colonne.jpg",
+		"path": "./textures/environment/ao-colonne.jpg",
 		"flipY": false
 	},
 	{
 		"name": "aoCarpet",
-		"path": "textures/environment/ao-carpet.jpg",
+		"path": "./textures/environment/ao-carpet.jpg",
 		"flipY": false
 	},
 	{
 		"name": "albedoCarpet",
-		"path": "textures/environment/albedo-carpet.jpg",
+		"path": "./textures/environment/albedo-carpet.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "albedoRoof",
-		"path": "textures/environment/albedo-roof.jpg",
+		"path": "./textures/environment/albedo-roof.jpg",
 		"flipY": false,
 		"repeatWrapping": true
 	},
 	{
 		"name": "albedoTables",
-		"path": "textures/environment/albedo-tables.jpg",
+		"path": "./textures/environment/albedo-tables.jpg",
 		"flipY": false
 	},
 	{
 		"name": "aoRoof",
-		"path": "textures/environment/ao-roof.jpg",
+		"path": "./textures/environment/ao-roof.jpg",
 		"flipY": false
 	},
 	{
 		"name": "aoLight",
-		"path": "textures/environment/ao-light.jpg",
+		"path": "./textures/environment/ao-light.jpg",
 		"flipY": false
 	},
 	{
 		"name": "aoTables",
-		"path": "textures/environment/ao-tables.jpg",
+		"path": "./textures/environment/ao-tables.jpg",
 		"flipY": false
 	},
 	{
 		"name": "machineModel",
-		"path": "models/machine.glb"
+		"path": "./models/machine.glb"
 	},
 
 	{
 		"name": "ambientTexture",
-		"path": "../textures/combi/ambient.webp"
+		"path": "./../textures/combi/ambient.webp"
 	},
 	{
 		"name": "barsTexture",
-		"path": "../textures/combi/bars.webp"
+		"path": "./../textures/combi/bars.webp"
 	},
 	{
 		"name": "innerTexture",
-		"path": "../textures/combi/inner.webp"
+		"path": "./../textures/combi/inner.webp"
 	},
 	{
 		"name": "outerTexture",
-		"path": "../textures/combi/outer.webp"
+		"path": "./../textures/combi/outer.webp"
 	},
 	{
 		"name": "strokeTexture",
-		"path": "../textures/combi/stroke.webp"
+		"path": "./../textures/combi/stroke.webp"
 	},
 	{
 		"name": "combinationsTexture",
-		"path": "../textures/combi/combinations.jpg",
+		"path": "./../textures/combi/combinations.jpg",
 		"repeatWrapping": false,
 		"flipY": false
 	},
 	{
 		"name": "scoreScreenModel",
-		"path": "../models/screens/score-screen.glb"
+		"path": "./../models/screens/score-screen.glb"
 	},
 	{
 		"name": "farkleVideo",
-		"path": "../videos/farkle.webm",
+		"path": "./../videos/farkle.webm",
 		"flipY": false
 	},
 	{
 		"name": "jackpotx3Video",
-		"path": "../videos/jackpot-x3.webm",
+		"path": "./../videos/jackpot-x3.webm",
 		"flipY": false
 	},
 	{
 		"name": "jackpotx4Video",
-		"path": "../videos/jackpot-x4.webm",
+		"path": "./../videos/jackpot-x4.webm",
 		"flipY": false
 	},
 	{
 		"name": "jackpotx5Video",
-		"path": "../videos/jackpot-x5.webm",
+		"path": "./../videos/jackpot-x5.webm",
 		"flipY": false
 	},
 	{
 		"name": "leagueGothicFontAtlas",
-		"path": "../fonts/msdf/league-gothic/LeagueGothic-Regular.png",
+		"path": "./../fonts/msdf/league-gothic/LeagueGothic-Regular.png",
 		"debug": false,
 		"flipY": true
 	},
 	{
 		"name": "leagueGothicFontFile",
-		"path": "../fonts/msdf/league-gothic/LeagueGothic-Regular.json",
+		"path": "./../fonts/msdf/league-gothic/LeagueGothic-Regular.json",
 		"debug": false
 	},
 	{
 		"name": "screenCharactersAtlas",
-		"path": "../textures/score-screen-chars.jpg",
+		"path": "./../textures/score-screen-chars.jpg",
 		"flipY": false,
 		"debug": false
 	},
 
 	{
 		"name": "ambientTexture",
-		"path": "../textures/combi/ambient.webp"
+		"path": "./../textures/combi/ambient.webp"
 	},
 	{
 		"name": "barsTexture",
-		"path": "../textures/combi/bars.webp"
+		"path": "./../textures/combi/bars.webp"
 	},
 	{
 		"name": "innerTexture",
-		"path": "../textures/combi/inner.webp"
+		"path": "./../textures/combi/inner.webp"
 	},
 	{
 		"name": "outerTexture",
-		"path": "../textures/combi/outer.webp"
+		"path": "./../textures/combi/outer.webp"
 	},
 	{
 		"name": "strokeTexture",
-		"path": "../textures/combi/stroke.webp"
+		"path": "./../textures/combi/stroke.webp"
 	},
 	{
 		"name": "combinationsTexture",
-		"path": "../textures/combi/combinations.jpg",
+		"path": "./../textures/combi/combinations.jpg",
 		"repeatWrapping": false,
 		"flipY": false
 	},
 	{
 		"name": "combinationScreenModel",
-		"path": "../models/screens/combination-screen.glb"
+		"path": "./../models/screens/combination-screen.glb"
 	},
 	{
 		"name": "marqueeVideo",
-		"path": "../videos/jackpot-marquee.mp4",
+		"path": "./../videos/jackpot-marquee.mp4",
 		"flipY": false
 	}
 ]
