@@ -9,6 +9,7 @@
 		"dev": "vite --port 3000 --host",
 		"build": "vite build",
 		"preview": "vite preview",
+		"start": "vite preview",
 		"dev:kinect": "concurrently \"cd server && source ~/libfreenect2/build/kinect-env/bin/activate && export DYLD_LIBRARY_PATH=~/libfreenect2/build/lib:$DYLD_LIBRARY_PATH && export LD_LIBRARY_PATH=~/libfreenect2/build/lib:$LD_LIBRARY_PATH && python kinect_client.py\" \"vite --port 3000 --host\""
 	},
 	"dependencies": {
