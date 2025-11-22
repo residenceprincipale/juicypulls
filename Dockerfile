@@ -1,9 +1,12 @@
 # --------------------------------------------
 # 1️⃣ Build stage – compile the Vite app
 # --------------------------------------------
-FROM node:20-alpine AS builder
+FROM node:20.12-alpine AS builder
 
 WORKDIR /app
+
+# Install git – required for dependencies that use github: URLs
+RUN apk add --no-cache git
 
 # Copy only the dependency descriptors first
 COPY package.json ./
