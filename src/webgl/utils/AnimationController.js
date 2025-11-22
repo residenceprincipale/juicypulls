@@ -169,7 +169,8 @@ export default class AnimationController {
 			})
 		}
 
-		setInterval(() => {
+		// Store interval ID so we can clear it later
+		this.debugRefreshInterval = setInterval(() => {
 			animationDebugFolder.refresh()
 		}, 100)
 	}
@@ -190,5 +191,34 @@ export default class AnimationController {
 		this.animations.forEach((animation) => {
 			this.actions[animation.name] = this.mixer.clipAction(animation)
 		})
+	}
+
+	/**
+	 * Disposes of the AnimationController and cleans up resources.
+	 */
+	dispose() {
+		// Clear debug refresh interval
+		if (this.debugRefreshInterval) {
+			clearInterval(this.debugRefreshInterval)
+			this.debugRefreshInterval = null
+		}
+
+		// Stop all actions
+		Object.values(this.actions).forEach((action) => {
+			action.stop()
+		})
+
+		// Dispose mixer
+		if (this.mixer) {
+			this.mixer.stopAllAction()
+			this.mixer.uncacheRoot(this.model)
+			this.mixer = null
+		}
+
+		// Clear references
+		this.actions = {}
+		this.animations = null
+		this.model = null
+		this.current = null
 	}
 }

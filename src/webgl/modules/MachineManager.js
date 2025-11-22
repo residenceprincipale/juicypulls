@@ -923,4 +923,33 @@ export default class MachineManager {
 				this._spinWheels([1, 1, 1, 0, 1]) // Triple cranium (farkle)
 			})
 	}
+
+	/**
+	 * Disposal
+	 */
+	dispose() {
+		// Kill all GSAP timelines
+		if (this._secondRouletteTimeline) {
+			this._secondRouletteTimeline.kill()
+			this._secondRouletteTimeline = null
+		}
+		gsap.killTweensOf(this)
+
+		// Clear timeouts
+		if (this._subliminalTimeout) {
+			clearTimeout(this._subliminalTimeout)
+			this._subliminalTimeout = null
+		}
+
+		// Remove socket event listeners
+		socket.off('lever', this._leverClickHandler)
+		socket.off('button', this._buttonClickHandler)
+		socket.off('button-collect', this._buttonCollectClickHandler)
+
+		// Clear references
+		this._machine = null
+		this._secondRoulette = null
+		this._hands = null
+		this._sceneInstance = null
+	}
 }

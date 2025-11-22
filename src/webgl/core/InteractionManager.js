@@ -10,6 +10,15 @@ export default class InteractionManager {
 		this.raycaster = new Raycaster()
 		this.pointer = new Vector2()
 
+		// Bind event handlers
+		this.handleMouseMove = this.handleMouseMove.bind(this)
+		this.handleClick = this.handleClick.bind(this)
+		this.handleMouseDown = this.handleMouseDown.bind(this)
+		this.handleMouseUp = this.handleMouseUp.bind(this)
+
+		this.lastPosition = new Vector2()
+		this.dragElement = null
+
 		this.#setEvents()
 
 		this.interactiveObjects = []
@@ -17,44 +26,46 @@ export default class InteractionManager {
 		this.needsUpdate = false
 	}
 
-	#setEvents() {
-		addEventListener('mousemove', (event) => {
-			this.pointer.x = (event.clientX / this.sizes.width) * 2 - 1
-			this.pointer.y = -(event.clientY / this.sizes.height) * 2 + 1
-			this.needsUpdate = true
-		})
+	handleMouseMove(event) {
+		this.pointer.x = (event.clientX / this.sizes.width) * 2 - 1
+		this.pointer.y = -(event.clientY / this.sizes.height) * 2 + 1
+		this.needsUpdate = true
+	}
 
-		addEventListener('click', (event) => {
-			if (!this.intersectsObjects.length) return
-			this.intersectsObjects.forEach((object) => {
-				object.dispatchEvent({ type: 'click' })
-			})
+	handleClick(event) {
+		if (!this.intersectsObjects.length) return
+		this.intersectsObjects.forEach((object) => {
+			object.dispatchEvent({ type: 'click' })
 		})
+	}
 
-		let lastPosition = new Vector2()
-		let dragElement
-		addEventListener('mousedown', (event) => {
-			if (!this.intersectsObjects.length) return
-			this.intersectsObjects.forEach((object) => {
-				if (object.isHovered) {
-					dragElement = object
-				}
-			})
-			lastPosition.copy(this.pointer)
-		})
-
-		addEventListener('mouseup', (event) => {
-			// if (!this.intersectsObjects.length) return
-			const distance = lastPosition.distanceTo(this.pointer)
-			if (distance > 0.01) {
-				//TODO: WIP
-				// dragElement.dispatchEvent({ type: 'drag', distance, direction: this.pointer.clone().sub(lastPosition) })
-				// this.intersectsObjects.forEach((object) => {
-				// 	object.dispatchEvent({ type: 'drag', distance: lastPosition.distanceTo(this.pointer) })
-				// })
+	handleMouseDown(event) {
+		if (!this.intersectsObjects.length) return
+		this.intersectsObjects.forEach((object) => {
+			if (object.isHovered) {
+				this.dragElement = object
 			}
-			lastPosition.set(0, 0)
 		})
+		this.lastPosition.copy(this.pointer)
+	}
+
+	handleMouseUp(event) {
+		const distance = this.lastPosition.distanceTo(this.pointer)
+		if (distance > 0.01) {
+			//TODO: WIP
+			// this.dragElement.dispatchEvent({ type: 'drag', distance, direction: this.pointer.clone().sub(lastPosition) })
+			// this.intersectsObjects.forEach((object) => {
+			// 	object.dispatchEvent({ type: 'drag', distance: lastPosition.distanceTo(this.pointer) })
+			// })
+		}
+		this.lastPosition.set(0, 0)
+	}
+
+	#setEvents() {
+		addEventListener('mousemove', this.handleMouseMove)
+		addEventListener('click', this.handleClick)
+		addEventListener('mousedown', this.handleMouseDown)
+		addEventListener('mouseup', this.handleMouseUp)
 	}
 
 	addInteractiveObject(object) {
@@ -81,5 +92,14 @@ export default class InteractionManager {
 			this.intersectsObjects.push(intersect.object)
 			intersect.object.isHovered = true
 		})
+	}
+
+	dispose() {
+		removeEventListener('mousemove', this.handleMouseMove)
+		removeEventListener('click', this.handleClick)
+		removeEventListener('mousedown', this.handleMouseDown)
+		removeEventListener('mouseup', this.handleMouseUp)
+		this.interactiveObjects = []
+		this.intersectsObjects = []
 	}
 }

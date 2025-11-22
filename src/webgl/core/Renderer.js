@@ -156,10 +156,22 @@ export default class Renderer {
 		this.transitionPass.enabled = false
 		this.composer.addPass(this.transitionPass)
 
-		setInterval(() => {
+		// Clear any existing interval
+		if (this.transitionInterval) {
+			clearInterval(this.transitionInterval)
+		}
+
+		this.transitionTimeout = null
+		this.transitionInterval = setInterval(() => {
 			if (this.transitionPass.enabled) return
 			this.transitionPass.enabled = true
-			setTimeout(() => {
+			
+			// Clear any existing timeout
+			if (this.transitionTimeout) {
+				clearTimeout(this.transitionTimeout)
+			}
+			
+			this.transitionTimeout = setTimeout(() => {
 				this.transitionPass.enabled = false
 			}, 200)
 		}, 3000)
@@ -359,5 +371,41 @@ export default class Renderer {
 		}
 
 		console.log('Updated camera references in postprocessing')
+	}
+
+	dispose() {
+		// Clear intervals and timeouts
+		if (this.transitionInterval) {
+			clearInterval(this.transitionInterval)
+			this.transitionInterval = null
+		}
+		if (this.transitionTimeout) {
+			clearTimeout(this.transitionTimeout)
+			this.transitionTimeout = null
+		}
+
+		// Dispose composers
+		if (this.threeComposer) {
+			this.threeComposer.dispose()
+			this.threeComposer = null
+		}
+		if (this.composer) {
+			this.composer.dispose()
+			this.composer = null
+		}
+
+		// Dispose bloom pass
+		if (this.bloomPass) {
+			this.bloomPass.dispose()
+			this.bloomPass = null
+		}
+
+		// Dispose effects
+		if (this.transitionEffect) {
+			this.transitionEffect.dispose()
+			this.transitionEffect = null
+		}
+
+		this.activeComposer = null
 	}
 }

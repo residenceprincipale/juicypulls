@@ -71,11 +71,14 @@ export default class Camera {
 		this.controlsCamera.name = 'controlsCamera'
 		this.controlsCamera.controls = new OrbitControls(this.controlsCamera, this.canvas)
 
-		//Apply saved settings
-		this.controlsCamera.controls.addEventListener('change', () => {
+		// Bind the change handler so we can remove it later
+		this.controlsCameraChangeHandler = () => {
 			sessionStorage.setItem('debugCameraPosition', JSON.stringify(this.controlsCamera.position))
 			sessionStorage.setItem('debugCameraTarget', JSON.stringify(this.controlsCamera.controls.target))
-		})
+		}
+
+		//Apply saved settings
+		this.controlsCamera.controls.addEventListener('change', this.controlsCameraChangeHandler)
 
 		this.#setCameraDebugPositionAndTarget(this.controlsCamera)
 
@@ -96,13 +99,16 @@ export default class Camera {
 		this.#setCameraDebugPositionAndTarget(this.fpsCamera)
 
 		this.fpsCamera.controls = new PointerLockControls(this.fpsCamera, this.canvas)
-		this.fpsCamera.controls.lockControls = () => {
+		
+		// Bind the lock handler so we can remove it later
+		this.fpsLockControlsHandler = () => {
 			if (this.instance.name !== 'fpsCamera') return
 			this.fpsCamera.controls.lock()
 		}
-		this.canvas.addEventListener('click', this.fpsCamera.controls.lockControls)
+		this.fpsCamera.controls.lockControls = this.fpsLockControlsHandler
+		this.canvas.addEventListener('click', this.fpsLockControlsHandler)
 
-		const movement = {
+		this.movement = {
 			moveForward: false,
 			moveBackward: false,
 			moveLeft: false,
@@ -118,24 +124,30 @@ export default class Camera {
 			shift: 'moveFaster',
 		}
 
+		// Store input manager handlers so we can remove them later
+		this.fpsInputHandlers = {}
 		Object.keys(actions).forEach((action) => {
-			InputManager.on(action, (value) => (movement[actions[action]] = value))
+			this.fpsInputHandlers[action] = (value) => (this.movement[actions[action]] = value)
+			InputManager.on(action, this.fpsInputHandlers[action])
 		})
 
 		const direction = new Vector3()
 
-		this.time.on('tick', () => {
+		// Store the tick handler so we can remove it later
+		this.fpsTickHandler = () => {
 			if (!this.fpsCamera.controls.isLocked) return
 			this.fpsCamera.getWorldDirection(direction)
-			const speed = movement.moveFaster ? 0.05 : 0.01
+			const speed = this.movement.moveFaster ? 0.05 : 0.01
 			const directionSpeed = direction.multiplyScalar(speed * this.time.delta)
-			if (movement.moveForward) this.fpsCamera.position.add(directionSpeed)
-			if (movement.moveBackward) this.fpsCamera.position.sub(directionSpeed)
-			if (movement.moveRight) this.fpsCamera.position.add(directionSpeed.cross(this.fpsCamera.up))
-			if (movement.moveLeft) this.fpsCamera.position.sub(directionSpeed.cross(this.fpsCamera.up))
-		})
+			if (this.movement.moveForward) this.fpsCamera.position.add(directionSpeed)
+			if (this.movement.moveBackward) this.fpsCamera.position.sub(directionSpeed)
+			if (this.movement.moveRight) this.fpsCamera.position.add(directionSpeed.cross(this.fpsCamera.up))
+			if (this.movement.moveLeft) this.fpsCamera.position.sub(directionSpeed.cross(this.fpsCamera.up))
+		}
+		this.time.on('tick', this.fpsTickHandler)
 
-		this.fpsCamera.controls.addEventListener('change', () => {
+		// Bind the change handler so we can remove it later
+		this.fpsCameraChangeHandler = () => {
 			sessionStorage.setItem('debugCameraPosition', JSON.stringify(this.fpsCamera.position))
 
 			const target = new Vector3()
@@ -143,7 +155,8 @@ export default class Camera {
 			target.add(this.fpsCamera.position)
 
 			sessionStorage.setItem('debugCameraTarget', JSON.stringify(target))
-		})
+		}
+		this.fpsCamera.controls.addEventListener('change', this.fpsCameraChangeHandler)
 
 		//Helper
 		if (!this.sceneCamera.cameraHelper) {
@@ -306,19 +319,48 @@ export default class Camera {
 	}
 
 	dispose() {
+		// Dispose scene camera
 		this.scene.remove(this.sceneCamera)
 		if (this.sceneCamera.cameraHelper) {
 			this.sceneCamera.cameraHelper.dispose()
 			this.scene.remove(this.sceneCamera.cameraHelper)
 		}
+
+		// Dispose controls camera
 		if (this.controlsCamera) {
-			this.controlsCamera.controls.dispose()
+			if (this.controlsCamera.controls) {
+				// Remove event listener
+				if (this.controlsCameraChangeHandler) {
+					this.controlsCamera.controls.removeEventListener('change', this.controlsCameraChangeHandler)
+				}
+				this.controlsCamera.controls.dispose()
+			}
 			this.scene.remove(this.controlsCamera)
 		}
+
+		// Dispose FPS camera
 		if (this.fpsCamera) {
-			this.fpsCamera.controls.removeEventListener('change', this.fpsCamera.controls._listeners.change[0])
+			// Remove event listeners
+			if (this.fpsCameraChangeHandler) {
+				this.fpsCamera.controls.removeEventListener('change', this.fpsCameraChangeHandler)
+			}
+			if (this.fpsLockControlsHandler) {
+				this.canvas.removeEventListener('click', this.fpsLockControlsHandler)
+			}
+
+			// Remove tick handler
+			if (this.fpsTickHandler) {
+				this.time.off('tick', this.fpsTickHandler)
+			}
+
+			// Remove input handlers
+			if (this.fpsInputHandlers) {
+				Object.keys(this.fpsInputHandlers).forEach((action) => {
+					InputManager.off(action, this.fpsInputHandlers[action])
+				})
+			}
+
 			this.fpsCamera.controls.dispose()
-			this.canvas.removeEventListener('click', this.fpsCamera.controls.lockControls)
 			this.scene.remove(this.fpsCamera)
 		}
 	}

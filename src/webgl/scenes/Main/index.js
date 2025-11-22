@@ -97,9 +97,68 @@ export default class Main {
 	}
 
 	dispose() {
+		console.log('[Main Scene] Starting disposal...')
+
+		// Dispose event listeners
 		this._disposeEventListeners()
-		this._lights.dispose()
-		this._backgroundEnvironment.dispose()
+
+		// Kill all GSAP timelines and delayed calls
+		gsap.killTweensOf(this)
+		gsap.globalTimeline.clear()
+
+		// Dispose all components
+		if (this._lights && this._lights.dispose) {
+			this._lights.dispose()
+		}
+		if (this._backgroundEnvironment && this._backgroundEnvironment.dispose) {
+			this._backgroundEnvironment.dispose()
+		}
+		if (this._gun && this._gun.dispose) {
+			this._gun.dispose()
+		}
+		if (this._logo && this._logo.dispose) {
+			this._logo.dispose()
+		}
+		if (this._machine && this._machine.dispose) {
+			this._machine.dispose()
+		}
+		if (this.scoreScreen && this.scoreScreen.dispose) {
+			this.scoreScreen.dispose()
+		}
+		if (this.scoreScreenManager && this.scoreScreenManager.dispose) {
+			this.scoreScreenManager.dispose()
+		}
+		if (this.combinationsScreen && this.combinationsScreen.dispose) {
+			this.combinationsScreen.dispose()
+		}
+		if (this.combinationsScreenManager && this.combinationsScreenManager.dispose) {
+			this.combinationsScreenManager.dispose()
+		}
+		if (this._secondRoulette && this._secondRoulette.dispose) {
+			this._secondRoulette.dispose()
+		}
+		if (this._hands && this._hands.dispose) {
+			this._hands.dispose()
+		}
+		if (this._machineManager && this._machineManager.dispose) {
+			this._machineManager.dispose()
+		}
+		if (this._shooterManager && this._shooterManager.dispose) {
+			this._shooterManager.dispose()
+		}
+		if (this._physicalDebug && this._physicalDebug.dispose) {
+			this._physicalDebug.dispose()
+		}
+		if (this._tutorialManager && this._tutorialManager.dispose) {
+			this._tutorialManager.dispose()
+		}
+
+		// Dispose resources
+		if (this._scene.resources && this._scene.resources.dispose) {
+			this._scene.resources.dispose()
+		}
+
+		console.log('[Main Scene] Disposal complete')
 	}
 
 	reset() {

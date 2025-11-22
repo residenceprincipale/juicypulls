@@ -4,24 +4,6 @@ import gsap from 'gsap'
 
 const experience = new Experience(document.querySelector('canvas#webgl'))
 
-// ------------------------------------------------------------------
-// HMR hooks
-// ------------------------------------------------------------------
-if (import.meta.hot) {
-	// Called *before* the module is replaced
-	import.meta.hot.accept(() => {
-		console.log('[HMR] Module will be updated – disposing old scene')
-	})
-
-	// Called *after* the module is replaced (i.e. right before the old
-	// instance is garbage‑collected)
-	import.meta.hot.dispose(() => {
-		console.log('[HMR] Disposing old Three.js objects')
-
-		experience.dispose()
-	})
-}
-
 const socket = new Socket()
 socket.connect('game')
 
@@ -32,14 +14,9 @@ if (!window.location.hash.includes('debug')) {
 const subliminalMessage = document.querySelector('.subliminal-message')
 const screamerVideoElement = document.querySelector('.screamer-video')
 
-socket.on('show-subliminal', onSubliminalMessage)
-socket.on('lose-final', onLoseFinal)
-socket.on('jackpot', () => {
-	experience.scene.resources.items.jackpotAudio.play()
-})
-socket.on('jackpot-end', () => {
-	experience.scene.resources.items.jackpotAudio.stop()
-})
+// Store timeouts so we can clear them on dispose
+let subliminalTimeout = null
+let screamerDelayedCall = null
 
 function onSubliminalMessage({ message }) {
 	const occurence = 5
@@ -51,7 +28,8 @@ function onSubliminalMessage({ message }) {
 	}).join('')
 	subliminalMessage.style.display = 'flex'
 
-	setTimeout(() => {
+	if (subliminalTimeout) clearTimeout(subliminalTimeout)
+	subliminalTimeout = setTimeout(() => {
 		subliminalMessage.style.display = 'none'
 		experience.scene.resources.items.subliminalAudio.stop()
 	}, 250)
@@ -67,7 +45,8 @@ function onLoseFinal() {
 
 	// play video x1.5 speed
 
-	gsap.delayedCall(3.5, () => {
+	if (screamerDelayedCall) screamerDelayedCall.kill()
+	screamerDelayedCall = gsap.delayedCall(3.5, () => {
 		experience.scene.resources.items.screamerAudio.play()
 	})
 	screamerVideoElement.onended = () => {
@@ -80,4 +59,65 @@ function onLoseFinal() {
 			window.location.reload()
 		})
 	}
+}
+
+socket.on('show-subliminal', onSubliminalMessage)
+socket.on('lose-final', onLoseFinal)
+
+const jackpotHandler = () => {
+	experience.scene.resources.items.jackpotAudio.play()
+}
+const jackpotEndHandler = () => {
+	experience.scene.resources.items.jackpotAudio.stop()
+}
+
+socket.on('jackpot', jackpotHandler)
+socket.on('jackpot-end', jackpotEndHandler)
+
+// ------------------------------------------------------------------
+// Cleanup function
+// ------------------------------------------------------------------
+function cleanup() {
+	console.log('[Cleanup] Removing socket listeners and cleaning up')
+
+	// Remove socket listeners
+	socket.off('show-subliminal', onSubliminalMessage)
+	socket.off('lose-final', onLoseFinal)
+	socket.off('jackpot', jackpotHandler)
+	socket.off('jackpot-end', jackpotEndHandler)
+
+	// Clear timeouts
+	if (subliminalTimeout) {
+		clearTimeout(subliminalTimeout)
+		subliminalTimeout = null
+	}
+
+	// Kill GSAP animations
+	if (screamerDelayedCall) {
+		screamerDelayedCall.kill()
+		screamerDelayedCall = null
+	}
+	gsap.killTweensOf(screamerVideoElement)
+
+	// Dispose experience
+	if (experience && experience.dispose) {
+		experience.dispose()
+	}
+}
+
+// ------------------------------------------------------------------
+// HMR hooks
+// ------------------------------------------------------------------
+if (import.meta.hot) {
+	// Called *before* the module is replaced
+	import.meta.hot.accept(() => {
+		console.log('[HMR] Module will be updated – disposing old scene')
+	})
+
+	// Called *after* the module is replaced (i.e. right before the old
+	// instance is garbage‑collected)
+	import.meta.hot.dispose(() => {
+		console.log('[HMR] Disposing old Three.js objects')
+		cleanup()
+	})
 }

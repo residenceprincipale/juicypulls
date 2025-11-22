@@ -218,6 +218,12 @@ export default class Debug {
 					attributeFilter: ['class'],
 					subtree: true,
 				})
+
+				// Store observer so we can disconnect it later
+				if (!this.mutationObservers) {
+					this.mutationObservers = []
+				}
+				this.mutationObservers.push(observer)
 			}
 		}
 	}
@@ -635,6 +641,29 @@ export default class Debug {
 	update() {
 		if (this.active) {
 			if (this.debugParams.Stats) this.stats.update()
+		}
+	}
+
+	dispose() {
+		// Disconnect all mutation observers
+		if (this.mutationObservers) {
+			this.mutationObservers.forEach((observer) => {
+				observer.disconnect()
+			})
+			this.mutationObservers = []
+		}
+
+		// Remove stats elements
+		if (this.statsJsPanel && this.statsJsPanel.domElement) {
+			this.statsJsPanel.domElement.remove()
+		}
+		if (this.monitoringSection) {
+			this.monitoringSection.remove()
+		}
+
+		// Destroy UI if it exists
+		if (this.ui) {
+			this.ui.dispose()
 		}
 	}
 }

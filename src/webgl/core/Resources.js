@@ -22,20 +22,25 @@ import gsap from 'gsap'
 
 // play() all loaded videos once with first user interaction
 const VIDEOS_ARRAY = []
-const DOCUMENT_CLICK_LISTENER = document.addEventListener(
-	'click',
-	() => {
-		VIDEOS_ARRAY.forEach((video) => {
-			video.play()
-			gsap.delayedCall(0.1, () => {
-				video.pause()
-				video.currentTime = 0.01
-				// console.log(video)
-			})
+let videoInitHandler = null
+
+const initVideosOnClick = () => {
+	VIDEOS_ARRAY.forEach((video) => {
+		video.play()
+		gsap.delayedCall(0.1, () => {
+			video.pause()
+			video.currentTime = 0.01
 		})
-	},
-	{ once: true },
-)
+	})
+	// Remove listener after first use
+	if (videoInitHandler) {
+		document.removeEventListener('click', videoInitHandler)
+		videoInitHandler = null
+	}
+}
+
+videoInitHandler = initVideosOnClick
+document.addEventListener('click', videoInitHandler, { once: true })
 
 export default class Resources extends EventEmitter {
 	constructor(sources) {
@@ -413,5 +418,55 @@ export default class Resources extends EventEmitter {
 	// Utility method to get asset with fallback
 	getAsset(name, fallback = null) {
 		return this.items[name] || fallback
+	}
+
+	dispose() {
+		// Dispose all loaded resources
+		Object.values(this.items).forEach((item) => {
+			// Dispose Three.js textures
+			if (item.dispose && typeof item.dispose === 'function') {
+				item.dispose()
+			}
+			// Stop Howler audio
+			if (item.stop && typeof item.stop === 'function') {
+				item.stop()
+			}
+			if (item.unload && typeof item.unload === 'function') {
+				item.unload()
+			}
+			// Dispose video textures
+			if (item.source && item.source.data && item.source.data instanceof HTMLVideoElement) {
+				const video = item.source.data
+				video.pause()
+				video.src = ''
+				video.load()
+				video.remove()
+			}
+		})
+
+		// Clean up video array
+		VIDEOS_ARRAY.forEach((video) => {
+			video.pause()
+			video.src = ''
+			video.load()
+			if (video.parentNode) {
+				video.remove()
+			}
+		})
+		VIDEOS_ARRAY.length = 0
+
+		// Remove click listener if still attached
+		if (videoInitHandler) {
+			document.removeEventListener('click', videoInitHandler)
+			videoInitHandler = null
+		}
+
+		// Clear items
+		this.items = {}
+
+		// Remove loading screen if exists
+		if (this.loadingScreenElement && this.loadingScreenElement.parentNode) {
+			this.loadingScreenElement.remove()
+		}
 	}
 }

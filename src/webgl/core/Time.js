@@ -9,17 +9,30 @@ export default class Time extends EventEmitter {
 		this.current = this.start
 		this.elapsed = 0
 		this.delta = 16
+		this.animationFrameId = null
+		this.stopped = false
 
-		requestAnimationFrame(this.tick.bind(this))
+		this.tick = this.tick.bind(this)
+		this.animationFrameId = requestAnimationFrame(this.tick)
 	}
 
 	tick(currentTime) {
+		if (this.stopped) return
+
 		this.delta = currentTime - this.current
 		this.current = currentTime
 		this.elapsed = this.current - this.start
 
 		this.trigger('tick')
 
-		requestAnimationFrame(this.tick.bind(this))
+		this.animationFrameId = requestAnimationFrame(this.tick)
+	}
+
+	dispose() {
+		this.stopped = true
+		if (this.animationFrameId !== null) {
+			cancelAnimationFrame(this.animationFrameId)
+			this.animationFrameId = null
+		}
 	}
 }
