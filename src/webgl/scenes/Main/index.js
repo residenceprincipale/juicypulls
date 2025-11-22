@@ -5,7 +5,7 @@ import Hands from '@/webgl/components/Hands/index.js'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import PhysicalDebug from '@/webgl/components/PhysicalDebug/index.js'
-import { Color } from 'three'
+import { Color, VSMShadowMap } from 'three'
 import gsap from 'gsap'
 import MachineManager from '@/webgl/modules/MachineManager'
 import SecondRoulette from '@/webgl/components/SecondRoulette'
@@ -15,6 +15,7 @@ import Target from '@/webgl/components/Target/index.js'
 import ShooterManager from '@/webgl/modules/ShooterManager'
 import TutorialManager from '@/webgl/modules/TutorialManager'
 import Logo from '@/webgl/components/Logo/index.js'
+import ShadowMap from '@/webgl/modules/ShadowMap'
 
 import Socket from '@/scripts/Socket.js'
 import ScoreScreen from '@/webgl/components/ScoreScreen'
@@ -32,6 +33,7 @@ export default class Main {
 		this._scene.resources = new Resources(sources)
 		this._debug = this._experience.debug
 		this._lights = new LightsMain()
+		// this._shadowMap = this._createShadowMap()
 		this._camera = this._experience.camera
 
 		this._scene.background = new Color(0x000000)
@@ -325,6 +327,17 @@ export default class Main {
 		if (this.combinationsScreen) this.combinationsScreen.update()
 	}
 
+	handleButtonInput(button) {
+		if (!this._tutorialInputPressed && this._isPlayingTutorial) {
+			this._tutorialInputPressed = true
+			this.startTutorial()
+		}
+	}
+
+	/**
+	 * Private
+	 */
+
 	_createEventListeners() {
 		socket.on('reset', this.reset.bind(this))
 		socket.on('start-round', this.startRound.bind(this))
@@ -343,13 +356,6 @@ export default class Main {
 
 		// listen to any buttoff input event from socket
 		socket.off('button', this.handleButtonInput.bind(this))
-	}
-
-	handleButtonInput(button) {
-		if (!this._tutorialInputPressed && this._isPlayingTutorial) {
-			this._tutorialInputPressed = true
-			this.startTutorial()
-		}
 	}
 
 	setDebug() {

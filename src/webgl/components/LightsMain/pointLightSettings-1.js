@@ -1,5 +1,5 @@
 export default {
-	name: 'pointlightTorch',
+	name: 'pointLightTorch',
 	visible: {
 		value: true,
 	},
@@ -10,28 +10,28 @@ export default {
 		value: false,
 	},
 	intensity: {
-		value: 1,
+		value: 10,
 	},
 	distance: {
-		value: 100,
+		value: 36.233841163718594,
 	},
 	decay: {
-		value: 3,
+		value: 1.385065785699402,
 	},
 	color: {
 		value: '0xff0000',
 	},
 	helper: {
-		value: true,
+		value: false,
 	},
 	transformControl: {
 		value: false,
 	},
 	position: {
 		value: {
-			x: 0,
-			y: 0,
-			z: 0,
+			x: -1.3683262292775193,
+			y: -0.4979862369040966,
+			z: -8.376464832892491,
 		},
 	},
 	rotation: {

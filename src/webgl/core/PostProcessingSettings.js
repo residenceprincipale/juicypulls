@@ -5,7 +5,7 @@ export default class PostProcessingSettings {
 				bloom: {
 					enabled: true,
 					type: 'SELECTIVE', // 'LUMINOSITY', 'SELECTIVE', 'TEXTURE'
-					strength: 2.61,
+					strength: 1.5,
 					radius: 0.59,
 					threshold: 0,
 					smoothWidth: 0.67,

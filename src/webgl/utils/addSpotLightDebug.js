@@ -1,9 +1,9 @@
 import addMaterialDebug from 'utils/addMaterialDebug.js'
 import useTransformControls from 'utils/useTransformControls.js'
 import { FolderApi } from '@tweakpane/core'
-import { Object3D, Color, DirectionalLightHelper, PointLightHelper } from 'three'
+import { Object3D, Color, DirectionalLightHelper, PointLightHelper, SpotLightHelper } from 'three'
 
-export default function addPointLightDebug(folder, object, settings) {
+export default function addSpotLightDebug(folder, object, settings) {
 	const title = object.name
 
 	const debugFolder = folder.addFolder({
@@ -17,9 +17,10 @@ export default function addPointLightDebug(folder, object, settings) {
 	})
 
 	// Create the helper and display it conditionally
-	const helper = new PointLightHelper(object, 0.2, 0xffffff)
+	const helper = new SpotLightHelper(object, 0.5, 0xff0000)
 	helper.visible = settings.helper.value
 	object.parent.add(helper)
+	helper.update()
 
 	debugFolder.addBinding(settings.helper, 'value', { label: 'helper' }).on('change', (ev) => {
 		helper.visible = ev.value
@@ -29,12 +30,18 @@ export default function addPointLightDebug(folder, object, settings) {
 		object.intensity = ev.value
 	})
 
-	debugFolder.addBinding(settings.decay, 'value', { label: 'decay', min: 0, max: 3 }).on('change', (ev) => {
+	debugFolder.addBinding(settings.decay, 'value', { label: 'decay', min: 0, max: 300 }).on('change', (ev) => {
 		object.decay = ev.value
 	})
 
 	debugFolder.addBinding(settings.distance, 'value', { label: 'distance', min: 0, max: 300 }).on('change', (ev) => {
-		object.distance = ev.value
+		object.decay = ev.value
+	})
+	debugFolder.addBinding(settings.angle, 'value', { label: 'angle', min: 0, max: 300 }).on('change', (ev) => {
+		object.decay = ev.value
+	})
+	debugFolder.addBinding(settings.penumbra, 'value', { label: 'penumbra', min: 0, max: 300 }).on('change', (ev) => {
+		object.decay = ev.value
 	})
 
 	debugFolder.addBinding(settings.color, 'value', { label: 'color' }).on('change', (ev) => {
@@ -74,11 +81,23 @@ export default function addPointLightDebug(folder, object, settings) {
 
 	debugFolder.addBlade({ view: 'separator' })
 
+	if (object.target) {
+		const targetControls = new useTransformControls(object.target, debugFolder, 'transform control target')
+
+		targetControls.addEventListener('change', () => {
+			settings.targetPosition.value.x = object.target.position.x
+			settings.targetPosition.value.y = object.target.position.y
+			settings.targetPosition.value.z = object.target.position.z
+
+			helper.update()
+		})
+	}
+
 	// Button to copy settings to clipboard
 	debugFolder.addButton({ title: 'Copy Settings to Clipboard' }).on('click', () => {
 		const settingsString = JSON.stringify(settings, null, 4) // Pretty-print with 4 spaces
 		navigator.clipboard.writeText(`export default ${settingsString}`)
-		console.log('Point Light Settings copied to clipboard!')
+		console.log('Spot Light Settings copied to clipboard!')
 	})
 
 	return debugFolder

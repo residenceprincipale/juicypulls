@@ -213,12 +213,13 @@ export default class BackgroundEnvironment {
 		this._borneMaterial = new PhongCustomMaterial({
 			uniforms: borneMaterialSettings,
 			name: 'Borne Material',
-			useSelectiveLights: true,
-			lights: ['lightEnvTwo'],
+			// useSelectiveLights: true,
+			// lights: ['lightEnvTwo'],
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 				USE_AO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 
@@ -232,6 +233,7 @@ export default class BackgroundEnvironment {
 			defines: {
 				USE_MATCAP: true,
 				USE_AO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 
@@ -241,6 +243,7 @@ export default class BackgroundEnvironment {
 			defines: {
 				USE_MATCAP: true,
 				USE_AO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 
@@ -255,6 +258,7 @@ export default class BackgroundEnvironment {
 				// USE_MATCAP: true,
 				USE_AO: true,
 				USE_ROUGHNESS: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 		this._materialsArray.push(this._columnMaterial)
@@ -277,6 +281,7 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 		this._materialsArray.push(this._lightMaterial)
@@ -289,6 +294,7 @@ export default class BackgroundEnvironment {
 			defines: {
 				USE_AO: true,
 				USE_ALBEDO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 
@@ -304,6 +310,7 @@ export default class BackgroundEnvironment {
 			defines: {
 				USE_AO: true,
 				USE_ALBEDO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 
@@ -319,6 +326,7 @@ export default class BackgroundEnvironment {
 			defines: {
 				USE_AO: true,
 				USE_MATCAP: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 
@@ -335,6 +343,7 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 				USE_MATCAP: true,
 				USE_ALBEDO: true,
+				USE_POINT_LIGHTS: true,
 			},
 		})
 

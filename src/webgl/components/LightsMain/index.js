@@ -1,6 +1,8 @@
 import Experience from 'core/Experience.js'
-import { DirectionalLight, Color } from 'three'
+import { DirectionalLight, Color, VSMShadowMap, SpotLight } from 'three'
 import addLightDebug from 'utils/addLightDebug.js'
+import addPointLightDebug from '@/webgl/utils/addPointLightDebug.js'
+import addSpotLightDebug from '@/webgl/utils/addSpotLightDebug.js'
 import SelectiveLightManager from '@/webgl/modules/SelectiveLightManager.js'
 
 import settingsLight1 from './lightSettings-1.js'
@@ -10,12 +12,13 @@ import settingsLight4 from './lightSettings-4.js'
 import settingsLight5 from './lightSettings-5.js'
 
 import settingsPointLight1 from './pointLightSettings-1.js'
+import settingsSpotLight1 from './spotLightSettings-1.js'
 
 import gsap from 'gsap'
 
 import Socket from '@/scripts/Socket.js'
 import { PointLight } from 'three'
-import addPointLightDebug from '@/webgl/utils/addPointLightDebug.js'
+import ShadowMap from '@/webgl/modules/ShadowMap.js'
 
 const socket = new Socket()
 
@@ -27,7 +30,9 @@ export default class LightsMain {
 		this._debug = this._experience.debug
 
 		this._lightSettings = [settingsLight1, settingsLight2, settingsLight3, settingsLight4, settingsLight5]
-		this._pointLightSettings = []
+		this._lightSettings = []
+		this._pointLightSettings = [settingsPointLight1]
+		this._spotLightSettings = [settingsSpotLight1]
 
 		// Initialize selective light manager
 		this._selectiveLightManager = new SelectiveLightManager()
@@ -42,6 +47,7 @@ export default class LightsMain {
 		this._lightsArray = []
 		this._createLights()
 		this._createPointLights()
+		this._createSpotLights()
 
 		this._createEventListeners()
 	}
@@ -293,12 +299,54 @@ export default class LightsMain {
 	/**
 	 * Private
 	 */
+	_createSpotLights() {
+		this._spotLightSettings.forEach((settings) => {
+			const spotLight = new SpotLight(
+				new Color(parseInt(settings.color.value)),
+				settings.intensity.value,
+				settings.distance.value,
+				settings.angle.value,
+				settings.penumbra.value,
+				settings.decay.value,
+			)
+
+			spotLight.visible = settings.visible.value
+			spotLight.castShadow = settings.castShadow.value
+			spotLight.receiveShadow = settings.receiveShadow.value
+
+			spotLight.position.set(settings.position.value.x, settings.position.value.y, settings.position.value.z)
+
+			spotLight.scale.set(settings.scale.value.x, settings.scale.value.y, settings.scale.value.z)
+
+			spotLight.name = settings.name
+			this._scene.add(spotLight)
+
+			// Set target position
+			spotLight.target.position.set(
+				settings.targetPosition.value.x,
+				settings.targetPosition.value.y,
+				settings.targetPosition.value.z,
+			)
+			this._scene.add(spotLight.target)
+
+			// Save the reference dynamically (this._spotLightTop, this._spotLightLeft, etc.)
+			this['_' + settings.name] = spotLight
+			this._lightsArray.push(this['_' + settings.name])
+
+			// Debug
+			if (this._debug.active) {
+				addSpotLightDebug(this._debugFolder, spotLight, settings)
+			}
+		})
+	}
+
 	_createPointLights() {
 		this._pointLightSettings.forEach((settings) => {
 			console.log('test')
 			const pointLight = new PointLight(
 				new Color(parseInt(settings.color.value)),
 				settings.intensity.value,
+				settings.distance.value,
 				settings.decay.value,
 			)
 
@@ -357,6 +405,23 @@ export default class LightsMain {
 				addLightDebug(this._debugFolder, light, settings)
 			}
 		})
+	}
+
+	_createShadowMap() {
+		// if (!settings.shadows) return
+		// if (!settings.shadows.enabled) return
+
+		const shadowMap = new ShadowMap({
+			light: this._lights.directional_light_shadows,
+			settings: settings.shadows,
+			scene: this,
+			debugFolder: this._debugFolder,
+		})
+		this.$renderer.shadowMap.enabled = true
+		this.$renderer.shadowMap.autoUpdate = true
+		this.$renderer.shadowMap.type = VSMShadowMap
+
+		return shadowMap
 	}
 
 	_animateFarkle() {

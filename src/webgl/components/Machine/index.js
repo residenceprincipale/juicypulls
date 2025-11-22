@@ -707,6 +707,7 @@ export default class Machine {
 				USE_MATCAP: true,
 				USE_AO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 	}

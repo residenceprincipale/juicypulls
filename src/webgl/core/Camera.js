@@ -22,7 +22,7 @@ export default class Camera {
 			frustum: { min: 0.1, max: 200 },
 			position: new Vector3(0.01, 0.01, 1.24),
 			target: new Vector3(0, 0, 0),
-			currentCamera: this.debug.active ? 'sceneCamera' : 'sceneCamera', // sorry
+			currentCamera: this.debug.active ? 'controlsCamera' : 'sceneCamera', // sorry
 		}
 
 		this.setInstance()
