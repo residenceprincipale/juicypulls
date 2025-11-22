@@ -220,6 +220,7 @@ export default class BackgroundEnvironment {
 				USE_MATCAP: true,
 				USE_AO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 
@@ -234,6 +235,7 @@ export default class BackgroundEnvironment {
 				USE_MATCAP: true,
 				USE_AO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 
@@ -244,6 +246,7 @@ export default class BackgroundEnvironment {
 				USE_MATCAP: true,
 				USE_AO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 
@@ -259,6 +262,7 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 				USE_ROUGHNESS: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 		this._materialsArray.push(this._columnMaterial)
@@ -266,7 +270,7 @@ export default class BackgroundEnvironment {
 
 	_createWhiteLightMaterial() {
 		this._whiteLightMaterial = new MeshBasicMaterial({
-			color: new Color(1, 1, 1), // Pure white
+			color: new Color(0.5, 0.5, 0.5), // Pure white
 			name: 'White Light Material',
 		})
 
@@ -282,6 +286,7 @@ export default class BackgroundEnvironment {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 		this._materialsArray.push(this._lightMaterial)
@@ -295,6 +300,7 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 				USE_ALBEDO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 
@@ -311,6 +317,7 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 				USE_ALBEDO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 
@@ -327,6 +334,7 @@ export default class BackgroundEnvironment {
 				USE_AO: true,
 				USE_MATCAP: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 
@@ -344,6 +352,7 @@ export default class BackgroundEnvironment {
 				USE_MATCAP: true,
 				USE_ALBEDO: true,
 				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
 			},
 		})
 

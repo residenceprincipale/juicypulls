@@ -26,22 +26,22 @@ export default function addSpotLightDebug(folder, object, settings) {
 		helper.visible = ev.value
 	})
 
-	debugFolder.addBinding(settings.intensity, 'value', { label: 'intensity', min: 0, max: 10 }).on('change', (ev) => {
+	debugFolder.addBinding(settings.intensity, 'value', { label: 'intensity', min: 0, max: 100 }).on('change', (ev) => {
 		object.intensity = ev.value
 	})
 
-	debugFolder.addBinding(settings.decay, 'value', { label: 'decay', min: 0, max: 300 }).on('change', (ev) => {
+	debugFolder.addBinding(settings.decay, 'value', { label: 'decay', min: 0, max: 2 }).on('change', (ev) => {
 		object.decay = ev.value
 	})
 
-	debugFolder.addBinding(settings.distance, 'value', { label: 'distance', min: 0, max: 300 }).on('change', (ev) => {
-		object.decay = ev.value
+	debugFolder.addBinding(settings.distance, 'value', { label: 'distance', min: 0, max: 500 }).on('change', (ev) => {
+		object.distance = ev.value
 	})
-	debugFolder.addBinding(settings.angle, 'value', { label: 'angle', min: 0, max: 300 }).on('change', (ev) => {
-		object.decay = ev.value
+	debugFolder.addBinding(settings.angle, 'value', { label: 'angle', min: 0, max: 3 }).on('change', (ev) => {
+		object.angle = ev.value
 	})
-	debugFolder.addBinding(settings.penumbra, 'value', { label: 'penumbra', min: 0, max: 300 }).on('change', (ev) => {
-		object.decay = ev.value
+	debugFolder.addBinding(settings.penumbra, 'value', { label: 'penumbra', min: 0, max: 1 }).on('change', (ev) => {
+		object.penumbra = ev.value
 	})
 
 	debugFolder.addBinding(settings.color, 'value', { label: 'color' }).on('change', (ev) => {

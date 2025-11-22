@@ -10,22 +10,22 @@ export default {
 		value: false,
 	},
 	intensity: {
-		value: 1,
+		value: 73.44158949830583,
 	},
 	angle: {
-		value: 1.05,
+		value: 0.12857215470867947,
 	},
 	penumbra: {
-		value: 1,
+		value: 0.15974051336714643,
 	},
 	distance: {
-		value: 100,
+		value: 500,
 	},
 	decay: {
-		value: 3,
+		value: 1.2155850116269011,
 	},
 	color: {
-		value: '0xff0000',
+		value: '0xffffff',
 	},
 	helper: {
 		value: true,
@@ -35,15 +35,15 @@ export default {
 	},
 	position: {
 		value: {
-			x: 0,
-			y: 0,
-			z: 0,
+			x: 1.83831033838316,
+			y: -0.524713859856786,
+			z: -2.5573780625644,
 		},
 	},
 	rotation: {
 		value: {
 			x: 0,
-			y: 1.5,
+			y: 0,
 			z: 0,
 		},
 	},
@@ -59,9 +59,9 @@ export default {
 	},
 	targetPosition: {
 		value: {
-			x: 0.12503593184846074,
-			y: 0.059545946026874796,
-			z: -0.2002941918202713,
+			x: 0.17492021686457848,
+			y: -1.3906051518954814,
+			z: -12.803598751245278,
 		},
 	},
 	targetRotation: {
