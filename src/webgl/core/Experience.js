@@ -135,6 +135,6 @@ export default class Experience {
 
 		console.log('[Experience] Disposal complete')
 
-		// if (this.debug.active) this.debug.ui.destroy()
+		if (this.debug.active) this.debug.dispose()
 	}
 }

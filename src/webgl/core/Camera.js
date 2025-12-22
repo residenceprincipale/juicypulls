@@ -22,7 +22,7 @@ export default class Camera {
 			frustum: { min: 0.1, max: 200 },
 			position: new Vector3(0.01, 0.01, 1.24),
 			target: new Vector3(0, 0, 0),
-			currentCamera: this.debug.active ? 'controlsCamera' : 'sceneCamera', // sorry
+			currentCamera: this.debug.active ? 'sceneCamera' : 'controlsCamera', // sorry
 		}
 
 		this.setInstance()
@@ -99,7 +99,7 @@ export default class Camera {
 		this.#setCameraDebugPositionAndTarget(this.fpsCamera)
 
 		this.fpsCamera.controls = new PointerLockControls(this.fpsCamera, this.canvas)
-		
+
 		// Bind the lock handler so we can remove it later
 		this.fpsLockControlsHandler = () => {
 			if (this.instance.name !== 'fpsCamera') return

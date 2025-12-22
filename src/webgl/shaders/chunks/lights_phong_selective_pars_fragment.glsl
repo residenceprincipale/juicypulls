@@ -63,7 +63,11 @@ void getSpotLightInfo(const in SpotLight spotLight, const in vec3 geometryPositi
 
   float angleCos = dot(light.direction, spotLight.direction);
 
-  float spotAttenuation = getSpotAttenuation(spotLight.coneCos, spotLight.penumbraCos, angleCos);
+  // float spotAttenuation = getSpotAttenuation(spotLight.coneCos, spotLight.penumbraCos, angleCos);
+  // uniforms.coneCos = Math.cos( light.angle );
+  // uniforms.penumbraCos = Math.cos( light.angle * ( 1 - light.penumbra ) );
+  float spotAttenuation = smoothstep(cos(0.13), cos(0.13 * (1.0 - 0.4)), angleCos)
+      + smoothstep(cos(0.10), cos(0.10 * (1.0 - 0.11)), angleCos);
 
   if (spotAttenuation > 0.0) {
     float lightDistance = length(lVector);

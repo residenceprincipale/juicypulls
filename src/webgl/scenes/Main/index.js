@@ -15,6 +15,7 @@ import Target from '@/webgl/components/Target/index.js'
 import ShooterManager from '@/webgl/modules/ShooterManager'
 import TutorialManager from '@/webgl/modules/TutorialManager'
 import Logo from '@/webgl/components/Logo/index.js'
+import Flashlight from '@/webgl/components/Flashlight/index.js'
 import ShadowMap from '@/webgl/modules/ShadowMap'
 
 import Socket from '@/scripts/Socket.js'
@@ -22,6 +23,7 @@ import ScoreScreen from '@/webgl/components/ScoreScreen'
 import ScoreScreenManager from '@/webgl/modules/ScoreScreenManager'
 import CombinationsScreen from '@/webgl/components/CombinationsScreen'
 import CombinationsScreenManager from '@/webgl/modules/CombinationsScreenManager'
+import FlashlightManager from '@/webgl/modules/FlashLightManager'
 
 const socket = new Socket()
 
@@ -49,6 +51,7 @@ export default class Main {
 			// this._target.animateIn()
 			this._logo = new Logo()
 			this._machine = new Machine()
+			this._flashlight = new Flashlight()
 
 			// Left Machine Screen
 			this.scoreScreen = new ScoreScreen()
@@ -80,6 +83,11 @@ export default class Main {
 				machineManager: this._machineManager,
 			})
 
+			this._flashlightManager = new FlashlightManager({
+				light: this._lights.spotLightTorch,
+				flashlightModel: this._flashlight,
+			})
+
 			// if (this._debug.active) {
 			this._machine.isDebugDev = true
 			this._physicalDebug = new PhysicalDebug()
@@ -93,11 +101,15 @@ export default class Main {
 			this._hands.hide()
 
 			this.startSkipIntro()
+
+			this.triggerFlashlightView()
 		})
 	}
 
 	dispose() {
 		console.log('[Main Scene] Starting disposal...')
+
+		console.clear()
 
 		// Dispose event listeners
 		this._disposeEventListeners()
@@ -381,6 +393,8 @@ export default class Main {
 		if (this._physicalDebug) this._physicalDebug.update(timeData)
 		if (this._lights) this._lights.update(timeData)
 		if (this._shooterManager) this._shooterManager.update(timeData)
+		if (this._flashlightManager) this._flashlightManager.update(timeData)
+		if (this._flashlight) this._flashlight.update(timeData)
 
 		if (this.scoreScreen) this.scoreScreen.update()
 		if (this.combinationsScreen) this.combinationsScreen.update()

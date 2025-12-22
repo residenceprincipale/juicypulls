@@ -1,5 +1,10 @@
 [
 	{
+		"name": "perlinNoise",
+		"path": "./textures/perlin-combined.jpg",
+		"repeatWrapping": true
+	},
+	{
 		"name": "wheelAlbedo",
 		"path": "./textures/roue-7.png",
 		"flipY": false,
@@ -62,6 +67,10 @@
 	{
 		"name": "rouletteModel",
 		"path": "./models/roulette-v5.glb"
+	},
+	{
+		"name": "monsterModel",
+		"path": "./models/monster.glb"
 	},
 	{
 		"name": "handModel",
@@ -418,8 +427,27 @@
 		"path": "./../models/screens/combination-screen.glb"
 	},
 	{
+		"name": "flashlightModel",
+		"path": "./../models/flashlight.glb"
+	},
+	{
 		"name": "marqueeVideo",
 		"path": "./../videos/jackpot-marquee.mp4",
+		"flipY": false
+	},
+	{
+		"name": "monsterAlbedo",
+		"path": "./textures/monster/albedo.jpg",
+		"flipY": false
+	},
+	{
+		"name": "monsterRoughness",
+		"path": "./textures/monster/roughness.jpg",
+		"flipY": false
+	},
+	{
+		"name": "monsterNormal",
+		"path": "./textures/monster/normal.jpg",
 		"flipY": false
 	}
 ]

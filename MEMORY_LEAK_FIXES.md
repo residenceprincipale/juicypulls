@@ -643,3 +643,4 @@ The fixes follow a consistent pattern:
 
 These changes should significantly improve memory management and eliminate the frame freezes caused by GC/CC, especially on Firefox during hot reload.
 
+

@@ -197,7 +197,7 @@ export default class MachineManager {
 			socket.send({
 				event: 'button-lights-enabled',
 				data: { value: false, index: -1 },
-				receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+				receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
 			})
 			socket.send({
 				event: 'reset-combi',
@@ -241,7 +241,7 @@ export default class MachineManager {
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: index },
-					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+					receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
 				})
 			} else {
 				this._machine.animateWheelLock({ index, value: false, color: '#ffffff' })
@@ -322,7 +322,7 @@ export default class MachineManager {
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: false, index: -1 },
-					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+					receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
 				})
 				this._resetWheels()
 			})
@@ -370,7 +370,7 @@ export default class MachineManager {
 				socket.send({
 					event: 'button-lights-enabled',
 					data: { value: true, index: -1 },
-					receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+					receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
 				})
 				this._machine.wheels.forEach((wheel) => {
 					wheel.isDisabled = false
@@ -768,7 +768,7 @@ export default class MachineManager {
 		socket.send({
 			event: 'button-lights-enabled',
 			data: { value: false, index: -1 },
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+			receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
 		})
 		this._rollingPoints = 0
 
@@ -799,7 +799,7 @@ export default class MachineManager {
 		socket.send({
 			event: 'button-lights-enabled',
 			data: { value: false, index: -1 },
-			receiver: this._machine.isDebugDev ? 'physical-debug' : 'input-board',
+			receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
 		})
 		socket.send({
 			event: 'reset-combi',

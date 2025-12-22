@@ -36,6 +36,7 @@ import roofMaterialSettings from './roofMaterialSettings'
 import poutreMaterialSettings from './poutreMaterialSettings'
 import tableMaterialSettings from './tableMaterialSettings'
 import stairsMaterialSettings from './stairsMaterialSettings'
+import monsterMaterialSettings from './monsterMaterialSettings.js'
 
 export default class BackgroundEnvironment {
 	constructor() {
@@ -76,6 +77,8 @@ export default class BackgroundEnvironment {
 		this._createWhiteLightMaterial()
 		this._createLightMaterial()
 		this._createModel()
+		this._createMonsterMaterial()
+		this._createTempMonster()
 		this._createEventListeners()
 
 		this._createFloorMaterial()
@@ -207,6 +210,44 @@ export default class BackgroundEnvironment {
 		this._modelMeshes.wallMesh.material = new MeshBasicMaterial({
 			color: new Color(0, 0, 0),
 		})
+	}
+
+	_createTempMonster() {
+		this._monster = this._resources.items.monsterModel.scene
+		this._monster.name = 'monster'
+		this._monster.position.set(-3.302, -2.518, -38.745)
+		this._monster.scale.set(2, 2, 2)
+		this._monster.rotation.set(-0.0, 0.192, -0.001)
+
+		this._scene.add(this._monster)
+
+		this._monster.traverse((child) => {
+			if (child.isMesh) {
+				child.material = this._monsterMaterial
+			}
+
+			// Apply materials to specific parts
+		})
+	}
+
+	_createMonsterMaterial() {
+		this._monsterMaterial = new PhongCustomMaterial({
+			uniforms: monsterMaterialSettings,
+			name: 'Monster Material',
+			// useSelectiveLights: true,
+			// lights: ['lightEnvTwo'],
+			defines: {
+				USE_ROUGHNESS: true,
+				USE_MATCAP: false,
+				USE_ALBEDO: true,
+				USE_NORMAL: true,
+				USE_AO: false,
+				USE_POINT_LIGHTS: true,
+				USE_SPOT_LIGHTS: true,
+			},
+		})
+
+		this._materialsArray.push(this._monsterMaterial)
 	}
 
 	_createBorneMaterial() {
@@ -729,6 +770,7 @@ export default class BackgroundEnvironment {
 		})
 
 		// Material debug
+		addCustomMaterialDebug(debugFolder, monsterMaterialSettings, this._resources, this._monsterMaterial)
 		addCustomMaterialDebug(debugFolder, borneMaterialSettings, this._resources, this._borneMaterial)
 		addCustomMaterialDebug(debugFolder, chairTopMaterialSettings, this._resources, this._chairTopMaterial)
 		addCustomMaterialDebug(debugFolder, chairBottomMaterialSettings, this._resources, this._chairBottomMaterial)
@@ -823,6 +865,7 @@ export default class BackgroundEnvironment {
 			})
 
 		addTransformDebug(debugFolder, this._model)
+		addTransformDebug(debugFolder, this._monster)
 	}
 
 	_setupLightFlicker() {

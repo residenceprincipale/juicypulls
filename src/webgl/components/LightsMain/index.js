@@ -73,6 +73,10 @@ export default class LightsMain {
 		return this._lightRight
 	}
 
+	get spotLightTorch() {
+		return this._spotLightTorch
+	}
+
 	/**
 	 * Public
 	 */
@@ -342,7 +346,6 @@ export default class LightsMain {
 
 	_createPointLights() {
 		this._pointLightSettings.forEach((settings) => {
-			console.log('test')
 			const pointLight = new PointLight(
 				new Color(parseInt(settings.color.value)),
 				settings.intensity.value,

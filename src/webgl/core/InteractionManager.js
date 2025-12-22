@@ -19,7 +19,7 @@ export default class InteractionManager {
 		this.lastPosition = new Vector2()
 		this.dragElement = null
 
-		this.#setEvents()
+		this._createEventListeners()
 
 		this.interactiveObjects = []
 		this.intersectsObjects = []
@@ -61,7 +61,7 @@ export default class InteractionManager {
 		this.lastPosition.set(0, 0)
 	}
 
-	#setEvents() {
+	_createEventListeners() {
 		addEventListener('mousemove', this.handleMouseMove)
 		addEventListener('click', this.handleClick)
 		addEventListener('mousedown', this.handleMouseDown)
@@ -92,6 +92,9 @@ export default class InteractionManager {
 			this.intersectsObjects.push(intersect.object)
 			intersect.object.isHovered = true
 		})
+
+		this.previousPointer = { x: this.pointer.x, y: this.pointer.y }
+		if (this.previousPointer.x === this.pointer.x && this.previousPointer.y === this.pointer.y) this.needsUpdate = false
 	}
 
 	dispose() {
