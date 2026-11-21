@@ -23,7 +23,9 @@ export default class SceneManager {
 
 		// if scene name is not in the list, get the first one
 		if (!this.scenes[this._sceneName]) {
-			console.warn(`Scene ${this._sceneName} not found, using ${Object.keys(this.scenes)[0]} instead`)
+			if (this._sceneName) {
+				console.warn(`Scene ${this._sceneName} not found, using ${Object.keys(this.scenes)[0]} instead`)
+			}
 			this.sceneName = Object.keys(this.scenes)[0]
 		}
 

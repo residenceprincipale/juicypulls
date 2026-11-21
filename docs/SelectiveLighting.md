@@ -12,7 +12,9 @@ The system operates in two modes:
 
 ### 1. SelectiveLightManager
 
-Located in `src/webgl/core/SelectiveLightManager.js`, this class manages the configuration of selective lights.
+Located in `src/webgl/modules/SelectiveLightManager.js`, this class manages the configuration of selective lights.
+
+> Currently unused in practice: `LightsMain` disables the directional lights (`this._lightSettings = []`).
 
 **Key Methods:**
 - `initializeLights(lightSettings)` - Initialize with light configuration
@@ -183,13 +185,6 @@ Enable console logging to see which lights are configured for each material:
 // "Material 'My Material' using selective lights: ['lightTop', 'lightLeft']"
 // "Updated material 'My Material' selective lights: ['lightRight']"
 ```
-
-## Example Implementation
-
-See `src/webgl/examples/SelectiveLightingExample.js` for a complete working example that demonstrates:
-- Multiple materials with different light selections
-- Dynamic light changes
-- Various usage patterns
 
 ## Integration
 

@@ -12,8 +12,6 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				main: path.resolve(__dirname, 'src/pages/index.html'),
-				score: path.resolve(__dirname, 'src/pages/score/index.html'),
-				combi: path.resolve(__dirname, 'src/pages/combi/index.html'),
 			},
 		},
 	},

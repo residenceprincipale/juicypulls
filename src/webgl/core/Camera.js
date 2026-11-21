@@ -20,8 +20,9 @@ export default class Camera {
 		this.options = {
 			fov: 35,
 			frustum: { min: 0.1, max: 200 },
-			position: new Vector3(0.01, 0.01, 1.24),
-			target: new Vector3(0, 0, 0),
+			// Frames both machine screens, the wheels and the buttons, while the second roulette and the gun stay out of view
+			position: new Vector3(0.01, 0.07, 1.24),
+			target: new Vector3(0, 0.07, 0),
 			currentCamera: this.debug.active ? 'sceneCamera' : 'sceneCamera', // sorry
 		}
 

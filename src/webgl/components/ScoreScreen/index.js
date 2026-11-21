@@ -9,9 +9,7 @@ import screenCharactersSettings from './screenCharactersSettings'
 import metalSettings from './metalSettings'
 import ledsSettings from './ledsSettings'
 
-import { MSDFTextGeometry } from 'three-msdf-text-utils'
-
-import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
+import { Color } from 'three'
 import gsap from 'gsap'
 import { RoughEase } from 'gsap/EasePack'
 gsap.registerPlugin(RoughEase)
@@ -33,13 +31,9 @@ export default class ScoreScreen {
 
 		this._createMaterials()
 		this._createModel()
-		// this._createTextGeometry()
 		this._createEventListeners()
 
 		if (this._debug.active) this._createDebug()
-
-		this.updateQuota(6666)
-		this.updateScore(1000)
 
 		this.show()
 	}
@@ -234,6 +228,8 @@ export default class ScoreScreen {
 			},
 			2.5,
 		)
+
+		return this._showJackpotTimeline
 	}
 
 	update() {
@@ -273,27 +269,6 @@ export default class ScoreScreen {
 		this._model.rotation.set(0.35, 0.0, 0.0)
 
 		this._scene.add(this._model)
-	}
-
-	_createTextGeometry() {
-		const text = `QUOTA     1000
-			0000
-			0000      0000`
-		this._textGeometry = new MSDFTextGeometry({
-			text,
-			width: 1000,
-			flipY: true,
-			font: this._resources.items.leagueGothicFontFile.data,
-		})
-		console.log(this._textGeometry)
-
-		this._textMesh = new Mesh(this._textGeometry, this._screenMaterial)
-
-		this._textMesh.scale.set(-0.02, -0.02, 0.02)
-		this._textMesh.position.set(-1.564, -1.226, 1.878)
-		this._textMesh.rotation.set(-3.142, 0.001, -3.142)
-
-		this._scene.add(this._textMesh)
 	}
 
 	_createMaterials() {

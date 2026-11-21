@@ -1,13 +1,9 @@
 import Experience from 'core/Experience.js'
-import Socket from '@/scripts/Socket.js'
+import bus from 'core/EventBus.js'
+import { SCREEN_SYMBOLS, getSymbolTint } from 'webgl/modules/screenSymbols.js'
 
-import { MAIN_ROULETTE_CONFIG } from 'webgl/modules/MachineManager.js'
-import gsap from 'gsap'
-
-const multiplierOrder = ['x1', 'x3', 'x4', 'x5']
-const symbolOrder = MAIN_ROULETTE_CONFIG.symbolNames
-
-const SYMBOL_TINTS_ARRAY = ['#8bffe6', '#fb8bff', '#ffee8b', '#c08bff', '#00c8ff', '#ff0000']
+// Columns of the combinations table, left to right (column 0 holds the symbol icons)
+const COMBI_COLUMNS = ['x1', 'x3', 'x4', 'x5']
 
 export default class CombinationsScreenManager {
 	constructor() {
@@ -15,68 +11,56 @@ export default class CombinationsScreenManager {
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 
-		const socket = new Socket()
-		socket.connect('combi')
-
-		socket.on('update-combi', this._updateCombi)
-		socket.on('reset-combi', this._resetCombi)
-		socket.on('reset', this._resetCombi)
-		// socket.on('hide', this._hide)
-		// socket.on('show', this._show)
-		socket.on('jackpot', this._jackpot)
-		// socket.on('jackpot-end', this._jackpotEnd)
-		socket.on('farkle', this._farkle)
-		// socket.on('lose-final', this._loseFinal)
-		//
-
-		if (this._debug.active) this._createDebug()
+		this._createEventListeners()
 	}
 
+	/**
+	 * Getters & Setters
+	 */
 	set screen(value) {
 		this._screen = value
-		const indexRow = 1
-		const indexColumn = 4
-		gsap.delayedCall(1.5, () => {
-			this._screen.displayCombination({ indexRow, indexColumn })
-			this._symbolIndex = indexRow
-			this._jackpot()
-		})
 	}
 
 	get screen() {
 		return this._screen
 	}
 
+	/**
+	 * Public
+	 */
+	dispose() {
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
+	}
+
+	/**
+	 * Private
+	 */
 	_resetCombi() {
-		// call reset
+		this._screen.reset()
 	}
 
 	_updateCombi({ symbol, value }) {
-		const symbolIndex = symbolOrder.indexOf(symbol)
-		const multiplierIndex = multiplierOrder.indexOf(value)
-		if (symbolIndex === -1 || multiplierIndex === -1) {
-			console.warn('Invalid symbol or value:', symbol, value)
-			return
-		}
-		this._symbolIndex = symbolIndex
+		const rowIndex = SCREEN_SYMBOLS.indexOf(symbol)
+		const columnIndex = COMBI_COLUMNS.indexOf(value)
+		// Pairs ('x2') have no column in the table: keep the previous highlight
+		if (rowIndex === -1 || columnIndex === -1) return
 
-		this._screen.displayCombination({ indexRow: symbolIndex, indexColumn: multiplierIndex })
-
-		// Affichage des points si la combinaison existe
-		const combiKey = `${multiplierIndex + 3}${symbol}` // x1=3, x3=4, x4=5, x5=6 symboles
+		// Rows and columns start at 1 (row 0 is the header, column 0 the icons)
+		this._screen.displayCombination({ indexRow: rowIndex + 1, indexColumn: columnIndex + 1 })
 	}
 
-	_jackpot() {
-		// TODO: reset le marquee au update combi ? en focntion de la chronologie jsp comment ça marche deja
-		this._screen.displayMarquee({ tint: SYMBOL_TINTS_ARRAY[this._symbolIndex - 1] })
+	_jackpot({ symbol }) {
+		const tint = getSymbolTint(symbol)
+		if (tint) this._screen.displayMarquee({ tint })
 	}
 
-	_createDebug() {
-		if (!this._debug.active) return
-
-		const debugFolder = this._debug.ui.addFolder({
-			title: 'Combinations Screen Manager',
-			expanded: true,
-		})
+	_createEventListeners() {
+		this._unsubscribers = [
+			bus.on('update-combi', (data) => this._updateCombi(data)),
+			bus.on('reset-combi', () => this._resetCombi()),
+			bus.on('reset', () => this._resetCombi()),
+			bus.on('jackpot', (data) => this._jackpot(data)),
+		]
 	}
 }

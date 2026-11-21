@@ -1,10 +1,7 @@
 import Experience from 'core/Experience.js'
 import { CineonToneMapping, PCFSoftShadowMap, SRGBColorSpace, WebGLRenderer } from 'three'
-import { EffectComposer, EffectPass, RenderPass, ScanlineEffect } from 'postprocessing'
-import { EffectComposer as ThreeEffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass as ThreeRenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { VhsEffect } from 'webgl/effects/VHS/VhsEffect.js'
-import { TransitionEffect } from 'webgl/effects/Transition/TransitionEffect.js'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { CustomUnrealBloomPass } from 'webgl/vendor/bloom/CustomUnrealBloomPass.js'
 import PostProcessingSettings from 'core/PostProcessingSettings.js'
 
@@ -40,9 +37,9 @@ export default class Renderer {
 		this.instance.setSize(this.sizes.width, this.sizes.height)
 		this.instance.setPixelRatio(this.sizes.pixelRatio)
 
-		// Resize active composer
-		if (this.activeComposer) {
-			this.activeComposer.setSize(this.sizes.width, this.sizes.height)
+		// Resize composer
+		if (this.composer) {
+			this.composer.setSize(this.sizes.width, this.sizes.height)
 		}
 
 		// Resize bloom pass
@@ -53,28 +50,11 @@ export default class Renderer {
 
 	update() {
 		// Use composer if available, otherwise render directly
-		if (this.activeComposer) {
-			this.activeComposer.render()
+		if (this.composer) {
+			this.composer.render()
 		} else {
 			this.instance.render(this.scene, this.camera.instance)
 		}
-	}
-
-	hasPostProcessingPasses() {
-		const sceneName = this.getCurrentSceneName()
-		const sceneSettings = this.postProcessingSettings.sceneSettings[sceneName]
-
-		if (!sceneSettings) return false
-
-		// Check if any effect is enabled
-		for (const effectName in sceneSettings) {
-			const effect = sceneSettings[effectName]
-			if (effect && effect.enabled) {
-				return true
-			}
-		}
-
-		return false
 	}
 
 	getCurrentSceneName() {
@@ -86,37 +66,28 @@ export default class Renderer {
 	}
 
 	createPostProcessing() {
-		// Clear any existing composers
-		this.activeComposer = null
+		// Clear any existing composer
 		this.composer = null
-		this.threeComposer = null
 		this.bloomPass = null
-
-		// Only create post-processing if there are passes to use
-		if (!this.hasPostProcessingPasses()) {
-			console.log('No post-processing passes needed, using direct rendering')
-			return
-		}
 
 		const sceneName = this.getCurrentSceneName()
 		const bloomSettings = this.postProcessingSettings.getBloomSettings(sceneName)
 
-		if (bloomSettings && bloomSettings.enabled) {
-			this.createBloomPostProcessing(bloomSettings)
-		} else {
-			// Future: Add other post-processing effects here
-			// For now, if no bloom but has other effects, we could create standard post-processing
-			console.log('No recognized post-processing effects enabled')
+		// Only create post-processing if there are passes to use
+		if (!bloomSettings || !bloomSettings.enabled) {
+			console.log('No post-processing passes needed, using direct rendering')
+			return
 		}
+
+		this.createBloomPostProcessing(bloomSettings)
 	}
 
 	createBloomPostProcessing(bloomSettings) {
-		// Create Three.js EffectComposer for bloom
-		this.threeComposer = new ThreeEffectComposer(this.instance)
+		this.composer = new EffectComposer(this.instance)
 
 		// Add render pass
-		const renderPass = new ThreeRenderPass(this.scene, this.camera.instance)
-		this.threeComposer.addPass(renderPass)
+		const renderPass = new RenderPass(this.scene, this.camera.instance)
+		this.composer.addPass(renderPass)
 
 		// Create and configure bloom pass
 		this.bloomPass = new CustomUnrealBloomPass({
@@ -131,57 +102,16 @@ export default class Renderer {
 			dpr: this.sizes.pixelRatio,
 		})
 
-		this.threeComposer.addPass(this.bloomPass)
-
-		// Set as active composer
-		this.activeComposer = this.threeComposer
+		this.composer.addPass(this.bloomPass)
 
 		// Set initial size
-		this.activeComposer.setSize(this.sizes.width, this.sizes.height)
+		this.composer.setSize(this.sizes.width, this.sizes.height)
 		this.bloomPass.setSize(this.sizes.width, this.sizes.height)
 
 		// Add debug controls if debug is active
 		if (this.experience.debug.active) {
 			this.addBloomDebugControls(bloomSettings)
 		}
-	}
-
-	createStandardPostProcessing() {
-		// Create postprocessing EffectComposer for other effects
-		this.composer = new EffectComposer(this.instance)
-		this.composer.addPass(new RenderPass(this.scene, this.camera.instance))
-
-		this.transitionEffect = new TransitionEffect()
-		this.transitionPass = new EffectPass(this.camera.instance, this.transitionEffect)
-		this.transitionPass.enabled = false
-		this.composer.addPass(this.transitionPass)
-
-		// Clear any existing interval
-		if (this.transitionInterval) {
-			clearInterval(this.transitionInterval)
-		}
-
-		this.transitionTimeout = null
-		this.transitionInterval = setInterval(() => {
-			if (this.transitionPass.enabled) return
-			this.transitionPass.enabled = true
-			
-			// Clear any existing timeout
-			if (this.transitionTimeout) {
-				clearTimeout(this.transitionTimeout)
-			}
-			
-			this.transitionTimeout = setTimeout(() => {
-				this.transitionPass.enabled = false
-			}, 200)
-		}, 3000)
-
-		this.composer.addPass(new EffectPass(this.camera.instance, new VhsEffect()))
-
-		// Set as active composer
-		this.activeComposer = this.composer
-
-		console.log('Standard post-processing initialized')
 	}
 
 	addBloomDebugControls(bloomSettings) {
@@ -198,8 +128,6 @@ export default class Renderer {
 				if (this.bloomPass) {
 					this.bloomPass.enabled = ev.value
 				}
-				// Recreate post-processing if bloom is toggled
-				this.createPostProcessing()
 			})
 
 		folder
@@ -317,78 +245,26 @@ export default class Renderer {
 		}
 	}
 
-	// Method to update bloom settings at runtime
-	updateBloomSettings(property, value) {
-		const sceneName = this.getCurrentSceneName()
-		if (this.postProcessingSettings.updateBloomSetting(sceneName, property, value)) {
-			if (this.bloomPass && this.bloomPass[property] !== undefined) {
-				this.bloomPass[property] = value
-			}
-		}
-	}
-
-	// Method to toggle bloom
-	toggleBloom(enabled) {
-		const sceneName = this.getCurrentSceneName()
-		this.postProcessingSettings.updateBloomSetting(sceneName, 'enabled', enabled)
-		if (this.bloomPass) {
-			this.bloomPass.enabled = enabled
-		}
-		// Recreate post-processing to handle composer changes
-		this.createPostProcessing()
-	}
-
 	// Method to update camera references in postprocessing
 	updateCameraReferences() {
-		if (!this.activeComposer) return
+		if (!this.composer) return
 
-		// Update Three.js composer camera references
-		if (this.threeComposer && this.threeComposer.passes) {
-			this.threeComposer.passes.forEach((pass) => {
-				if (pass.camera) {
-					pass.camera = this.camera.instance
-				}
-			})
-		}
-
-		// Update postprocessing composer camera references
-		if (this.composer && this.composer.passes) {
-			this.composer.passes.forEach((pass) => {
-				if (pass.camera) {
-					pass.camera = this.camera.instance
-				}
-			})
-		}
+		this.composer.passes.forEach((pass) => {
+			if (pass.camera) {
+				pass.camera = this.camera.instance
+			}
+		})
 
 		// Update bloom pass camera reference
 		if (this.bloomPass && this.bloomPass._camera) {
 			this.bloomPass._camera = this.camera.instance
 		}
 
-		// Update transition pass camera reference
-		if (this.transitionPass && this.transitionPass.camera) {
-			this.transitionPass.camera = this.camera.instance
-		}
-
 		console.log('Updated camera references in postprocessing')
 	}
 
 	dispose() {
-		// Clear intervals and timeouts
-		if (this.transitionInterval) {
-			clearInterval(this.transitionInterval)
-			this.transitionInterval = null
-		}
-		if (this.transitionTimeout) {
-			clearTimeout(this.transitionTimeout)
-			this.transitionTimeout = null
-		}
-
-		// Dispose composers
-		if (this.threeComposer) {
-			this.threeComposer.dispose()
-			this.threeComposer = null
-		}
+		// Dispose composer
 		if (this.composer) {
 			this.composer.dispose()
 			this.composer = null
@@ -399,13 +275,5 @@ export default class Renderer {
 			this.bloomPass.dispose()
 			this.bloomPass = null
 		}
-
-		// Dispose effects
-		if (this.transitionEffect) {
-			this.transitionEffect.dispose()
-			this.transitionEffect = null
-		}
-
-		this.activeComposer = null
 	}
 }

@@ -1,15 +1,13 @@
-import Socket from '@/scripts/Socket.js'
+import bus from 'core/EventBus.js'
 import gsap from 'gsap'
 import { MAIN_ROULETTE_CONFIG } from './MachineManager'
 
-const socket = new Socket()
+// Not instantiated yet: Main runs `startSkipIntro()` instead of the tutorial
 export default class TutorialManager {
 	constructor(options = {}) {
 		this._machineManager = options.machineManager
 		this._machine = options.machine
 		this._scene = options.scene
-
-		socket.connect('tutorial')
 
 		this._createEventListeners()
 
@@ -19,29 +17,16 @@ export default class TutorialManager {
 	start() {
 		this._isStarted = true
 
-		socket.send({
-			event: 'start-tutorial',
-			data: {},
-		})
-
-		socket.send({
-			event: 'show-message',
-			data: {
-				message: 'PULL THE LEVER',
-				size: 'fullscreen',
-			},
-			receiver: 'score',
-		})
-
-		socket.send({
-			event: 'show-message',
-			data: {
-				message: 'PULL THE LEVER',
-				size: 'fullscreen',
-			},
-			receiver: 'combi',
+		bus.emit('show-message', {
+			message: 'PULL THE LEVER',
+			size: 'fullscreen',
 		})
 		this._scene._scene.resources.items.messageAudio.play()
+	}
+
+	dispose() {
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
 	}
 
 	_setupMachineManager() {
@@ -51,38 +36,28 @@ export default class TutorialManager {
 	}
 
 	_goToHoldStep() {
-		socket.send({
-			event: 'show',
-			receiver: ['combi', 'score'],
-		})
-
-		socket.send({
-			event: 'hide-message',
-			receiver: ['combi', 'score'],
-		})
+		bus.emit('show')
+		bus.emit('hide-message')
 
 		gsap.delayedCall(1.5, () => {
-			socket.send({
-				event: 'show-message',
-				data: {
-					message: 'PRESS BUTTONS TO HOLD WHEELS, \n GET BIG COMBOS',
-					size: 'inner',
-					modifier: [
-						{
-							text: 'BUTTONS',
-							color: 'yellow',
-						},
-						{
-							text: 'COMBOS',
-							color: 'yellow',
-						},
-					],
-				},
-				receiver: 'score',
+			bus.emit('show-message', {
+				screen: 'score',
+				message: 'PRESS BUTTONS TO HOLD WHEELS, \n GET BIG COMBOS',
+				size: 'inner',
+				modifier: [
+					{
+						text: 'BUTTONS',
+						color: 'yellow',
+					},
+					{
+						text: 'COMBOS',
+						color: 'yellow',
+					},
+				],
 			})
 			this._scene._scene.resources.items.messageAudio.play()
 
-			this._machineManager.sendPointsToTutorial()
+			this._listenToPoints = true
 
 			this._machine.animateWheelBlink({ index: 1, value: true })
 			this._machine.animateWheelBlink({ index: 2, value: true })
@@ -93,24 +68,18 @@ export default class TutorialManager {
 	_goToBankStep() {
 		this._isBankStep = true
 
-		socket.send({
-			event: 'hide-message',
-			receiver: 'score',
-		})
+		bus.emit('hide-message', { screen: 'score' })
 
-		socket.send({
-			event: 'show-message',
-			data: {
-				message: 'BANK ANYTIME TO REACH QUOTA,\nWATCH YOUR JETONS.',
-				size: 'inner',
-				modifier: [
-					{
-						text: 'BANK',
-						color: 'yellow',
-					},
-				],
-			},
-			receiver: 'combi',
+		bus.emit('show-message', {
+			screen: 'combi',
+			message: 'BANK ANYTIME TO REACH QUOTA,\nWATCH YOUR JETONS.',
+			size: 'inner',
+			modifier: [
+				{
+					text: 'BANK',
+					color: 'yellow',
+				},
+			],
 		})
 		this._scene._scene.resources.items.messageAudio.play()
 
@@ -126,43 +95,22 @@ export default class TutorialManager {
 	}
 
 	_goToLastStep() {
-		socket.send({
-			event: 'hide-message',
-			receiver: 'combi',
-		})
+		bus.emit('hide-message', { screen: 'combi' })
 
 		gsap.delayedCall(1, () => {
-			socket.send({
-				event: 'show-message',
-				data: {
-					message: 'SPIN AT WILL.\nMISS ONCE, LOSE IT ALL.',
-					size: 'inner',
-					// modifier: [
-					//     {
-					//         text: 'YOU WIN!',
-					//         color: 'yellow',
-					//     },
-					// ],
-				},
-				receiver: 'score',
+			bus.emit('show-message', {
+				screen: 'score',
+				message: 'SPIN AT WILL.\nMISS ONCE, LOSE IT ALL.',
+				size: 'inner',
 			})
 			this._scene._scene.resources.items.messageAudio.play()
 		})
 
 		gsap.delayedCall(2, () => {
-			socket.send({
-				event: 'show-message',
-				data: {
-					message: 'NOW PULL THE LEVER TO START',
-					size: 'inner',
-					// modifier: [
-					//     {
-					//         text: 'YOU WIN!',
-					//         color: 'yellow',
-					//     },
-					// ],
-				},
-				receiver: 'combi',
+			bus.emit('show-message', {
+				screen: 'combi',
+				message: 'NOW PULL THE LEVER TO START',
+				size: 'inner',
 			})
 			this._scene._scene.resources.items.messageAudio.play()
 
@@ -177,21 +125,15 @@ export default class TutorialManager {
 		this._isStarted = false
 		this._listenToLeverStart = false
 
-		socket.send({
-			event: 'hide-message',
-			receiver: 'combi',
-		})
-
-		socket.send({
-			event: 'hide-message',
-			receiver: 'score',
-		})
+		bus.emit('hide-message')
 	}
 
 	_createEventListeners() {
-		socket.on('lever', this._leverClickHandler.bind(this))
-		socket.on('update-rolling-points', this._updateRollingPoints.bind(this))
-		socket.on('button-collect', this._buttonCollectClickHandler.bind(this))
+		this._unsubscribers = [
+			bus.on('lever', () => this._leverClickHandler()),
+			bus.on('update-rolling-points', (data) => this._updateRollingPoints(data)),
+			bus.on('button-collect', () => this._buttonCollectClickHandler()),
+		]
 	}
 
 	_leverClickHandler() {
@@ -208,7 +150,7 @@ export default class TutorialManager {
 	}
 
 	_updateRollingPoints(data) {
-		if (this._isBankStep) return
+		if (!this._listenToPoints || this._isBankStep) return
 
 		if (data.value === MAIN_ROULETTE_CONFIG.combinationPoints['3🍒']) {
 			this._goToBankStep()

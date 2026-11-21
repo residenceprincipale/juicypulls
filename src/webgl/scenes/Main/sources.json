@@ -12,12 +12,6 @@
 		"colorSpace": "srgb"
 	},
 	{
-		"name": "wheelNormal",
-		"path": "./textures/roue-4-normal.jpg",
-		"flipY": false,
-		"repeatWrapping": true
-	},
-	{
 		"name": "baseRoughness",
 		"path": "./textures/baseRoughness1.jpg",
 		"flipY": false,
@@ -55,10 +49,6 @@
 	{
 		"name": "metalMatcap",
 		"path": "./textures/matcaps/metal-matcap-3.jpeg"
-	},
-	{
-		"name": "metalMatcap-1",
-		"path": "./textures/matcaps/metal-matcap-1.jpeg"
 	},
 	{
 		"name": "metalMatcapShiny",
@@ -141,13 +131,6 @@
 		"autoplay": false
 	},
 	{
-		"name": "currentAudio",
-		"path": "./audio/current.mp3",
-		"loop": false,
-		"volume": 0.5,
-		"autoplay": false
-	},
-	{
 		"name": "shooterAudio",
 		"path": "./audio/shooter.mp3",
 		"loop": false,
@@ -187,11 +170,6 @@
 	{
 		"name": "secondRouletteAlbedo",
 		"path": "./textures/second-wheel/BASE_ROULETTE_Diffuse.jpg",
-		"flipY": false
-	},
-	{
-		"name": "secondRouletteRoughness",
-		"path": "./textures/second-wheel/BASE_ROULETTE_Ro.jpg",
 		"flipY": false
 	},
 	{
@@ -244,11 +222,6 @@
 	{
 		"name": "gunBerettaRoughness",
 		"path": "./textures/gun/beretta-roughness.jpg",
-		"flipY": false
-	},
-	{
-		"name": "gunBerettaNormal",
-		"path": "./textures/gun/beretta-normal.jpg",
 		"flipY": false
 	},
 	{
@@ -327,27 +300,6 @@
 		"name": "machineModel",
 		"path": "./models/machine.glb"
 	},
-
-	{
-		"name": "ambientTexture",
-		"path": "./../textures/combi/ambient.webp"
-	},
-	{
-		"name": "barsTexture",
-		"path": "./../textures/combi/bars.webp"
-	},
-	{
-		"name": "innerTexture",
-		"path": "./../textures/combi/inner.webp"
-	},
-	{
-		"name": "outerTexture",
-		"path": "./../textures/combi/outer.webp"
-	},
-	{
-		"name": "strokeTexture",
-		"path": "./../textures/combi/stroke.webp"
-	},
 	{
 		"name": "combinationsTexture",
 		"path": "./../textures/combi/combinations.jpg",
@@ -385,42 +337,10 @@
 		"flipY": true
 	},
 	{
-		"name": "leagueGothicFontFile",
-		"path": "./../fonts/msdf/league-gothic/LeagueGothic-Regular.json",
-		"debug": false
-	},
-	{
 		"name": "screenCharactersAtlas",
 		"path": "./../textures/score-screen-chars.jpg",
 		"flipY": false,
 		"debug": false
-	},
-
-	{
-		"name": "ambientTexture",
-		"path": "./../textures/combi/ambient.webp"
-	},
-	{
-		"name": "barsTexture",
-		"path": "./../textures/combi/bars.webp"
-	},
-	{
-		"name": "innerTexture",
-		"path": "./../textures/combi/inner.webp"
-	},
-	{
-		"name": "outerTexture",
-		"path": "./../textures/combi/outer.webp"
-	},
-	{
-		"name": "strokeTexture",
-		"path": "./../textures/combi/stroke.webp"
-	},
-	{
-		"name": "combinationsTexture",
-		"path": "./../textures/combi/combinations.jpg",
-		"repeatWrapping": false,
-		"flipY": false
 	},
 	{
 		"name": "combinationScreenModel",

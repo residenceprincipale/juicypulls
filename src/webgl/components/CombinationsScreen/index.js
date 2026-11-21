@@ -23,7 +23,7 @@ export default class CombinationsScreen {
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
 		this._tint = new Color('white')
-		// this._resource = this._resources.items.environmentModel
+		this._blinkingTimelines = []
 
 		this._createMaterials()
 		this._createModel()
@@ -95,13 +95,19 @@ export default class CombinationsScreen {
 		if (this._screenMaterial) this._screenMaterial.uniforms.uTime.value = this._experience.time.elapsed * 0.001
 	}
 
+	/**
+	 * @param {number} indexRow 1–6 (row 0 is the header)
+	 * @param {number} indexColumn 1–4 (column 0 holds the symbol icons)
+	 */
 	displayCombination({ indexRow, indexColumn }) {
 		this._screenMaterial.uniforms['uHighlightIndex' + indexRow].value = indexColumn
 
-		this._blinkingTimeline?.kill()
-		this._blinkingTimeline = gsap.timeline()
-		this._blinkingTimeline.to(this._screenMaterial.uniforms['uBlinkingFactor' + indexRow], { value: 1, duration: 0 })
-		this._blinkingTimeline.to(this._screenMaterial.uniforms['uBlinkingFactor' + indexRow], { value: 0, duration: 0 }, 2)
+		// One blinking timeline per row, so highlighting a row doesn't leave another one blinking
+		const blinkingFactor = this._screenMaterial.uniforms['uBlinkingFactor' + indexRow]
+		this._blinkingTimelines[indexRow]?.kill()
+		this._blinkingTimelines[indexRow] = gsap.timeline()
+		this._blinkingTimelines[indexRow].to(blinkingFactor, { value: 1, duration: 0 })
+		this._blinkingTimelines[indexRow].to(blinkingFactor, { value: 0, duration: 0 }, 2)
 	}
 
 	displayMarquee({ tint }) {

@@ -1,29 +1,28 @@
 import Experience from 'core/Experience.js'
+import bus from 'core/EventBus.js'
 import gsap from 'gsap'
-import Socket from '@/scripts/Socket.js'
-
-const socket = new Socket()
 
 // Configuration constants moved outside the class
 export const MAIN_ROULETTE_CONFIG = {
 	numWheels: 5,
 	segments: 6,
-	wheelEmojis: ['🍋', '🍇', '🍊', '🍒', '💀', '7'].reverse(),
+	// Index = segment on the wheel texture. The emoji are placeholders for the symbol art.
 	symbolNames: ['7', '💀', '🍒', '🍊', '🍇', '🍋'],
 	symbolValues: {
-		'🍇': 100, // 🍇
-		'🍊': 50, // 🍊
-		'🍋': 0, // 🍋
-		'🍒': 0, // 🍒
-		'💀': 'malus', // Crâne
-		7: 'special', // Œil
+		'🍇': 100,
+		'🍊': 50,
+		'🍋': 0,
+		'🍒': 0,
+		'💀': 'malus',
+		7: 'special', // 3 or more trigger the second roulette
 	},
+	// Taken from the bank on every spin, by number of skulls
 	malusPoints: {
-		1: -25, // Two craniums
-		2: -50, // One cranium
-		3: -75, // Three craniums
-		4: -100, // Four craniums
-		5: -125, // Five craniums
+		1: -25,
+		2: -50,
+		3: -75,
+		4: -100,
+		5: -125,
 	},
 	occurrencePoints: {
 		triple: 100, // Points for a triple of any symbol (except cranium)
@@ -52,19 +51,18 @@ const SECOND_ROULETTE_CONFIG = {
 
 export default class MachineManager {
 	constructor(options = {}) {
-		socket.connect('machine')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 
 		this._machine = options.machine
 		this._secondRoulette = options.secondRoulette
-		this._physicalDebug = options.physicalDebug
 		this._hands = options.hands
 		this._sceneInstance = options.scene
 
 		this._initializeGameState()
 		this._createEventListeners()
+		this._emitInitialState()
 
 		if (this._debug.active) this._createDebug()
 	}
@@ -156,15 +154,20 @@ export default class MachineManager {
 		this._round = value
 	}
 
+	get multiplier() {
+		return this._multiplier
+	}
+
+	set multiplier(value) {
+		this._multiplier = value
+		bus.emit('update-multiplier', { value })
+	}
+
 	/**
 	 * Public
 	 */
 	spinWheels(riggedCombination = null) {
 		this._spinWheels(riggedCombination)
-	}
-
-	sendPointsToTutorial() {
-		this._sendPointsToTutorial = true
 	}
 
 	/**
@@ -173,53 +176,29 @@ export default class MachineManager {
 	_initializeGameState() {
 		// Game state
 		this._rollingPoints = 0
-		this._lockedPoints = 0
 		this._collectedPoints = 0
 		this._round = 0
-		this._maxSpins = false
-		this._spinsLeft = 3
 		this._currentSpinIsDone = true
 		this._currentSpins = 0
-		this._currentSpinPoints = 0
 		this._spinTokens = 0
 		this._quota = 0
 		this._multiplier = 1
 
-		socket.on('open', () => {
-			socket.send({
-				event: 'update-spin-tokens',
-				data: {
-					value: this._spinTokens,
-				},
-				receiver: 'score',
-			})
-
-			socket.send({
-				event: 'button-lights-enabled',
-				data: { value: false, index: -1 },
-				receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
-			})
-			socket.send({
-				event: 'reset-combi',
-				receiver: 'combi',
-			})
-			socket.send({
-				event: `x${this._multiplier}`,
-				receiver: 'bulbs',
-			})
-
-			socket.send({
-				event: 'reset',
-			})
-		})
-
 		// Main roulette state
 		this._results = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
 		this._previousResults = new Array(MAIN_ROULETTE_CONFIG.numWheels).fill(0)
-		this._customCombinations = new Map()
 
 		// Second roulette state
 		this._secondRouletteResults = new Array(SECOND_ROULETTE_CONFIG.numWheels).fill(0)
+	}
+
+	// Puts the screens and the buttons in their initial state
+	_emitInitialState() {
+		bus.emit('reset')
+		bus.emit('reset-combi')
+		bus.emit('update-spin-tokens', { value: this._spinTokens })
+		bus.emit('update-multiplier', { value: this._multiplier })
+		bus.emit('button-lights-enabled', { value: false, index: -1 })
 	}
 
 	_spinWheels(riggedCombination = null) {
@@ -238,11 +217,7 @@ export default class MachineManager {
 				wheel.isDisabled = true
 				this._anyLockedWheels = true
 				console.log(`Wheel ${index} is blocked`)
-				socket.send({
-					event: 'button-lights-enabled',
-					data: { value: false, index: index },
-					receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
-				})
+				bus.emit('button-lights-enabled', { value: false, index })
 			} else {
 				this._machine.animateWheelLock({ index, value: false, color: '#ffffff' })
 			}
@@ -258,7 +233,6 @@ export default class MachineManager {
 		// use a spin token if there is no locked wheels or if it's the first spin
 		if (this._currentSpins === 0 || !this._anyLockedWheels) {
 			// Check if player has spin tokens available
-
 			if (this._spinTokens <= 0) {
 				this._logMessage('No spin tokens left! Game over.')
 				this._sceneInstance.lose()
@@ -266,8 +240,7 @@ export default class MachineManager {
 			}
 
 			// Decrement spin tokens only for the first spin of a round
-			this._spinTokens -= 1
-			socket.send({ event: 'update-spin-tokens', data: { value: this._spinTokens } })
+			this.spinTokens -= 1
 		}
 
 		this._currentSpinIsDone = false
@@ -283,7 +256,7 @@ export default class MachineManager {
 			return Math.floor(Math.random() * MAIN_ROULETTE_CONFIG.segments)
 		})
 
-		this._logSpinResult(this._results, MAIN_ROULETTE_CONFIG.wheelEmojis)
+		this._logSpinResult(this._results)
 
 		// Log if rigged spin was used
 		if (riggedCombination) {
@@ -295,6 +268,7 @@ export default class MachineManager {
 
 		// Check for triple cranium farkle
 		const counts = this._countOccurrences(this._results, MAIN_ROULETTE_CONFIG.symbolNames)
+		let isCraniumFarkle = false
 		if (counts['💀'] >= 1) {
 			gsap.delayedCall(2, () => {
 				this.collectedPoints += MAIN_ROULETTE_CONFIG.malusPoints[counts['💀']] || 0
@@ -302,6 +276,7 @@ export default class MachineManager {
 
 			if (counts['💀'] >= 3) {
 				this._logMessage('Farkle! Triple cranium - score of the round is lost.')
+				isCraniumFarkle = true
 				this._rollingPoints = 0
 				this._currentSpins = 0
 				this._updatePointsDisplay()
@@ -319,11 +294,7 @@ export default class MachineManager {
 			this._updatePointsDisplay()
 			gsap.delayedCall(2, () => {
 				this._triggerSecondRoulette()
-				socket.send({
-					event: 'button-lights-enabled',
-					data: { value: false, index: -1 },
-					receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
-				})
+				bus.emit('button-lights-enabled', { value: false, index: -1 })
 				this._resetWheels()
 			})
 		}
@@ -332,16 +303,16 @@ export default class MachineManager {
 
 		gsap.delayedCall(2, () => {
 			this._currentSpinIsDone = true
+
+			// The cranium farkle above already ended the turn
+			if (isCraniumFarkle) return
+
 			if (this._machine.wheels.filter((wheel) => wheel.isLocked).length >= 2) {
 				this._subliminalTimeout = setTimeout(
 					() => {
 						const messages = ['SPIN MORE', 'DONT STOP NOW', 'KEEP SPINNING', 'JUST A LITTLE MORE']
-						socket.send({
-							event: 'show-subliminal',
-							receiver: 'game',
-							data: {
-								message: messages[Math.floor(Math.random() * messages.length)],
-							},
+						bus.emit('show-subliminal', {
+							message: messages[Math.floor(Math.random() * messages.length)],
 						})
 						this._subliminalTimeout = null
 					},
@@ -362,16 +333,12 @@ export default class MachineManager {
 				return
 			}
 
-			this._rollingPoints = this._getPoints().points || 0
+			this._rollingPoints = this._getPoints().points
 
 			this._updatePointsDisplay()
 
 			if (this._currentSpins === 1) {
-				socket.send({
-					event: 'button-lights-enabled',
-					data: { value: true, index: -1 },
-					receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
-				})
+				bus.emit('button-lights-enabled', { value: true, index: -1 })
 				this._machine.wheels.forEach((wheel) => {
 					wheel.isDisabled = false
 				})
@@ -404,7 +371,7 @@ export default class MachineManager {
 
 		// If no wheels are locked, return 0 points
 		if (results.length === 0) {
-			return 0
+			return { points: 0, pointsBeforeCranium: 0 }
 		}
 
 		// Count occurrences of symbols in locked wheels
@@ -422,22 +389,15 @@ export default class MachineManager {
 			}
 		})
 
-		socket.send({
-			event: 'reset-combi',
-			receiver: 'combi',
-		})
+		bus.emit('reset-combi')
 		results.forEach((index) => {
 			const symbolName = MAIN_ROULETTE_CONFIG.symbolNames[index]
 
 			counts[symbolName] = (counts[symbolName] || 0) + 1
 			if (counts[symbolName] !== 0 && options.lockedOnly) {
-				socket.send({
-					event: 'update-combi',
-					data: {
-						symbol: symbolName,
-						value: `x${counts[symbolName] || 0}`,
-					},
-					receiver: 'combi',
+				bus.emit('update-combi', {
+					symbol: symbolName,
+					value: `x${counts[symbolName] || 0}`,
 				})
 			}
 		})
@@ -458,18 +418,7 @@ export default class MachineManager {
 					excludedSymbols.push(symbol)
 					// Check if the symbol is new, compare counts with lockedCounts
 					if (counts[symbol] - (lockedCounts[symbol] || 0) > 0 && counts[symbol] >= 3) {
-						socket.send({
-							event: 'jackpot',
-							data: {
-								symbol: symbol,
-								count: counts[symbol],
-							},
-						})
-
-						socket.send({
-							event: 'anim',
-							receiver: 'bulbs',
-						})
+						bus.emit('jackpot', { symbol, count: counts[symbol] })
 						this._machine.animateJackpot(symbol)
 					}
 				}
@@ -525,17 +474,7 @@ export default class MachineManager {
 
 			// Check if the symbol is a new one, compare counts with lockedCounts
 			if (counts[symbol] - (lockedCounts[symbol] || 0) > 0 && counts[symbol] >= 3) {
-				socket.send({
-					event: 'jackpot',
-					data: {
-						symbol: symbol,
-						count: count,
-					},
-				})
-				socket.send({
-					event: 'anim',
-					receiver: 'bulbs',
-				})
+				bus.emit('jackpot', { symbol, count })
 				this._machine.animateJackpot(symbol)
 			}
 		})
@@ -562,7 +501,6 @@ export default class MachineManager {
 		this._secondRouletteResults = Array(SECOND_ROULETTE_CONFIG.numWheels)
 			.fill(0)
 			.map(() => Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments))
-		// this._secondRouletteResults = [0, Math.floor(Math.random() * SECOND_ROULETTE_CONFIG.segments)] // Always multiplier x1 for the second roulette
 
 		// Animate the wheels
 		await this._animateWheelSpin(
@@ -589,25 +527,19 @@ export default class MachineManager {
 		//do actions depending on the combination of the two wheels
 		const firstWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis1[this._secondRouletteResults[0]]
 		const secondWheelSymbol = SECOND_ROULETTE_CONFIG.wheelEmojis2[this._secondRouletteResults[1]]
+		const factor = parseInt(secondWheelSymbol.replace('x', ''), 10) || 1
+
 		switch (firstWheelSymbol) {
 			case 'multiplier':
-				socket.send({ event: secondWheelSymbol, receiver: 'bulbs' })
-				this._multiplier = parseInt(secondWheelSymbol.replace('x', '') || 1)
+				this.multiplier = factor
 				break
 			case 'token':
-				this._spinTokens += parseInt(secondWheelSymbol.replace('x', '') || 1)
-				socket.send({
-					event: 'update-spin-tokens',
-					data: { value: this._spinTokens },
-				})
+				this.spinTokens += factor
 				break
 			case '+100':
 			case '-100':
-				const points =
-					parseInt(firstWheelSymbol.replace('+', '').replace('-', '')) * (firstWheelSymbol.startsWith('+') ? 1 : -1)
-				this._collectedPoints = Math.max(0, this._collectedPoints + points * (secondWheelSymbol.replace('x', '') || 1))
-				this._updateCollectedPointsDisplay()
-				this._collect()
+				// Goes straight to the bank (doesn't check the quota, see CLAUDE.md known bugs)
+				this.collectedPoints = this._collectedPoints + parseInt(firstWheelSymbol, 10) * factor
 				break
 		}
 	}
@@ -655,64 +587,34 @@ export default class MachineManager {
 		return counts
 	}
 
-	_logSpinResult(results, wheelEmojis, isSecondRoulette = false) {
-		const resultEmojis = results.map((index) => wheelEmojis[index]).join(' ')
-		const message = isSecondRoulette ? `Second Roulette Spin Result: ${resultEmojis}` : `Spin Result: ${resultEmojis}`
-
-		if (this._physicalDebug) {
-			this._physicalDebug.printToRightScreen(message)
-		}
+	_logSpinResult(results) {
+		const resultEmojis = results.map((index) => MAIN_ROULETTE_CONFIG.symbolNames[index]).join(' ')
+		this._logMessage(`Spin Result: ${resultEmojis}`)
 	}
 
 	_logMessage(message) {
 		console.log(message)
-		// if (this._physicalDebug) {
-		// 	this._physicalDebug.printToRightScreen(message)
-		// }
 	}
 
 	/**
 	 * UI Updates
 	 */
 	_updatePointsDisplay() {
-		socket.send({
-			event: 'update-rolling-points',
-			data: {
-				value: this._rollingPoints,
-			},
-			receiver: this._sendPointsToTutorial ? ['tutorial', 'score'] : 'score',
-		})
+		bus.emit('update-rolling-points', { value: this._rollingPoints })
 	}
 
 	_updateSpinTokensDisplay() {
-		socket.send({
-			event: 'update-spin-tokens',
-			data: {
-				value: this._spinTokens,
-			},
-			receiver: 'score',
-		})
+		bus.emit('update-spin-tokens', { value: this._spinTokens })
 
 		this._logMessage(`Spin tokens remaining: ${this._spinTokens}`)
 	}
 
 	_updateCollectedPointsDisplay() {
-		socket.send({
-			event: 'update-collected-points',
-			data: {
-				value: this._collectedPoints,
-			},
-			receiver: 'score',
-		})
+		bus.emit('update-collected-points', { value: this._collectedPoints })
 	}
 
 	_updateQuotaDisplay() {
-		socket.send({
-			event: 'update-quota',
-			data: {
-				value: this._quota,
-			},
-		})
+		bus.emit('update-quota', { value: this._quota })
 	}
 
 	/**
@@ -720,10 +622,7 @@ export default class MachineManager {
 	 */
 	_lockWheel(index) {
 		if (this._machine.wheels[index].isDisabled) return
-		socket.send({
-			event: 'reset-combi',
-			receiver: 'combi',
-		})
+		bus.emit('reset-combi')
 		this._scene.resources.items.buttonAudio.play()
 		gsap.killTweensOf(this._machine.wheels[index].rotation)
 
@@ -739,7 +638,7 @@ export default class MachineManager {
 		}
 
 		// Recalculate points based only on locked wheels
-		this._rollingPoints = this._getPoints().points || 0
+		this._rollingPoints = this._getPoints().points
 
 		// Log updated points
 		this._logMessage(`Updated rolling points: ${this._rollingPoints}`)
@@ -765,11 +664,7 @@ export default class MachineManager {
 		this._currentSpins = 0
 		this._collectedPoints += this._rollingPoints
 		this._logMessage(`Collected ${this._rollingPoints} points!`)
-		socket.send({
-			event: 'button-lights-enabled',
-			data: { value: false, index: -1 },
-			receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
-		})
+		bus.emit('button-lights-enabled', { value: false, index: -1 })
 		this._rollingPoints = 0
 
 		// Unlock all wheels
@@ -778,12 +673,7 @@ export default class MachineManager {
 		// Update UI
 		this._updateCollectedPointsDisplay()
 		this._updatePointsDisplay()
-		// this._updateSpinsDisplay()
-		//reset combination
-		socket.send({
-			event: 'reset-combi',
-			receiver: 'combi',
-		})
+		bus.emit('reset-combi')
 
 		if (this._collectedPoints >= this._quota && this._round > 0) {
 			this._sceneInstance.completeRound({ index: this._round })
@@ -793,18 +683,9 @@ export default class MachineManager {
 
 	_farkle() {
 		this._scene.resources.items.farkleAudio.play()
-		socket.send({
-			event: 'farkle',
-		})
-		socket.send({
-			event: 'button-lights-enabled',
-			data: { value: false, index: -1 },
-			receiver: this._machine?.isDebugDev ? 'physical-debug' : 'input-board',
-		})
-		socket.send({
-			event: 'reset-combi',
-			receiver: 'combi',
-		})
+		bus.emit('farkle')
+		bus.emit('button-lights-enabled', { value: false, index: -1 })
+		bus.emit('reset-combi')
 		this._resetWheels()
 		this._machine.turnOffInnerLeds()
 		this._machine.flickerOnceOuterLeds()
@@ -833,31 +714,14 @@ export default class MachineManager {
 	 * Events
 	 */
 	_createEventListeners() {
-		socket.on('lever', (e) => {
-			this._leverClickHandler(e)
-		})
-		socket.on('button', (e) => {
-			this._buttonClickHandler(e)
-		})
-		socket.on('button-collect', (e) => {
-			this._buttonCollectClickHandler(e)
-		})
-		// socket.on('update-spin-tokens', ({ value }) => {
-		// 	const stringValue = value.toString()
-		// 	if (stringValue.startsWith('+')) {
-		// 		const increment = parseInt(stringValue.slice(1), 10)
-		// 		this._spinTokens = parseInt(this._spinTokens) + (isNaN(increment) ? 1 : increment)
-		// 	} else if (stringValue.startsWith('-')) {
-		// 		const decrement = parseInt(stringValue.slice(1), 10)
-		// 		this._spinTokens = parseInt(this._spinTokens) - (isNaN(decrement) ? 1 : decrement)
-		// 		if (this._spinTokens < 0) this._spinTokens = 0 // Prevent negative tokens
-		// 	} else {
-		// 		this._spinTokens = value
-		// 	}
-		// })
+		this._unsubscribers = [
+			bus.on('lever', () => this._leverClickHandler()),
+			bus.on('button', (data) => this._buttonClickHandler(data)),
+			bus.on('button-collect', () => this._buttonCollectClickHandler()),
+		]
 	}
 
-	_leverClickHandler(e) {
+	_leverClickHandler() {
 		if (this._isLeverLocked) return
 
 		this._spinWheels()
@@ -874,7 +738,7 @@ export default class MachineManager {
 		}
 	}
 
-	_buttonCollectClickHandler(e) {
+	_buttonCollectClickHandler() {
 		if (!this._isCollectLocked) this._collect()
 	}
 
@@ -928,6 +792,10 @@ export default class MachineManager {
 	 * Disposal
 	 */
 	dispose() {
+		// Remove event bus listeners
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
+
 		// Kill all GSAP timelines
 		if (this._secondRouletteTimeline) {
 			this._secondRouletteTimeline.kill()
@@ -940,11 +808,6 @@ export default class MachineManager {
 			clearTimeout(this._subliminalTimeout)
 			this._subliminalTimeout = null
 		}
-
-		// Remove socket event listeners
-		socket.off('lever', this._leverClickHandler)
-		socket.off('button', this._buttonClickHandler)
-		socket.off('button-collect', this._buttonCollectClickHandler)
 
 		// Clear references
 		this._machine = null

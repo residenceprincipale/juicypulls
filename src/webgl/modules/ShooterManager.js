@@ -3,13 +3,10 @@ import { Vector3, Raycaster, Vector2, Box3 } from 'three'
 import gsap from 'gsap'
 import Target from '@/webgl/components/Target'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
-import Socket from '@/scripts/Socket.js'
-
-const socket = new Socket()
+import bus from 'core/EventBus.js'
 
 export default class ShooterManager {
 	constructor(options = {}) {
-		socket.connect('shooter')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._sceneInstance = options.scene
@@ -63,49 +60,49 @@ export default class ShooterManager {
 				offset: { x: 0.3865, y: 0.045, z: 0 },
 				startRotation: { x: 0, y: 0, z: 0 },
 				rotationOffset: { x: 0, y: 0, z: 0.25 },
-				scale: 1
+				scale: 1,
 			},
 			{
 				start: { x: -3.8545, y: -0.9, z: -30.845 },
 				offset: { x: 1.2405, y: 0, z: 0 },
 				startRotation: { x: 0, y: 0, z: 0 },
 				rotationOffset: { x: 0, y: 0, z: 0.1 },
-				scale: 1.313
+				scale: 1.313,
 			},
 			{
 				start: { x: -5, y: -0.4195, z: -53.098 },
 				offset: { x: 0, y: 0.9455, z: 0 },
 				startRotation: { x: 0, y: 0, z: -0.579 },
 				rotationOffset: { x: 0, y: 0, z: 0 },
-				scale: 1.613
+				scale: 1.613,
 			},
 			{
 				start: { x: 2.571, y: -1.105, z: -35.779 },
 				offset: { x: 1.35, y: 0, z: 0 },
 				startRotation: { x: 0, y: 0, z: 0 },
 				rotationOffset: { x: 0, y: 0, z: 0.1 },
-				scale: 1.525
+				scale: 1.525,
 			},
 			{
 				start: { x: 7.999, y: 1.998, z: -35.779 },
 				offset: { x: 0, y: 0, z: 0 },
 				startRotation: { x: 0.008, y: -0.023, z: 0.667 },
 				rotationOffset: { x: 0, y: 0, z: 0 },
-				scale: 1.525
+				scale: 1.525,
 			},
 			{
 				start: { x: 1.726, y: -0.941, z: -22.639 },
 				offset: { x: 0, y: 0, z: 0 },
 				startRotation: { x: -0.002, y: -0.023, z: -0.081 },
 				rotationOffset: { x: 0, y: 0, z: 0 },
-				scale: 1.368
+				scale: 1.368,
 			},
 			{
 				start: { x: -0.9675, y: -2.5965, z: -24.487 },
 				offset: { x: 1.6755, y: 0.0145, z: 0 },
 				startRotation: { x: 0, y: 0, z: 0 },
 				rotationOffset: { x: 0, y: 0, z: 0 },
-				scale: 1.291
+				scale: 1.291,
 			},
 		]
 
@@ -197,9 +194,7 @@ export default class ShooterManager {
 
 		console.log(`Game ended! Final score: ${this._score}`)
 
-		socket.send({
-			event: 'hide-message',
-		})
+		bus.emit('hide-message')
 
 		this._sceneInstance.endShooter()
 	}
@@ -486,16 +481,18 @@ export default class ShooterManager {
 	}
 
 	dispose() {
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
+
 		this.endGame()
 
 		// Kill any pending shooting debounce and breathing animation
 		gsap.killTweensOf(this)
 		this._crosshairBreathingTimeline?.kill()
 
-		// Remove crosshair element
-		if (this._crosshairElement) {
-			this._crosshairElement.remove()
-		}
+		// Remove crosshair and timer elements
+		this._crosshairElement?.remove()
+		this._timerElement?.remove()
 
 		// Dispose all targets in pool and active targets
 		const allTargets = this._activeTargets.concat(this._targetPool)
@@ -594,13 +591,10 @@ export default class ShooterManager {
 		if (this._timerElement) this._timerElement.textContent = this._gameTimer.toFixed(1)
 
 		if (this._previousGameTimer !== this._gameTimer.toFixed(1))
-			socket.send({
-				event: 'show-message',
-				data: {
-					size: 'inner',
-					message: this._gameTimer.toFixed(1),
-				},
-				receiver: 'score',
+			bus.emit('show-message', {
+				screen: 'score',
+				size: 'inner',
+				message: this._gameTimer.toFixed(1),
 			})
 
 		this._previousGameTimer = this._gameTimer.toFixed(1)
@@ -732,15 +726,16 @@ export default class ShooterManager {
 	}
 
 	_setupEventListeners() {
-		// Socket event listeners for physical button controls
-		socket.on('button', (e) => {
-			this._handleButtonPress(e.index)
-		})
-
-		socket.on('button-collect', (e) => {
-			if (!this._isGameActive) return
-			this.shoot()
-		})
+		// Machine buttons drive the crosshair, collect shoots
+		this._unsubscribers = [
+			bus.on('button', (e) => {
+				this._handleButtonPress(e.index)
+			}),
+			bus.on('button-collect', () => {
+				if (!this._isGameActive) return
+				this.shoot()
+			}),
+		]
 	}
 
 	_handleButtonPress(index) {

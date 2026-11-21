@@ -71,19 +71,21 @@ Uniform Types in (`materialSettings.js`) file:
 
 ## 📊 Events
 
-| Event                     | Description                                                           |
-| ------------------------- | --------------------------------------------------------------------- |
-| `lever`                   | Triggered when roulette lever sends an input (physical or debug-dev). |
-| `button`                  | Triggered when roulette button is hit, with button index in data.     |
-| `button-light`            | Triggered when button light state changes.                            |
-| `reset-buttons-light`     | Triggered to reset all buttons light.                                 |
-| `button-collect`          | Triggered when "collect" button is hit.                               |
-| `remote`                  | Triggered when a remote button is hit (info in data).                 |
-| `update-rolling-points`   | Updates current rolling points.                                       |
-| `update-collected-points` | Updates total collected points.                                       |
-| `update-quota`            | Updates quota info.                                                   |
-| `update-round`            | Updates the current round.                                            |
-| `update-spin-tokens`      | Updates spin count.                                                   |
+Game logic, machine screens and inputs talk through the in-page event bus (`src/webgl/core/EventBus.js`). Main events:
+
+| Event                     | Description                                                     |
+| ------------------------- | --------------------------------------------------------------- |
+| `lever`                   | Lever pulled (Space).                                           |
+| `button`                  | Hold button pressed, with `{ index }` (number row).             |
+| `button-collect`          | Collect button pressed (Enter).                                 |
+| `button-lights-enabled`   | Enables/disables the hold buttons lights, `{ value, index }`.   |
+| `update-rolling-points`   | Updates current rolling points.                                 |
+| `update-collected-points` | Updates total collected points (bank).                          |
+| `update-quota`            | Updates quota info.                                             |
+| `update-spin-tokens`      | Updates spin count (jetons).                                    |
+| `update-multiplier`       | Updates the points multiplier.                                  |
+| `update-combi`            | Highlights a combination on the combinations screen.            |
+| `farkle` / `jackpot`      | Triggers the farkle / jackpot effects on screens and lights.    |
 
 ---
 

@@ -1,5 +1,6 @@
 import Experience from 'core/Experience.js'
-import { DirectionalLight, Color, VSMShadowMap, SpotLight } from 'three'
+import bus from 'core/EventBus.js'
+import { DirectionalLight, Color, SpotLight, PointLight } from 'three'
 import addLightDebug from 'utils/addLightDebug.js'
 import addPointLightDebug from '@/webgl/utils/addPointLightDebug.js'
 import addSpotLightDebug from '@/webgl/utils/addSpotLightDebug.js'
@@ -16,20 +17,14 @@ import settingsSpotLight1 from './spotLightSettings-1.js'
 
 import gsap from 'gsap'
 
-import Socket from '@/scripts/Socket.js'
-import { PointLight } from 'three'
-import ShadowMap from '@/webgl/modules/ShadowMap.js'
-
-const socket = new Socket()
-
 export default class LightsMain {
 	constructor() {
-		socket.connect('lights')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 
 		this._lightSettings = [settingsLight1, settingsLight2, settingsLight3, settingsLight4, settingsLight5]
+		// Directional lights are disabled for now: the animations that drive them are skipped while this is empty
 		this._lightSettings = []
 		this._pointLightSettings = [settingsPointLight1]
 		this._spotLightSettings = [settingsSpotLight1]
@@ -53,6 +48,9 @@ export default class LightsMain {
 	}
 
 	dispose() {
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
+
 		this._lightsArray.forEach((light) => {
 			light.dispose()
 		})
@@ -82,6 +80,7 @@ export default class LightsMain {
 	 */
 	turnOff({ immediate = false } = {}) {
 		const timeline = gsap.timeline()
+		if (!this._hasDirectionalLights()) return timeline
 
 		if (immediate) {
 			timeline.to([this._lightTop, this._lightLeft, this._lightRight, this._lightEnv], {
@@ -156,6 +155,7 @@ export default class LightsMain {
 
 	turnOn({ immediate = false } = {}) {
 		const timeline = gsap.timeline()
+		if (!this._hasDirectionalLights()) return timeline
 
 		if (immediate) {
 			timeline
@@ -265,6 +265,7 @@ export default class LightsMain {
 	animateLoseFinal() {
 		// make top light flicker to red color with a timeline
 		const timeline = gsap.timeline()
+		if (!this._hasDirectionalLights()) return timeline
 
 		timeline.to(this._lightTop, {
 			intensity: 0,
@@ -410,26 +411,14 @@ export default class LightsMain {
 		})
 	}
 
-	_createShadowMap() {
-		// if (!settings.shadows) return
-		// if (!settings.shadows.enabled) return
-
-		const shadowMap = new ShadowMap({
-			light: this._lights.directional_light_shadows,
-			settings: settings.shadows,
-			scene: this,
-			debugFolder: this._debugFolder,
-		})
-		this.$renderer.shadowMap.enabled = true
-		this.$renderer.shadowMap.autoUpdate = true
-		this.$renderer.shadowMap.type = VSMShadowMap
-
-		return shadowMap
+	_hasDirectionalLights() {
+		return this._lightSettings.length > 0
 	}
 
 	_animateFarkle() {
 		// make top light flicker to red color with a timeline
 		const timeline = gsap.timeline()
+		if (!this._hasDirectionalLights()) return timeline
 
 		timeline.to(this._lightTop, {
 			intensity: 0,
@@ -476,6 +465,7 @@ export default class LightsMain {
 	_animateJackpot() {
 		// make top light blink to orange-yellow color with a smooth timeline
 		const timeline = gsap.timeline()
+		if (!this._hasDirectionalLights()) return timeline
 
 		timeline.to(this._lightTop, {
 			intensity: 0,
@@ -521,15 +511,16 @@ export default class LightsMain {
 	}
 
 	_createEventListeners() {
-		socket.on('farkle', () => {
-			if (this.blockColorChange) return
-			this._animateFarkle()
-		})
-
-		socket.on('jackpot', () => {
-			if (this.blockColorChange) return
-			this._animateJackpot()
-		})
+		this._unsubscribers = [
+			bus.on('farkle', () => {
+				if (this.blockColorChange) return
+				this._animateFarkle()
+			}),
+			bus.on('jackpot', () => {
+				if (this.blockColorChange) return
+				this._animateJackpot()
+			}),
+		]
 	}
 
 	_createDebug() {

@@ -1,35 +1,23 @@
 import Experience from 'core/Experience.js'
-import {
-	Scene,
-	BoxGeometry,
-	Mesh,
-	ShaderMaterial,
-	Vector3,
-	MeshBasicMaterial,
-	Vector2,
-	RepeatWrapping,
-	MeshMatcapMaterial,
-	Color,
-	MeshStandardMaterial,
-	DirectionalLight,
-	MeshPhongMaterial,
-} from 'three'
-// import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js'
+import bus from 'core/EventBus.js'
+import { Color, MeshBasicMaterial, MeshMatcapMaterial, MeshPhongMaterial } from 'three'
 import gsap from 'gsap'
-import addObjectDebug from 'utils/addObjectDebug.js'
-import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
-import Socket from '@/scripts/Socket.js'
 
-const socket = new Socket()
+// Hold buttons 0–4 on the number row, matched by physical key (AZERTY `& é " ' (`, QWERTY `1 2 3 4 5`)
+const BUTTON_KEY_CODES = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5']
+
+/**
+ * Lever, hold buttons and collect button of the machine.
+ * The model is hidden, but its meshes still receive clicks (raycasting ignores visibility).
+ * They sit off-screen from the machine view, so clicking doesn't work until the 3D buttons are built.
+ * Keyboard: Space = lever, Enter = collect, number row = hold buttons.
+ */
 export default class PhysicalDebug {
 	constructor() {
-		socket.connect('physical-debug')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._debug = this._experience.debug
 		this._resources = this._scene.resources
-		this._machine = this._experience.sceneManager.machine
-		this._hands = this._experience.sceneManager.hands
 		this._buttonLightsEnabled = Array(5).fill(false)
 
 		this._resource = this._resources.items.physicalPartsModel
@@ -37,24 +25,21 @@ export default class PhysicalDebug {
 		this._createMaterials()
 		this._createModel()
 		this._createInteraction()
-		// this._cssScreen = this._createCssScreen()
-
 		this._createEventListeners()
-
-		if (this._debug.active) this._createDebug()
-
-		if (window.location.hash.includes('#debug-dev') || window.location.hash.includes('#debug-tutorial')) {
-			const screensElement = document.querySelector('.top-screens')
-			screensElement.style.display = 'flex'
-		}
 	}
 
-	// public
-	printToRightScreen(message) {
-		return
+	/**
+	 * Public
+	 */
+	dispose() {
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
+		window.removeEventListener('keydown', this._keydownHandler)
 	}
 
-	// private
+	/**
+	 * Private
+	 */
 	_createModel() {
 		this._model = this._resource.scene
 		this._model.name = 'physical machine parts'
@@ -70,7 +55,6 @@ export default class PhysicalDebug {
 			} else if (child.name.includes('base')) {
 				child.material = new MeshMatcapMaterial({ matcap: this._resources.items.goldMatcap })
 			} else if (child.name.includes('collect')) {
-				// child.material = new MeshBasicMaterial({ map: collectButtonTexture })
 				this._collectButton = child
 			} else if (child.name.includes('machine')) {
 				child.material = new MeshBasicMaterial({ color: new Color(0x000000) })
@@ -79,13 +63,10 @@ export default class PhysicalDebug {
 				child.material = new MeshPhongMaterial({ color: new Color(0x444444) })
 			} else if (child.name.includes('ball')) {
 				child.material = new MeshPhongMaterial({ color: new Color(0xff0000) })
-			} else if (child.name.includes('screen')) {
-				this._doubleScreenPlane = child
-				this._doubleScreenPlane.visible = false
 			}
 		})
 
-		this._leds.forEach((led, i) => {
+		this._leds.forEach((led) => {
 			led.material = this._ledWhiteMaterial
 			led.isWhite = true
 		})
@@ -103,85 +84,33 @@ export default class PhysicalDebug {
 		this._ledWhiteMaterial = new MeshBasicMaterial({ color: 0xffffff })
 	}
 
-	_createCss3dRenderer() {
-		const renderer = new CSS3DRenderer()
-		renderer.setSize(window.innerWidth, window.innerHeight)
-		renderer.domElement.style.position = 'fixed'
-		renderer.domElement.style.top = 0
-		renderer.domElement.style.pointerEvents = 'none'
-		document.body.appendChild(renderer.domElement)
-
-		return renderer
-	}
-
-	_createCss3dScene() {
-		const scene = new Scene()
-
-		return scene
-	}
-
-	_createCss3dScreen() {
-		const screenElement = document.querySelector('.top-screens')
-
-		this._spinsElement = screenElement.querySelector('.spins')
-		this._roundsElement = screenElement.querySelector('.round')
-		this._collectedElement = screenElement.querySelector('.score')
-		this._rollingElement = screenElement.querySelector('.current')
-		this._rightScreen = screenElement.querySelector('.right-screen')
-		this._videoElement = screenElement.querySelector('.joined-screen')
-
-		const cssObject = new CSS3DObject(screenElement)
-
-		cssObject.position.copy(this._doubleScreenPlane.position)
-
-		cssObject.rotation.x = this._doubleScreenPlane.rotation.x - Math.PI / 2
-		cssObject.scale.set(0.005, 0.005, 0.005)
-
-		this._css3dScene.add(cssObject)
-
-		return cssObject
-	}
-
-	_createCssScreen() {
-		const screenElement = document.querySelector('.top-screens')
-
-		this._spinsElement = screenElement.querySelector('.spins')
-		this._roundsElement = screenElement.querySelector('.round')
-		this._collectedElement = screenElement.querySelector('.score')
-		this._rollingElement = screenElement.querySelector('.current')
-		this._rightScreen = screenElement.querySelector('.right-screen')
-		this._videoElement = screenElement.querySelector('.joined-screen')
-	}
-
 	_createInteraction() {
 		this._experience.interactionManager.addInteractiveObject(this._lever)
-		this._lever.addEventListener('click', (e) => {
+		this._lever.addEventListener('click', () => {
 			this._leverClickHandler()
 		})
 
 		this._experience.interactionManager.addInteractiveObject(this._collectButton)
-		this._collectButton.addEventListener('click', (e) => {
+		this._collectButton.addEventListener('click', () => {
 			this._collectButtonClickHandler()
 		})
 
-		this._leds.forEach((led, i) => {
+		this._leds.forEach((led, index) => {
 			this._experience.interactionManager.addInteractiveObject(led)
-
-			led.addEventListener('click', (e) => {
-				socket.send({
-					event: 'button',
-					data: {
-						index: i,
-					},
-					// receiver: ['machine', 'shooter'],
-				})
-
-				if (this._buttonLightsEnabled[i]) {
-					led.isWhite = !led.isWhite
-					led.material = led.isWhite ? this._ledWhiteMaterial : this._ledMaterials[i]
-				}
+			led.addEventListener('click', () => {
+				this._pressButton(index)
 			})
 		})
+	}
+
+	_pressButton(index) {
+		if (this._buttonLightsEnabled[index]) {
+			const led = this._leds[index]
+			led.isWhite = !led.isWhite
+			led.material = led.isWhite ? this._ledWhiteMaterial : this._ledMaterials[index]
+		}
+
+		bus.emit('button', { index })
 	}
 
 	_leverClickHandler() {
@@ -198,10 +127,7 @@ export default class PhysicalDebug {
 		})
 
 		gsap.delayedCall(0.15, () => {
-			socket.send({
-				event: 'lever',
-				// receiver: 'machine', // add physical non-debug too
-			})
+			bus.emit('lever')
 		})
 
 		gsap.delayedCall(1, () => {
@@ -216,83 +142,26 @@ export default class PhysicalDebug {
 			this._collectButton.material.color.set(0xffffff)
 		})
 
-		socket.send({
-			event: 'button-collect',
-			// receiver: 'machine', // add physical non-debug too
-		})
+		bus.emit('button-collect')
 	}
 
 	_createEventListeners() {
-		window.addEventListener('resize', () => {
-			// this._css3dRenderer.setSize(window.innerWidth, window.innerHeight)
-		})
+		this._keydownHandler = (e) => {
+			if (e.repeat) return
 
-		// listen to f g h j k and send corresponding index button events to machine and shooter
-		window.addEventListener('keydown', (e) => {
-			const keyToIndex = { '&': 0, é: 1, '"': 2, "'": 3, '(': 4 }
-			if (e.key in keyToIndex) {
-				const index = keyToIndex[e.key]
-				if (this._buttonLightsEnabled[index]) {
-					this._leds[index].isWhite = !this._leds[index].isWhite
-					this._leds[index].material = this._leds[index].isWhite ? this._ledWhiteMaterial : this._ledMaterials[index]
-				}
-				socket.send({
-					event: 'button',
-					data: { index },
-					// receiver: ['machine', 'shooter'],
-				})
+			const buttonIndex = BUTTON_KEY_CODES.indexOf(e.code)
+			if (buttonIndex !== -1) {
+				this._pressButton(buttonIndex)
 			} else if (e.key === 'Enter') {
 				this._collectButtonClickHandler()
 			} else if (e.key === ' ') {
 				e.preventDefault() // Empêche le scroll par défaut de la barre d'espace
 				this._leverClickHandler()
 			}
-		})
-		// socket.on('update-collected-points', (e) => {
-		// 	this._updateCollectedPointsHandler(e)
-		// })
-		// socket.on('update-rolling-points', (e) => {
-		// 	this._updateRollingPointsHandler(e)
-		// })
-		// socket.on('update-spin-tokens', (e) => {
-		// 	this._updateSpinTokensHandler(e)
-		// })
-		// socket.on('update-rounds', (e) => {
-		// 	this._updateRounds(e)
-		// })
-		// socket.on('update-quota', (e) => {
-		// 	this._updateQuota(e)
-		// })
-		socket.on('button-lights-enabled', (e) => {
-			this._buttonLightsEnabledHandler(e)
-		})
-		socket.on('reset-buttons-light', (e) => {
-			this._resetButtonsLightHandler(e)
-		})
-	}
-
-	_updateCollectedPointsHandler(e) {
-		this._collectedElement.textContent = e.value
-	}
-
-	_updateRollingPointsHandler(e) {
-		this._rollingElement.textContent = e.value
-	}
-
-	_updateSpinTokensHandler({ value }) {
-		const stringValue = value.toString()
-
-		if (stringValue.startsWith('+')) {
-			const increment = parseInt(stringValue.slice(1), 10)
-			this._spinsElement.textContent = parseInt(this._spinsElement.textContent) + (isNaN(increment) ? 1 : increment)
-		} else if (stringValue.startsWith('-')) {
-			const decrement = parseInt(stringValue.slice(1), 10)
-			let newValue = parseInt(this._spinsElement.textContent) - (isNaN(decrement) ? 1 : decrement)
-			if (newValue < 0) newValue = 0
-			this._spinsElement.textContent = newValue
-		} else {
-			this._spinsElement.textContent = value
 		}
+		window.addEventListener('keydown', this._keydownHandler)
+
+		this._unsubscribers = [bus.on('button-lights-enabled', (data) => this._buttonLightsEnabledHandler(data))]
 	}
 
 	_buttonLightsEnabledHandler({ value, index }) {
@@ -305,23 +174,5 @@ export default class PhysicalDebug {
 		} else {
 			this._buttonLightsEnabled[index] = value
 		}
-	}
-
-	_resetButtonsLightHandler() {
-		this._leds.forEach((led, i) => {
-			led.material = this._ledWhiteMaterial
-			led.isWhite = true
-		})
-	}
-
-	update() {
-		if (this._css3dRenderer) this._css3dRenderer.render(this._css3dScene, this._experience.camera.instance)
-	}
-
-	_createDebug() {
-		const folder = this._debug.ui.addFolder({
-			title: 'Physical Parts',
-			expanded: true,
-		})
 	}
 }

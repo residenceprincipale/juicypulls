@@ -1,4 +1,3 @@
-import { mapRange } from 'gsap/src/all'
 import { MeshBasicMaterial } from 'three'
 import { Mesh, Plane } from 'three'
 import { Vector2 } from 'three'
@@ -6,13 +5,13 @@ import Experience from '../core/Experience'
 import { Vector3 } from 'three'
 import { PlaneGeometry } from 'three'
 import addTransformDebug from '../utils/addTransformDebug'
-import { lerp } from 'three/src/math/MathUtils'
+import { MathUtils } from 'three'
+import gsap from 'gsap'
 
 export default class FlashlightManager {
 	constructor(options = {}) {
 		this._flashlightModel = options.flashlightModel
 		this._light = options.light
-		console.log(this._light)
 
 		this._experience = new Experience()
 		this._scene = this._experience.scene
@@ -28,7 +27,10 @@ export default class FlashlightManager {
 			speedX: 0.2, // oscillations per second
 		}
 
-		this._enabled = true
+		// The torch starts off: it only lights up in the side view on the casino (Main.toggleFlashlightView)
+		this._enabled = false
+		this._lightIntensity = this._light.intensity
+		this._light.intensity = 0
 
 		this._setupLightPosition()
 		this._createEventListener()
@@ -37,7 +39,22 @@ export default class FlashlightManager {
 
 	//Public
 	enableLight() {
+		if (this._enabled) return
 		this._enabled = true
+
+		// Intensity rather than visible: hiding the light changes the spot light count and recompiles every lit material
+		this._intensityTween?.kill()
+		this._intensityTween = gsap.to(this._light, { intensity: this._lightIntensity, duration: 0.15, ease: 'power1.in' })
+	}
+
+	disableLight() {
+		if (!this._enabled) return
+		this._enabled = false
+
+		// Keeps an intensity changed from the debug panel
+		if (!this._intensityTween?.isActive()) this._lightIntensity = this._light.intensity
+		this._intensityTween?.kill()
+		this._intensityTween = gsap.to(this._light, { intensity: 0, duration: 0.15, ease: 'power1.out' })
 	}
 
 	update(timeData) {
@@ -79,8 +96,8 @@ export default class FlashlightManager {
 		const smoothness = 0.1
 		const lerpFactor = 1 - Math.exp(-smoothness * this._deltaTime)
 
-		this._mouseVector2.x = lerp(this._mouseVector2.x, this._mousetargetX, lerpFactor)
-		this._mouseVector2.y = lerp(this._mouseVector2.y, this._mousetargetY, lerpFactor)
+		this._mouseVector2.x = MathUtils.lerp(this._mouseVector2.x, this._mousetargetX, lerpFactor)
+		this._mouseVector2.y = MathUtils.lerp(this._mouseVector2.y, this._mousetargetY, lerpFactor)
 
 		const dx = this._mousetargetX - this._prevMouseRaw.x
 		const dy = this._mousetargetY - this._prevMouseRaw.y
@@ -121,8 +138,6 @@ export default class FlashlightManager {
 	}
 
 	_mouseMoveHandler(event) {
-		if (!this._enabled) return
-
 		this._mousetargetX = (event.clientX / window.innerWidth) * 2 - 1
 		this._mousetargetY = -(event.clientY / window.innerHeight) * 2 + 1
 	}

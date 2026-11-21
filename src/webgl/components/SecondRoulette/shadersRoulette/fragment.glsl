@@ -1,6 +1,7 @@
 #define PHONG
 
 varying vec2 vUv;
+varying vec3 vViewPosition;
 
 uniform float uAmbientIntensity;
 uniform float uDiffuseIntensity;
@@ -51,9 +52,9 @@ uniform sampler2D uAoMap;
 #include <uv_pars_fragment>
 #include <fog_pars_fragment>
 #include <bsdfs>
-#include <lights_pars_begin>
 #include <normal_pars_fragment>
-#include <lights_phong_pars_fragment>
+// Custom light chunk (as in the main roulette): ambient comes from uAmbientColor, not from scene lights
+#include <custom_lights_phong_pars_fragment>
 #include <shadowmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
@@ -187,9 +188,7 @@ void main() {
 	material.specularShininess = uShininess;
 	material.specularStrength = uSpecularIntensity * roughness * (1.0 - albedoTexture.a);
 
-	#include <lights_fragment_begin>
-	#include <lights_fragment_maps>
-	#include <lights_fragment_end>
+	#include <custom_lights_phong_fragment>
 
 	vec3 finalColor = (reflectedLight.directDiffuse * uDiffuseIntensity ) + (reflectedLight.indirectDiffuse * uAmbientIntensity) + reflectedLight.directSpecular + reflectedLight.indirectSpecular + uEmissiveColor;
 

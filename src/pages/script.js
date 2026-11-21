@@ -1,16 +1,9 @@
 import Experience from 'core/Experience.js'
-import Socket from '@/scripts/Socket.js'
+import bus from 'core/EventBus.js'
 import gsap from 'gsap'
 
 const experience = new Experience(document.querySelector('canvas#webgl'))
 
-const socket = new Socket()
-socket.connect('game')
-
-if (!window.location.hash.includes('debug')) {
-	const canvas = document.querySelector('canvas#webgl')
-	// canvas.style.cursor = 'none'
-}
 const subliminalMessage = document.querySelector('.subliminal-message')
 const screamerVideoElement = document.querySelector('.screamer-video')
 
@@ -43,8 +36,6 @@ function onLoseFinal() {
 	screamerVideoElement.playbackRate = 1.2
 	screamerVideoElement.play()
 
-	// play video x1.5 speed
-
 	if (screamerDelayedCall) screamerDelayedCall.kill()
 	screamerDelayedCall = gsap.delayedCall(3.5, () => {
 		experience.scene.resources.items.screamerAudio.play()
@@ -55,36 +46,31 @@ function onLoseFinal() {
 			item.includes('Audio') && experience.scene.resources.items[item].stop()
 		})
 		document.body.style.display = 'none'
-		socket.on('lever', () => {
+		// Pulling the lever restarts the game
+		bus.on('lever', () => {
 			window.location.reload()
 		})
 	}
 }
 
-socket.on('show-subliminal', onSubliminalMessage)
-socket.on('lose-final', onLoseFinal)
-
-const jackpotHandler = () => {
+function onJackpot() {
 	experience.scene.resources.items.jackpotAudio.play()
 }
-const jackpotEndHandler = () => {
-	experience.scene.resources.items.jackpotAudio.stop()
-}
 
-socket.on('jackpot', jackpotHandler)
-socket.on('jackpot-end', jackpotEndHandler)
+const unsubscribers = [
+	bus.on('show-subliminal', onSubliminalMessage),
+	bus.on('lose-final', onLoseFinal),
+	bus.on('jackpot', onJackpot),
+]
 
 // ------------------------------------------------------------------
 // Cleanup function
 // ------------------------------------------------------------------
 function cleanup() {
-	console.log('[Cleanup] Removing socket listeners and cleaning up')
+	console.log('[Cleanup] Removing event listeners and cleaning up')
 
-	// Remove socket listeners
-	socket.off('show-subliminal', onSubliminalMessage)
-	socket.off('lose-final', onLoseFinal)
-	socket.off('jackpot', jackpotHandler)
-	socket.off('jackpot-end', jackpotEndHandler)
+	// Remove event bus listeners
+	unsubscribers.forEach((unsubscribe) => unsubscribe())
 
 	// Clear timeouts
 	if (subliminalTimeout) {

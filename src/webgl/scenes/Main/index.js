@@ -1,42 +1,40 @@
 import Experience from 'core/Experience.js'
+import bus from 'core/EventBus.js'
 import Machine from '@/webgl/components/Machine/index.js'
 import LightsMain from '@/webgl/components/LightsMain/index.js'
 import Hands from '@/webgl/components/Hands/index.js'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
 import PhysicalDebug from '@/webgl/components/PhysicalDebug/index.js'
-import { Color, VSMShadowMap } from 'three'
+import { Color } from 'three'
 import gsap from 'gsap'
 import MachineManager from '@/webgl/modules/MachineManager'
 import SecondRoulette from '@/webgl/components/SecondRoulette'
 import BackgroundEnvironment from '@/webgl/components/BackgroundEnvironment/index.js'
 import Gun from '@/webgl/components/Gun/index.js'
-import Target from '@/webgl/components/Target/index.js'
 import ShooterManager from '@/webgl/modules/ShooterManager'
 import TutorialManager from '@/webgl/modules/TutorialManager'
 import Logo from '@/webgl/components/Logo/index.js'
 import Flashlight from '@/webgl/components/Flashlight/index.js'
-import ShadowMap from '@/webgl/modules/ShadowMap'
 
-import Socket from '@/scripts/Socket.js'
 import ScoreScreen from '@/webgl/components/ScoreScreen'
 import ScoreScreenManager from '@/webgl/modules/ScoreScreenManager'
 import CombinationsScreen from '@/webgl/components/CombinationsScreen'
 import CombinationsScreenManager from '@/webgl/modules/CombinationsScreenManager'
 import FlashlightManager from '@/webgl/modules/FlashLightManager'
 
-const socket = new Socket()
+// Camera x for the side view on the casino (the machine view uses camera.options.position)
+const FLASHLIGHT_VIEW_CAMERA_X = 1.36
 
 export default class Main {
 	constructor() {
-		socket.connect('scene')
 		this._experience = new Experience()
 		this._scene = this._experience.scene
 		this._scene.resources = new Resources(sources)
 		this._debug = this._experience.debug
 		this._lights = new LightsMain()
-		// this._shadowMap = this._createShadowMap()
 		this._camera = this._experience.camera
+		this._isFlashlightView = false
 
 		this._scene.background = new Color(0x000000)
 
@@ -47,8 +45,6 @@ export default class Main {
 
 			this._backgroundEnvironment = new BackgroundEnvironment()
 			this._gun = new Gun()
-			// this._target = new Target()
-			// this._target.animateIn()
 			this._logo = new Logo()
 			this._machine = new Machine()
 			this._flashlight = new Flashlight()
@@ -88,11 +84,9 @@ export default class Main {
 				flashlightModel: this._flashlight,
 			})
 
-			// if (this._debug.active) {
-			this._machine.isDebugDev = true
+			// Lever, hold buttons and collect button (mouse + keyboard)
 			this._physicalDebug = new PhysicalDebug()
-			this._machineManager._physicalDebug = this._physicalDebug
-			// }
+
 			this._createEventListeners()
 
 			if (this._debug.active) this.setDebug()
@@ -101,8 +95,6 @@ export default class Main {
 			this._hands.hide()
 
 			this.startSkipIntro()
-
-			this.triggerFlashlightView()
 		})
 	}
 
@@ -173,10 +165,6 @@ export default class Main {
 		console.log('[Main Scene] Disposal complete')
 	}
 
-	reset() {
-		// if (this._logo) this._logo.reset()
-	}
-
 	start() {
 		// this._lights.turnOff()
 		this._machine.turnOffLeds()
@@ -194,13 +182,7 @@ export default class Main {
 		this._logo.hide()
 
 		gsap.delayedCall(2, () => {
-			socket.send({
-				event: 'show',
-				data: {
-					immediate: true,
-				},
-				receiver: ['combi', 'score'],
-			})
+			bus.emit('show')
 
 			this._machineManager.spinTokens = 10
 			this._machineManager.quota = 200
@@ -233,14 +215,8 @@ export default class Main {
 	}
 
 	startGame() {
-		// this._machineManager.startGame()
-		// start round ?
 		this._machineManager.round = 1
 		this._lights.blockColorChange = false
-	}
-
-	startRound() {
-		// animate available tokens and quota
 	}
 
 	completeRound(options) {
@@ -256,51 +232,41 @@ export default class Main {
 	}
 
 	startShooter() {
-		// reset bulbs
-		socket.send({
-			event: 'x1',
-			receiver: 'bulbs',
-		})
-		this._machineManager._multiplier = 1
+		// reset multiplier
+		this._machineManager.multiplier = 1
 		// animate machine out
 		// start shooter
 		this._machine.animateInnerMachineOut()
 		this._machineManager.isLeverLocked = true
 		this._machineManager.isCollectLocked = true
-		socket.send({
-			event: 'show-message',
-			data: {
-				size: 'inner',
-				message: 'Shooter time',
-				modifier: [
-					{
-						text: 'SHOOT',
-						color: 'red',
-					},
-				],
-			},
-			receiver: ['score'],
+		bus.emit('show-message', {
+			screen: 'score',
+			size: 'inner',
+			message: 'Shooter time',
+			modifier: [
+				{
+					text: 'SHOOT',
+					color: 'red',
+				},
+			],
 		})
 		this._scene.resources.items.messageAudio.play()
 
 		gsap.delayedCall(1.5, () => {
 			this._shooterManager.startGame()
-			socket.send({
-				event: 'show-message',
-				data: {
-					message: 'USE YOUR BUTTONS. <BR> THEY’RE JUST TARGETS. <BR> 1 TARGET = 1 JETONS.',
-					modifier: [
-						{
-							text: 'BUTTONS',
-							color: 'yellow',
-						},
-						{
-							text: 'JETONS',
-							color: 'yellow',
-						},
-					],
-				},
-				receiver: ['combi'],
+			bus.emit('show-message', {
+				screen: 'combi',
+				message: 'USE YOUR BUTTONS. <BR> THEY’RE JUST TARGETS. <BR> 1 TARGET = 1 JETONS.',
+				modifier: [
+					{
+						text: 'BUTTONS',
+						color: 'yellow',
+					},
+					{
+						text: 'JETONS',
+						color: 'yellow',
+					},
+				],
 			})
 			this._scene.resources.items.messageAudio.play()
 		})
@@ -313,12 +279,10 @@ export default class Main {
 		console.log('END SHOOTER')
 		console.log('start round', this._machineManager.round)
 
-		this._machineManager.quota = this._machineManager.quota += 400
+		this._machineManager.quota += 400
 		this._machineManager.isLeverLocked = false
 		this._machineManager.isCollectLocked = false
 	}
-
-	endGame() {}
 
 	lose() {
 		console.log('LOSE GAME')
@@ -335,7 +299,7 @@ export default class Main {
 
 	respawn() {
 		console.log('RESPAWN')
-		this._machineManager.quota = this._machineManager.quota += 400
+		this._machineManager.quota += 400
 		this._machineManager.spinTokens = 3
 		this._machineManager.isLeverLocked = false
 	}
@@ -351,16 +315,26 @@ export default class Main {
 		this._machine.changeOuterLedsColor('#ff0000')
 		await this._machine.animateInnerMachineOut()
 		this._lights.animateLoseFinal()
-		socket.send({
-			event: 'lose-final',
-		})
+		bus.emit('lose-final')
 	}
 
-	triggerFlashlightView() {
-		this._camera.instance.position.x = gsap.to(this._camera.instance.position, {
-			x: 1.36,
+	/**
+	 * Pans the camera between the machine and the side view on the casino (flashlight, work in progress).
+	 * Debug only for now: the game starts and stays on the machine view.
+	 * The torch turns on once the camera reaches the side view and off as soon as it leaves.
+	 */
+	toggleFlashlightView() {
+		this._isFlashlightView = !this._isFlashlightView
+		if (!this._isFlashlightView) this._flashlightManager.disableLight()
+
+		this._cameraTween?.kill()
+		this._cameraTween = gsap.to(this._camera.instance.position, {
+			x: this._isFlashlightView ? FLASHLIGHT_VIEW_CAMERA_X : this._camera.options.position.x,
 			duration: 1,
 			ease: 'Power2.inOut',
+			onComplete: () => {
+				if (this._isFlashlightView) this._flashlightManager.enableLight()
+			},
 		})
 	}
 
@@ -387,10 +361,8 @@ export default class Main {
 			deltaTime: this._experience.time.delta,
 			elapsedTime: this._experience.time.elapsed,
 		}
-		if (this._fox) this.fox.update(timeData)
 		if (this._gun) this._gun.update(timeData)
 		if (this._hands) this._hands.update(timeData)
-		if (this._physicalDebug) this._physicalDebug.update(timeData)
 		if (this._lights) this._lights.update(timeData)
 		if (this._shooterManager) this._shooterManager.update(timeData)
 		if (this._flashlightManager) this._flashlightManager.update(timeData)
@@ -412,23 +384,15 @@ export default class Main {
 	 */
 
 	_createEventListeners() {
-		socket.on('reset', this.reset.bind(this))
-		socket.on('start-round', this.startRound.bind(this))
-		socket.on('complete-round', this.completeRound.bind(this))
-		socket.on('start-shooter', this.startShooter.bind(this))
-
-		// listen to any button input event from socket
-		socket.on('button', this.handleButtonInput.bind(this))
+		this._unsubscribers = [
+			// any button press starts the tutorial
+			bus.on('button', (data) => this.handleButtonInput(data)),
+		]
 	}
 
 	_disposeEventListeners() {
-		socket.off('reset', this.reset.bind(this))
-		socket.off('start-round', this.startRound.bind(this))
-		socket.off('complete-round', this.completeRound.bind(this))
-		socket.off('start-shooter', this.startShooter.bind(this))
-
-		// listen to any buttoff input event from socket
-		socket.off('button', this.handleButtonInput.bind(this))
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
 	}
 
 	setDebug() {
@@ -438,10 +402,10 @@ export default class Main {
 		})
 		folder
 			.addButton({
-				title: 'Trigger Flashlight',
+				title: 'Toggle Flashlight View',
 			})
 			.on('click', () => {
-				this.triggerFlashlightView()
+				this.toggleFlashlightView()
 			})
 		folder
 			.addButton({
@@ -505,20 +469,6 @@ export default class Main {
 			})
 			.on('click', () => {
 				this.loseFinal()
-			})
-		folder
-			.addButton({
-				title: 'End Game',
-			})
-			.on('click', () => {
-				this.endGame()
-			})
-		folder
-			.addButton({
-				title: 'Reset',
-			})
-			.on('click', () => {
-				this.reset()
 			})
 	}
 }

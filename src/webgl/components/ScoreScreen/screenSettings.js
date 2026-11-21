@@ -21,7 +21,7 @@ export default {
 		value: 0.55,
 	},
 	uAmbientIntensity: {
-		value: 1,
+		value: 3.14,
 	},
 	uDiffuseIntensity: {
 		value: 1.0199999999999998,
@@ -39,7 +39,7 @@ export default {
 		value: 0,
 	},
 	uAmbientColor: {
-		value: '#000000',
+		value: '#ffffff',
 	},
 	uDiffuseColor: {
 		value: '#000000',
