@@ -71,10 +71,6 @@
 		"path": "./textures/hand-albedo.png"
 	},
 	{
-		"name": "physicalPartsModel",
-		"path": "./models/physical-parts.glb"
-	},
-	{
 		"name": "spinningAudio",
 		"path": "./audio/spinning.mp3",
 		"loop": false,

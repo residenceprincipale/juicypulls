@@ -5,6 +5,9 @@ import InputManager from 'utils/InputManager.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import addTransformDebug from '../utils/addTransformDebug.js'
 
+// Space kept around the framed machine, in NDC (1 = half the window)
+const FRAMING_MARGIN = 0.04
+
 export default class Camera {
 	constructor() {
 		this.experience = new Experience()
@@ -20,11 +23,14 @@ export default class Camera {
 		this.options = {
 			fov: 35,
 			frustum: { min: 0.1, max: 200 },
-			// Frames both machine screens, the wheels and the buttons, while the second roulette and the gun stay out of view
+			// Start view, and the viewing direction kept by the machine framing (see setFraming)
 			position: new Vector3(0.01, 0.07, 1.24),
 			target: new Vector3(0, 0.07, 0),
 			currentCamera: this.debug.active ? 'sceneCamera' : 'sceneCamera', // sorry
 		}
+
+		// Added to the machine view (the flashlight side view slides the camera along x)
+		this.viewOffset = new Vector3()
 
 		this.setInstance()
 		if (this.options.currentCamera === 'controlsCamera') this.setControlsCamera()
@@ -224,6 +230,73 @@ export default class Camera {
 	resize() {
 		this.instance.aspect = this.sizes.width / this.sizes.height
 		this.instance.updateProjectionMatrix()
+		this.#fitFraming()
+	}
+
+	/**
+	 * Keeps `box` (world Box3) in view for any window shape: the scene camera keeps the direction of
+	 * `options.position → options.target` and moves along it, and slides sideways only when that lets it frame a
+	 * narrow window closer. Refitted on resize.
+	 */
+	setFraming(box) {
+		this.framingBox = box
+		this.#fitFraming()
+	}
+
+	// Places the scene camera at the framed machine view plus `viewOffset` (call after changing `viewOffset`)
+	applyView() {
+		if (!this.machineView) return
+		this.sceneCamera.position.copy(this.machineView.position).add(this.viewOffset)
+		this.sceneCamera.lookAt(this.machineView.target.clone().add(this.viewOffset))
+	}
+
+	#fitFraming() {
+		if (!this.framingBox) return
+
+		const camera = this.sceneCamera
+		const direction = this.options.position.clone().sub(this.options.target).normalize()
+		const center = this.framingBox.getCenter(new Vector3())
+		const { min, max } = this.framingBox
+		const corners = [min.x, max.x].flatMap((x) =>
+			[min.y, max.y].flatMap((y) => [min.z, max.z].map((z) => new Vector3(x, y, z))),
+		)
+		const projected = new Vector3()
+		const target = new Vector3()
+
+		const place = (offsetX, distance) => {
+			target.set(offsetX, center.y, center.z)
+			camera.position.copy(target).addScaledVector(direction, distance)
+			camera.lookAt(target)
+			camera.updateMatrixWorld()
+		}
+		const fits = () =>
+			corners.every((corner) => {
+				projected.copy(corner).project(camera)
+				return Math.abs(projected.x) <= 1 - FRAMING_MARGIN && Math.abs(projected.y) <= 1 - FRAMING_MARGIN
+			})
+		const closestDistance = (offsetX) => {
+			let near = 0.2
+			let far = 50
+			for (let i = 0; i < 30; i++) {
+				const distance = (near + far) / 2
+				place(offsetX, distance)
+				if (fits()) far = distance
+				else near = distance
+			}
+			return far
+		}
+
+		// Centered on the machine (x = 0), unless sliding toward the box center frames a narrow window closer
+		let best = { offsetX: 0, distance: closestDistance(0) }
+		for (const share of [0.25, 0.5, 0.75, 1]) {
+			const offsetX = center.x * share
+			const distance = closestDistance(offsetX)
+			if (distance < best.distance * 0.98) best = { offsetX, distance }
+		}
+		place(best.offsetX, best.distance)
+
+		this.machineView = { position: camera.position.clone(), target: target.clone() }
+		this.applyView()
 	}
 
 	setDebug() {

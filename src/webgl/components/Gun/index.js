@@ -94,8 +94,11 @@ export default class Gun {
     }
 
     animateGunIn() {
+        this._gunOutTimeline?.kill()
         this._gunInTimeline?.kill()
         this._gunInTimeline = gsap.timeline()
+        // Hidden while parked, so it never shows at the edge of a wide window
+        this.show()
         this._gunInTimeline.fromTo(this._model.rotation, {
             x: -2.142, // Hidden position
         }, {
@@ -112,8 +115,9 @@ export default class Gun {
         // this._breathingTimelineY?.kill()
         // this._breathingTimelineX?.kill()
 
+        this._gunInTimeline?.kill()
         this._gunOutTimeline?.kill()
-        this._gunOutTimeline = gsap.timeline()
+        this._gunOutTimeline = gsap.timeline({ onComplete: () => this.hide() })
         this._gunOutTimeline.fromTo(this._model.rotation, {
             x: 0, // Normal position
         }, {

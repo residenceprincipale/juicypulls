@@ -8,6 +8,7 @@ import screenSettings from './screenSettings'
 import screenCharactersSettings from './screenCharactersSettings'
 import metalSettings from './metalSettings'
 import ledsSettings from './ledsSettings'
+import ScreenText from 'components/ScreenText/index.js'
 
 import { Color } from 'three'
 import gsap from 'gsap'
@@ -18,6 +19,31 @@ import addObjectDebug from 'utils/addObjectDebug.js'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
+
+// Message areas on the glass, in [x, y] fractions. The V-shaped frame crosses the glass from 0.6 (sides) to 0.78
+// (center), so the text always sits above it.
+const MESSAGE_LAYOUTS = {
+	// Covers the score and the quota; jetons and bank stay visible
+	inner: {
+		backdrop: [
+			[0, 0],
+			[1, 0],
+			[1, 0.6],
+			[0.5, 0.78],
+			[0, 0.6],
+		],
+		text: [0.05, 0.08, 0.9, 0.42],
+	},
+	fullscreen: {
+		backdrop: [
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 1],
+		],
+		text: [0.05, 0.08, 0.9, 0.42],
+	},
+}
 
 export default class ScoreScreen {
 	constructor() {
@@ -43,6 +69,10 @@ export default class ScoreScreen {
 	 */
 	get model() {
 		return this._model
+	}
+
+	get text() {
+		return this._text
 	}
 
 	get tint() {
@@ -104,6 +134,23 @@ export default class ScoreScreen {
 		)
 
 		return this._hideTimeline
+	}
+
+	/**
+	 * @param {{ message: string, modifier?: Array<{ text: string, color?: string }>, size?: 'fullscreen' | 'inner' }} options
+	 */
+	showMessage({ message, modifier = [], size = 'fullscreen' }) {
+		const layout = MESSAGE_LAYOUTS[size] || MESSAGE_LAYOUTS.fullscreen
+		this._text.draw((text) => {
+			text.fillPolygon(layout.backdrop)
+			text.drawMessage({ message, modifier, rect: text.toPixels(layout.text) })
+		})
+		this._text.material.opacity = 0
+		return this._text.fade(1)
+	}
+
+	hideMessage() {
+		return this._text.fade(0).eventCallback('onComplete', () => this._text.clear())
 	}
 
 	updateBank(value) {
@@ -269,6 +316,15 @@ export default class ScoreScreen {
 		this._model.rotation.set(0.35, 0.0, 0.0)
 
 		this._scene.add(this._model)
+
+		// Text layer for messages, just in front of the glass
+		this._model.updateMatrixWorld(true)
+		// The digits mesh stands up to ~6 mm in front of the glass, so the text layer goes in front of it
+		this._text = new ScreenText({
+			screenMesh: this._screenMesh,
+			camera: this._experience.camera.instance,
+			offset: 0.008,
+		})
 	}
 
 	_createMaterials() {

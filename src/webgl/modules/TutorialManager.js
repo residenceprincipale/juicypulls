@@ -2,7 +2,7 @@ import bus from 'core/EventBus.js'
 import gsap from 'gsap'
 import { MAIN_ROULETTE_CONFIG } from './MachineManager'
 
-// Not instantiated yet: Main runs `startSkipIntro()` instead of the tutorial
+// Created by Main.start() (the intro); `?skip-intro` skips it
 export default class TutorialManager {
 	constructor(options = {}) {
 		this._machineManager = options.machineManager
@@ -59,14 +59,17 @@ export default class TutorialManager {
 
 			this._listenToPoints = true
 
-			this._machine.animateWheelBlink({ index: 1, value: true })
-			this._machine.animateWheelBlink({ index: 2, value: true })
-			this._machine.animateWheelBlink({ index: 3, value: true })
+			// The forced spin puts the cherries on wheels 1–3: prompt their wheels and hold buttons
+			;[1, 2, 3].forEach((index) => {
+				this._machine.animateWheelBlink({ index, value: true })
+				this._scene.machineControls.blinkButton(index, true)
+			})
 		})
 	}
 
 	_goToBankStep() {
 		this._isBankStep = true
+		this._scene.machineControls.blinkButton(-1, false)
 
 		bus.emit('hide-message', { screen: 'score' })
 

@@ -75,15 +75,18 @@ Game logic, machine screens and inputs talk through the in-page event bus (`src/
 
 | Event                     | Description                                                     |
 | ------------------------- | --------------------------------------------------------------- |
-| `lever`                   | Lever pulled (Space).                                           |
-| `button`                  | Hold button pressed, with `{ index }` (number row).             |
-| `button-collect`          | Collect button pressed (Enter).                                 |
-| `button-lights-enabled`   | Enables/disables the hold buttons lights, `{ value, index }`.   |
+| `lever`                   | Lever pulled (click it, or Space).                              |
+| `button`                  | Hold button pressed, with `{ index }` (click, or number row).   |
+| `button-collect`          | Collect button pressed (click, or Enter).                       |
+| `look-aside`              | Player leans out to the casino (`{ value: true }`) or back.     |
 | `update-rolling-points`   | Updates current rolling points.                                 |
 | `update-collected-points` | Updates total collected points (bank).                          |
 | `update-quota`            | Updates quota info.                                             |
 | `update-spin-tokens`      | Updates spin count (jetons).                                    |
 | `update-multiplier`       | Updates the points multiplier.                                  |
+| `update-round`            | Updates the round number.                                       |
+| `show-message`            | Text on the screens, `{ screen?, message, size, modifier }`.    |
+| `hide-message`            | Hides the text, `{ screen? }` (no `screen` means both).         |
 | `update-combi`            | Highlights a combination on the combinations screen.            |
 | `farkle` / `jackpot`      | Triggers the farkle / jackpot effects on screens and lights.    |
 

@@ -55,12 +55,28 @@ export default class CombinationsScreenManager {
 		if (tint) this._screen.displayMarquee({ tint })
 	}
 
+	// Messages without a `screen` go to both screens
+	_showMessage(data) {
+		if (!data.screen || data.screen === 'combi') this._screen.showMessage(data)
+	}
+
+	_hideMessage(data = {}) {
+		if (!data.screen || data.screen === 'combi') this._screen.hideMessage()
+	}
+
 	_createEventListeners() {
 		this._unsubscribers = [
 			bus.on('update-combi', (data) => this._updateCombi(data)),
 			bus.on('reset-combi', () => this._resetCombi()),
 			bus.on('reset', () => this._resetCombi()),
 			bus.on('jackpot', (data) => this._jackpot(data)),
+			bus.on('show', () => this._screen.show()),
+			bus.on('hide', () => this._screen.hide()),
+			bus.on('show-message', (data) => this._showMessage(data)),
+			bus.on('hide-message', (data) => this._hideMessage(data)),
+			bus.on('update-round', ({ value }) => this._screen.setStatus({ round: value })),
+			bus.on('update-multiplier', ({ value }) => this._screen.setStatus({ multiplier: value })),
+			bus.on('lose-final', () => this._screen.hideMessage()),
 		]
 	}
 }

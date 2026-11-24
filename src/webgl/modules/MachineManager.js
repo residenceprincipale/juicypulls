@@ -152,6 +152,7 @@ export default class MachineManager {
 
 	set round(value) {
 		this._round = value
+		bus.emit('update-round', { value })
 	}
 
 	get multiplier() {
@@ -198,7 +199,6 @@ export default class MachineManager {
 		bus.emit('reset-combi')
 		bus.emit('update-spin-tokens', { value: this._spinTokens })
 		bus.emit('update-multiplier', { value: this._multiplier })
-		bus.emit('button-lights-enabled', { value: false, index: -1 })
 	}
 
 	_spinWheels(riggedCombination = null) {
@@ -217,7 +217,6 @@ export default class MachineManager {
 				wheel.isDisabled = true
 				this._anyLockedWheels = true
 				console.log(`Wheel ${index} is blocked`)
-				bus.emit('button-lights-enabled', { value: false, index })
 			} else {
 				this._machine.animateWheelLock({ index, value: false, color: '#ffffff' })
 			}
@@ -294,7 +293,6 @@ export default class MachineManager {
 			this._updatePointsDisplay()
 			gsap.delayedCall(2, () => {
 				this._triggerSecondRoulette()
-				bus.emit('button-lights-enabled', { value: false, index: -1 })
 				this._resetWheels()
 			})
 		}
@@ -338,7 +336,6 @@ export default class MachineManager {
 			this._updatePointsDisplay()
 
 			if (this._currentSpins === 1) {
-				bus.emit('button-lights-enabled', { value: true, index: -1 })
 				this._machine.wheels.forEach((wheel) => {
 					wheel.isDisabled = false
 				})
@@ -664,7 +661,6 @@ export default class MachineManager {
 		this._currentSpins = 0
 		this._collectedPoints += this._rollingPoints
 		this._logMessage(`Collected ${this._rollingPoints} points!`)
-		bus.emit('button-lights-enabled', { value: false, index: -1 })
 		this._rollingPoints = 0
 
 		// Unlock all wheels
@@ -677,14 +673,13 @@ export default class MachineManager {
 
 		if (this._collectedPoints >= this._quota && this._round > 0) {
 			this._sceneInstance.completeRound({ index: this._round })
-			this._round += 1
+			this.round += 1
 		}
 	}
 
 	_farkle() {
 		this._scene.resources.items.farkleAudio.play()
 		bus.emit('farkle')
-		bus.emit('button-lights-enabled', { value: false, index: -1 })
 		bus.emit('reset-combi')
 		this._resetWheels()
 		this._machine.turnOffInnerLeds()

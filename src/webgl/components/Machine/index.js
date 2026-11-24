@@ -68,6 +68,11 @@ export default class Machine {
 		return this._rouletteModel
 	}
 
+	// Cabinet model: holds the hold buttons (BOUTON_1–5), BOUTON_COLLECT and the lever (MANCHE)
+	get cabinetModel() {
+		return this._machineModel
+	}
+
 	get material() {
 		return this._material
 	}

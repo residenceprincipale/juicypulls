@@ -5,6 +5,7 @@ import fragmentShader from './shaders/fragment.glsl'
 import screenSettings from './screenSettings'
 import metalSettings from './metalSettings'
 import ledsSettings from './ledsSettings'
+import ScreenText from 'components/ScreenText/index.js'
 
 import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
 import gsap from 'gsap'
@@ -15,6 +16,17 @@ import addObjectDebug from 'utils/addObjectDebug.js'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
+
+// Areas on the glass, as [x, y, width, height] fractions. Metal frames split the glass into a central panel
+// (the combinations table) and a narrow slot on each side.
+const MESSAGE_LAYOUTS = {
+	// Covers the table; the side slots keep the round and the multiplier
+	inner: { backdrop: [0.13, 0, 0.76, 1], text: [0.16, 0.06, 0.7, 0.88] },
+	fullscreen: { backdrop: [0, 0, 1, 1], text: [0.16, 0.06, 0.7, 0.88] },
+}
+// Centers of the side slots (x) for the vertical status labels
+const STATUS_SLOT_X = { round: 0.05, multiplier: 0.945 }
+const MULTIPLIER_COLOR = '#ffd400'
 
 export default class CombinationsScreen {
 	constructor() {
@@ -39,6 +51,10 @@ export default class CombinationsScreen {
 	 */
 	get model() {
 		return this._model
+	}
+
+	get text() {
+		return this._text
 	}
 
 	get tint() {
@@ -79,6 +95,53 @@ export default class CombinationsScreen {
 		this._hideTimeline.to(this._screenMaterial.uniforms.uScreenLuminosity, {
 			value: 0.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
+		})
+	}
+
+	/**
+	 * @param {{ message: string, modifier?: Array<{ text: string, color?: string }>, size?: 'fullscreen' | 'inner' }} options
+	 */
+	showMessage({ message, modifier = [], size = 'fullscreen' }) {
+		const layout = MESSAGE_LAYOUTS[size] || MESSAGE_LAYOUTS.fullscreen
+		this._text.draw((text) => {
+			text.fillRect(text.toPixels(layout.backdrop))
+			text.drawMessage({ message, modifier, rect: text.toPixels(layout.text) })
+		})
+		this._text.material.opacity = 0
+		return this._text.fade(1)
+	}
+
+	hideMessage() {
+		return this._text.fade(0).eventCallback('onComplete', () => this._text.clear())
+	}
+
+	/**
+	 * Round (left slot) and multiplier (right slot), shown once the round starts
+	 * @param {{ round?: number, multiplier?: number }} status
+	 */
+	setStatus(status) {
+		Object.assign(this._status, status)
+		const { round, multiplier } = this._status
+
+		this._statusText.draw((text) => {
+			if (!round) return
+			const fontSize = text.width * 0.085
+			const y = text.height / 2
+			text.drawLabel({
+				text: `Round ${round}`,
+				x: text.width * STATUS_SLOT_X.round,
+				y,
+				fontSize,
+				rotation: -Math.PI / 2,
+			})
+			text.drawLabel({
+				text: `Multiplier x${multiplier}`,
+				x: text.width * STATUS_SLOT_X.multiplier,
+				y,
+				fontSize,
+				rotation: -Math.PI / 2,
+				color: multiplier > 1 ? MULTIPLIER_COLOR : undefined,
+			})
 		})
 	}
 
@@ -126,6 +189,9 @@ export default class CombinationsScreen {
 			value: 1.0,
 			ease: "rough({ template: 'none', strength: 2, points: 7, randomize: true })",
 		})
+		// The marquee plays in the side slots, over the round and multiplier
+		this._showMarqueeTimeline.add(this._statusText.fade(0), 0)
+		this._showMarqueeTimeline.add(() => this._statusText.fade(1), 3.0)
 		this._showMarqueeTimeline.to(
 			this._screenMaterial.uniforms.uMarqueeOpacity,
 			{
@@ -163,6 +229,13 @@ export default class CombinationsScreen {
 		this._model.rotation.set(0.35, 0.0, 0.0)
 
 		this._scene.add(this._model)
+
+		// Text layers just in front of the glass: round and multiplier in the side slots, messages on top
+		this._model.updateMatrixWorld(true)
+		const camera = this._experience.camera.instance
+		this._statusText = new ScreenText({ screenMesh: this._screenMesh, camera, offset: 0.003, renderOrder: 10 })
+		this._text = new ScreenText({ screenMesh: this._screenMesh, camera, offset: 0.004, renderOrder: 11 })
+		this._status = { round: 0, multiplier: 1 }
 	}
 
 	_createMaterials() {

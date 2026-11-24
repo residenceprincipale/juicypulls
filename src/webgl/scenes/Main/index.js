@@ -5,8 +5,8 @@ import LightsMain from '@/webgl/components/LightsMain/index.js'
 import Hands from '@/webgl/components/Hands/index.js'
 import Resources from 'core/Resources.js'
 import sources from './sources.json'
-import PhysicalDebug from '@/webgl/components/PhysicalDebug/index.js'
-import { Color } from 'three'
+import MachineControls from '@/webgl/components/MachineControls/index.js'
+import { Box3, Color } from 'three'
 import gsap from 'gsap'
 import MachineManager from '@/webgl/modules/MachineManager'
 import SecondRoulette from '@/webgl/components/SecondRoulette'
@@ -23,8 +23,10 @@ import CombinationsScreen from '@/webgl/components/CombinationsScreen'
 import CombinationsScreenManager from '@/webgl/modules/CombinationsScreenManager'
 import FlashlightManager from '@/webgl/modules/FlashLightManager'
 
-// Camera x for the side view on the casino (the machine view uses camera.options.position)
-const FLASHLIGHT_VIEW_CAMERA_X = 1.36
+// Hold button that blinks during the intro (the middle one)
+const INTRO_BUTTON_INDEX = 2
+// Buttons kept in view with the two screens and the lever knob, for any window shape
+const FRAMED_BUTTONS = ['BOUTON_1', 'BOUTON_2', 'BOUTON_3', 'BOUTON_4', 'BOUTON_5', 'BOUTON_COLLECT']
 
 export default class Main {
 	constructor() {
@@ -34,7 +36,6 @@ export default class Main {
 		this._debug = this._experience.debug
 		this._lights = new LightsMain()
 		this._camera = this._experience.camera
-		this._isFlashlightView = false
 
 		this._scene.background = new Color(0x000000)
 
@@ -84,18 +85,28 @@ export default class Main {
 				flashlightModel: this._flashlight,
 			})
 
-			// Lever, hold buttons and collect button (mouse + keyboard)
-			this._physicalDebug = new PhysicalDebug()
+			// Lever, hold buttons and collect button of the cabinet (mouse, touch and keyboard)
+			this._machineControls = new MachineControls({
+				machine: this._machine,
+				machineManager: this._machineManager,
+			})
 
 			this._createEventListeners()
+			this._frameMachine()
 
 			if (this._debug.active) this.setDebug()
 
 			this._isSecondChanceEnabled = false
 			this._hands.hide()
 
-			this.startSkipIntro()
+			// `?skip-intro` jumps straight into a game (development and tests)
+			if (new URLSearchParams(location.search).has('skip-intro')) this.startSkipIntro()
+			else this.start()
 		})
+	}
+
+	get machineControls() {
+		return this._machineControls
 	}
 
 	dispose() {
@@ -150,11 +161,14 @@ export default class Main {
 		if (this._shooterManager && this._shooterManager.dispose) {
 			this._shooterManager.dispose()
 		}
-		if (this._physicalDebug && this._physicalDebug.dispose) {
-			this._physicalDebug.dispose()
+		if (this._machineControls && this._machineControls.dispose) {
+			this._machineControls.dispose()
 		}
 		if (this._tutorialManager && this._tutorialManager.dispose) {
 			this._tutorialManager.dispose()
+		}
+		if (this._flashlightManager && this._flashlightManager.dispose) {
+			this._flashlightManager.dispose()
 		}
 
 		// Dispose resources
@@ -165,6 +179,10 @@ export default class Main {
 		console.log('[Main Scene] Disposal complete')
 	}
 
+	/**
+	 * Intro: the machine is off and one hold button blinks. The first input (that press, or any other control)
+	 * powers it on and starts the tutorial. That first input also unlocks the browser audio (Howler unlocks on it).
+	 */
 	start() {
 		// this._lights.turnOff()
 		this._machine.turnOffLeds()
@@ -173,7 +191,16 @@ export default class Main {
 		this._backgroundEnvironment.hide()
 		this._gun.hide()
 		this._logo.show()
+		bus.emit('hide')
 
+		this._tutorialManager = new TutorialManager({
+			machineManager: this._machineManager,
+			machine: this._machine,
+			scene: this,
+		})
+		this._machineControls.blinkButton(INTRO_BUTTON_INDEX, true)
+
+		this._isPlayingTutorial = true
 		this._tutorialInputPressed = false
 		this._loseCount = 0
 	}
@@ -188,10 +215,12 @@ export default class Main {
 			this._machineManager.quota = 200
 
 			this._machineManager.round = 1
+			this._flashlightManager.enabled = true
 		})
 	}
 
 	startTutorial() {
+		this._machineControls.blinkButton(INTRO_BUTTON_INDEX, false)
 		this._logo.hide()
 		this._lights.blockColorChange = true
 
@@ -217,6 +246,7 @@ export default class Main {
 	startGame() {
 		this._machineManager.round = 1
 		this._lights.blockColorChange = false
+		this._flashlightManager.enabled = true
 	}
 
 	completeRound(options) {
@@ -318,24 +348,9 @@ export default class Main {
 		bus.emit('lose-final')
 	}
 
-	/**
-	 * Pans the camera between the machine and the side view on the casino (flashlight, work in progress).
-	 * Debug only for now: the game starts and stays on the machine view.
-	 * The torch turns on once the camera reaches the side view and off as soon as it leaves.
-	 */
+	// Debug: leans out to the casino and back (the game does it when the pointer rests on the window edges)
 	toggleFlashlightView() {
-		this._isFlashlightView = !this._isFlashlightView
-		if (!this._isFlashlightView) this._flashlightManager.disableLight()
-
-		this._cameraTween?.kill()
-		this._cameraTween = gsap.to(this._camera.instance.position, {
-			x: this._isFlashlightView ? FLASHLIGHT_VIEW_CAMERA_X : this._camera.options.position.x,
-			duration: 1,
-			ease: 'Power2.inOut',
-			onComplete: () => {
-				if (this._isFlashlightView) this._flashlightManager.enableLight()
-			},
-		})
+		this._flashlightManager.lookAside(!this._flashlightManager.isLookingAside)
 	}
 
 	triggerFarkle() {
@@ -367,6 +382,7 @@ export default class Main {
 		if (this._shooterManager) this._shooterManager.update(timeData)
 		if (this._flashlightManager) this._flashlightManager.update(timeData)
 		if (this._flashlight) this._flashlight.update(timeData)
+		if (this._machineControls) this._machineControls.update(timeData)
 
 		if (this.scoreScreen) this.scoreScreen.update()
 		if (this.combinationsScreen) this.combinationsScreen.update()
@@ -386,8 +402,29 @@ export default class Main {
 	_createEventListeners() {
 		this._unsubscribers = [
 			// any button press starts the tutorial
+			// Any control powers the machine on during the intro
 			bus.on('button', (data) => this.handleButtonInput(data)),
+			bus.on('lever', () => this.handleButtonInput()),
+			bus.on('button-collect', () => this.handleButtonInput()),
 		]
+	}
+
+	// Fits the camera to the screens, buttons and lever, for any window shape
+	_frameMachine() {
+		// World matrices aren't computed before the first render
+		this._scene.updateMatrixWorld(true)
+		const cabinet = this._machine.cabinetModel
+		const box = new Box3()
+		box.expandByObject(this.scoreScreen.model)
+		box.expandByObject(this.combinationsScreen.model)
+		FRAMED_BUTTONS.forEach((name) => box.expandByObject(cabinet.getObjectByName(name)))
+
+		// The lever's knob must stay clickable, but its base can go below the frame
+		const lever = new Box3().expandByObject(cabinet.getObjectByName('MANCHE'))
+		lever.min.y = Math.max(lever.min.y, box.min.y)
+		box.union(lever)
+
+		this._camera.setFraming(box)
 	}
 
 	_disposeEventListeners() {

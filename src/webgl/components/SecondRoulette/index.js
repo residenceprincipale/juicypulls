@@ -133,6 +133,8 @@ export default class SecondRoulette {
 		this._inTimeline?.kill()
 		this._outTimeline?.kill()
 		this._inTimeline = gsap.timeline();
+		// Hidden while parked above the frame, so it never shows at the top of a tall window
+		this.show()
 
 		// Drop animation with smoother ease
 		this._inTimeline.to(this._model.position, {
@@ -167,7 +169,7 @@ export default class SecondRoulette {
 	animateOut() {
 		this._inTimeline?.kill()
 		this._outTimeline?.kill()
-		this._outTimeline = gsap.timeline();
+		this._outTimeline = gsap.timeline({ onComplete: () => this.hide() });
 
 		// Go back up animation with smoother ease
 		this._outTimeline.to(this._model.position, {
@@ -248,6 +250,7 @@ export default class SecondRoulette {
 		// this._model.position.set(0.003, 0.039, -0.038)
 		this._model.scale.set(0.817, 0.816, 0.816)
 		this._scene.add(this._model)
+		this.hide()
 	}
 
 	_createBaseMaterial() {

@@ -2,12 +2,27 @@ import { MeshBasicMaterial } from 'three'
 import { Mesh, Plane } from 'three'
 import { Vector2 } from 'three'
 import Experience from '../core/Experience'
+import bus from 'core/EventBus.js'
 import { Vector3 } from 'three'
 import { PlaneGeometry } from 'three'
 import addTransformDebug from '../utils/addTransformDebug'
 import { MathUtils } from 'three'
 import gsap from 'gsap'
 
+// Pointer x (fraction of the window) that makes the player lean out to the casino, and that brings them back
+const LOOK_ASIDE_EDGE = 0.96
+const LOOK_BACK_EDGE = 0.06
+// Time the pointer must rest on the edge, in ms
+const EDGE_DWELL = 300
+// Camera position of the side view (beside the machine, the torch in view), whatever the machine framing
+const SIDE_VIEW_POSITION = new Vector3(1.36, 0.07, 1.24)
+
+/**
+ * Flashlight (replaces the CCTV of the installation): the player rests the pointer on the right edge to lean out
+ * and look into the casino, then holds the pointer down to switch the torch on and aim it.
+ * The left edge, or any machine input (lever, buttons, collect), brings them back to the machine.
+ * Emits `look-aside {value}`. Off until `enabled` is set (the game sets it once the machine runs).
+ */
 export default class FlashlightManager {
 	constructor(options = {}) {
 		this._flashlightModel = options.flashlightModel
@@ -27,8 +42,14 @@ export default class FlashlightManager {
 			speedX: 0.2, // oscillations per second
 		}
 
-		// The torch starts off: it only lights up in the side view on the casino (Main.toggleFlashlightView)
 		this._enabled = false
+		this._isLookingAside = false
+		this._isInSideView = false
+		this._edgeTime = 0
+
+		// The torch starts off. Intensity rather than visible: hiding the light changes the spot light count and
+		// recompiles every lit material.
+		this._isLightOn = false
 		this._lightIntensity = this._light.intensity
 		this._light.intensity = 0
 
@@ -37,19 +58,63 @@ export default class FlashlightManager {
 		if (this._debug.active) this._createDebug()
 	}
 
-	//Public
-	enableLight() {
-		if (this._enabled) return
-		this._enabled = true
+	/**
+	 * Getters & Setters
+	 */
+	get enabled() {
+		return this._enabled
+	}
 
-		// Intensity rather than visible: hiding the light changes the spot light count and recompiles every lit material
+	set enabled(value) {
+		this._enabled = value
+		if (!value) this.lookAside(false)
+	}
+
+	get isLookingAside() {
+		return this._isLookingAside
+	}
+
+	/**
+	 * Public
+	 */
+	// Slides the camera to the side view on the casino (true) or back to the machine (false)
+	lookAside(value) {
+		if (this._isLookingAside === value) return
+		this._isLookingAside = value
+		this._isInSideView = false
+		this._edgeTime = 0
+		this.disableLight()
+
+		const offset = value ? SIDE_VIEW_POSITION.clone().sub(this._camera.machineView.position) : new Vector3()
+		this._cameraTween?.kill()
+		this._cameraTween = gsap.to(this._camera.viewOffset, {
+			x: offset.x,
+			y: offset.y,
+			z: offset.z,
+			duration: 1,
+			ease: 'power2.inOut',
+			onUpdate: () => this._camera.applyView(),
+			onComplete: () => {
+				this._isInSideView = value
+				// Already holding the pointer down when the camera arrives
+				if (value && this._isPointerDown) this.enableLight()
+			},
+		})
+
+		bus.emit('look-aside', { value })
+	}
+
+	enableLight() {
+		if (this._isLightOn) return
+		this._isLightOn = true
+
 		this._intensityTween?.kill()
 		this._intensityTween = gsap.to(this._light, { intensity: this._lightIntensity, duration: 0.15, ease: 'power1.in' })
 	}
 
 	disableLight() {
-		if (!this._enabled) return
-		this._enabled = false
+		if (!this._isLightOn) return
+		this._isLightOn = false
 
 		// Keeps an intensity changed from the debug panel
 		if (!this._intensityTween?.isActive()) this._lightIntensity = this._light.intensity
@@ -58,12 +123,25 @@ export default class FlashlightManager {
 	}
 
 	update(timeData) {
-		if (!this._enabled) return
 		this._elapsedTime = timeData.elapsedTime
 		this._deltaTime = timeData.deltaTime
 
+		this._updateEdgeLook(timeData.deltaTime)
+
+		if (!this._isLightOn) return
 		this._updateBreathingMovement(this._elapsedTime)
 		this._updateLightPosition()
+	}
+
+	dispose() {
+		this._unsubscribers?.forEach((unsubscribe) => unsubscribe())
+		this._unsubscribers = null
+		window.removeEventListener('pointermove', this._pointerMoveHandler)
+		window.removeEventListener('pointerdown', this._pointerDownHandler)
+		window.removeEventListener('pointerup', this._pointerUpHandler)
+		window.removeEventListener('pointercancel', this._pointerUpHandler)
+		this._cameraTween?.kill()
+		this._intensityTween?.kill()
 	}
 
 	//Private
@@ -130,22 +208,50 @@ export default class FlashlightManager {
 			Math.cos((TWO_PI * this._breathingSettings.speedX * 0.002 * timeElapsed) / 2)
 	}
 
-	//Events
-	_createEventListener() {
-		window.addEventListener('mousemove', this._mouseMoveHandler.bind(this))
-		window.addEventListener('mousedown', this._mouseDownHandler.bind(this))
-		window.addEventListener('mouseup', this._mouseUpHandler.bind(this))
+	// Leans out after the pointer rests on the right edge, comes back after it rests on the left edge
+	_updateEdgeLook(deltaTime) {
+		if (!this._enabled || this._pointerX === undefined) return
+
+		const isOnEdge = this._isLookingAside ? this._pointerX < LOOK_BACK_EDGE : this._pointerX > LOOK_ASIDE_EDGE
+		this._edgeTime = isOnEdge ? this._edgeTime + deltaTime : 0
+		if (this._edgeTime >= EDGE_DWELL) this.lookAside(!this._isLookingAside)
 	}
 
-	_mouseMoveHandler(event) {
+	//Events
+	_createEventListener() {
+		this._pointerMoveHandler = (event) => this._onPointerMove(event)
+		this._pointerDownHandler = (event) => this._onPointerDown(event)
+		this._pointerUpHandler = () => this._onPointerUp()
+		window.addEventListener('pointermove', this._pointerMoveHandler)
+		window.addEventListener('pointerdown', this._pointerDownHandler)
+		window.addEventListener('pointerup', this._pointerUpHandler)
+		window.addEventListener('pointercancel', this._pointerUpHandler)
+
+		// Any machine input brings the player back to the machine
+		const backToMachine = () => this.lookAside(false)
+		this._unsubscribers = [
+			bus.on('lever', backToMachine),
+			bus.on('button', backToMachine),
+			bus.on('button-collect', backToMachine),
+		]
+	}
+
+	_onPointerMove(event) {
+		this._pointerX = event.clientX / window.innerWidth
 		this._mousetargetX = (event.clientX / window.innerWidth) * 2 - 1
 		this._mousetargetY = -(event.clientY / window.innerHeight) * 2 + 1
 	}
-	_mouseDownHandler(event) {
-		if (!this._enabled) return
+
+	_onPointerDown(event) {
+		if (event.button !== 0) return
+		this._isPointerDown = true
+		this._onPointerMove(event)
+		if (this._isInSideView) this.enableLight()
 	}
-	_mouseUpHandler(event) {
-		if (!this._enabled) return
+
+	_onPointerUp() {
+		this._isPointerDown = false
+		this.disableLight()
 	}
 
 	_createDebug() {

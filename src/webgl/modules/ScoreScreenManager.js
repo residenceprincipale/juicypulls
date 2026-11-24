@@ -96,6 +96,16 @@ export default class ScoreScreenManager {
 
 	_loseFinal() {
 		this._screen.hide()
+		this._screen.hideMessage()
+	}
+
+	// Messages without a `screen` go to both screens
+	_showMessage(data) {
+		if (!data.screen || data.screen === 'score') this._screen.showMessage(data)
+	}
+
+	_hideMessage(data = {}) {
+		if (!data.screen || data.screen === 'score') this._screen.hideMessage()
 	}
 
 	_createEventListeners() {
@@ -110,6 +120,8 @@ export default class ScoreScreenManager {
 			bus.on('farkle', () => this._farkle()),
 			bus.on('jackpot', (data) => this._jackpot(data)),
 			bus.on('lose-final', () => this._loseFinal()),
+			bus.on('show-message', (data) => this._showMessage(data)),
+			bus.on('hide-message', (data) => this._hideMessage(data)),
 		]
 	}
 }
