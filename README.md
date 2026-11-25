@@ -18,7 +18,7 @@ pnpm run dev
 - [Three.js](https://threejs.org/)
 - [Vite](https://vitejs.dev/)
 - [Tweakpane](https://cocopon.github.io/tweakpane/)
-- [Glslify](https://github.com/KusStar/vite-plugin-glslify)
+- WebGPU (`WebGPURenderer`, WebGL2 fallback) and [TSL](https://threejs.org/docs/#api/en/nodes/TSL) node materials
 
 ---
 
@@ -56,7 +56,7 @@ pnpm run dev
 
 #### PhongCustomMaterial
 
-- Optimized custom Phong shading with external uniform settings (`materialSettings.js`).
+- Custom Phong shading in TSL, with external uniform settings (`materialSettings.js`). Components add their own shading through `nodes` (see `components/*/nodes/`).
 
 Uniform Types in (`materialSettings.js`) file:
 | Type | Example |

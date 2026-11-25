@@ -1,21 +1,17 @@
 import Experience from 'core/Experience.js'
-import rouletteVertexShader from './shadersRoulette/vertex.glsl';
-import rouletteFragmentShader from './shadersRoulette/fragment.glsl';
-import innerReflectionVertexShader from './shadersInnerReflection/vertex.glsl';
-import innerReflectionFragmentShader from './shadersInnerReflection/fragment.glsl';
-import { BoxGeometry, Mesh, ShaderMaterial, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
+import { BoxGeometry, Mesh, Vector3, MeshBasicMaterial, Vector2, RepeatWrapping, MeshMatcapMaterial, Color, MeshStandardMaterial, DirectionalLight, MeshPhongMaterial, DirectionalLightHelper } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
 import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
+import secondRouletteNodes from './nodes/roulette.js'
 
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
 import baseMaterialUniforms from './baseMaterialSettings.js'
 import flapMaterialUniforms from './flapMaterialSettings.js'
 import innerMaterialUniforms from './innerMaterialSettings.js'
-import innerReflectionMaterialUniforms from './innerReflectionMaterialSettings.js'
 export default class SecondRoulette {
 	constructor() {
 		this._experience = new Experience()
@@ -29,7 +25,6 @@ export default class SecondRoulette {
 		this._createBaseMaterial()
 		this._createFlapMaterial()
 		// this._createInnerMaterial()
-		// this._createInnerReflectionMaterial()
 
 
 		this._createModel()
@@ -286,29 +281,13 @@ export default class SecondRoulette {
 
 	_createRouletteMaterial() {
 		this._rouletteMaterial = new PhongCustomMaterial({
-			vertexShader: rouletteVertexShader,
-			fragmentShader: rouletteFragmentShader,
 			uniforms: rouletteMaterialUniforms,
 			name: 'Roulette Material',
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
-		});
-	}
-
-	_createInnerReflectionMaterial() {
-		this._innerReflectionMaterial = new PhongCustomMaterial({
-			vertexShader: innerReflectionVertexShader,
-			fragmentShader: innerReflectionFragmentShader,
-			// vertexShader: rouletteVertexShader,
-			// fragmentShader: rouletteFragmentShader,
-			uniforms: innerReflectionMaterialUniforms,
-			name: 'Inner Reflection Material',
-			defines: {
-				USE_ROUGHNESS: true,
-				USE_MATCAP: true,
-			},
+			nodes: secondRouletteNodes,
 		});
 	}
 
@@ -357,7 +336,6 @@ export default class SecondRoulette {
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 		addCustomMaterialDebug(folder, flapMaterialUniforms, this._resources, this._flapMaterial)
 		// addCustomMaterialDebug(folder, innerMaterialUniforms, this._resources, this._innerMaterial)
-		// addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
 
 		// Add transform controls for the model
 		addTransformDebug(folder, this._model)

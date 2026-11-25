@@ -1,10 +1,8 @@
 import Experience from 'core/Experience.js'
-import rayVertexShader from './shaders/ray/vertex.glsl'
-import rayFragmentShader from './shaders/ray/fragment.glsl'
+import rayNodes from './nodes/ray.js'
 import {
 	BoxGeometry,
 	Mesh,
-	ShaderMaterial,
 	Vector3,
 	MeshBasicMaterial,
 	Vector2,
@@ -21,7 +19,7 @@ import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
-import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
+import { PhongCustomMaterial, UnlitCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
 import sampleMaterialUniforms from './settings.js'
 import rayMaterialUniforms from './raySettings.js'
@@ -90,12 +88,11 @@ export default class Flashlight {
 	}
 
 	_createRayMaterial() {
-		this._rayMaterial = new PhongCustomMaterial({
-			vertexShader: rayVertexShader,
-			fragmentShader: rayFragmentShader,
+		this._rayMaterial = new UnlitCustomMaterial({
 			uniforms: rayMaterialUniforms,
 			name: 'FlashLight Ray Material',
-			transparent: true,
+			parameters: { transparent: true },
+			nodes: rayNodes,
 		})
 	}
 

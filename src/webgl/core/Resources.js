@@ -5,9 +5,9 @@ import {
 	Object3D,
 	Texture,
 	TextureLoader,
-	WebGLRenderer,
 	RepeatWrapping,
 	VideoTexture,
+	SRGBColorSpace,
 } from 'three'
 import Experience from 'core/Experience.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -111,7 +111,7 @@ export default class Resources extends EventEmitter {
 		this.loaders.gltfLoader.setDRACOLoader(dracoLoader)
 		this.loaders.ktx2Loader = new KTX2Loader()
 		this.loaders.ktx2Loader.setTranscoderPath('/basis/')
-		this.loaders.ktx2Loader.detectSupport(new WebGLRenderer())
+		// detectSupport() needs the initialized renderer: done on the first .ktx2 source (none are listed today)
 		this.loaders.textureLoader = new TextureLoader()
 		this.loaders.cubeTextureLoader = new CubeTextureLoader()
 		this.loaders.fbxLoader = new FBXLoader()
@@ -235,6 +235,10 @@ export default class Resources extends EventEmitter {
 					)
 					break
 				case 'ktx2':
+					if (!this.ktx2SupportDetected) {
+						this.loaders.ktx2Loader.detectSupport(this.experience.renderer.instance)
+						this.ktx2SupportDetected = true
+					}
 					this.loaders.ktx2Loader.load(
 						source.path,
 						(file) => {
@@ -289,6 +293,7 @@ export default class Resources extends EventEmitter {
 					VIDEOS_ARRAY.push(videoElement)
 
 					const videoTexture = new VideoTexture(videoElement)
+					videoTexture.colorSpace = SRGBColorSpace // required by WebGPURenderer
 					this.sourceLoaded(source, videoTexture)
 					break
 				//font (for MSDF)

@@ -4,7 +4,6 @@ import { DirectionalLight, Color, SpotLight, PointLight } from 'three'
 import addLightDebug from 'utils/addLightDebug.js'
 import addPointLightDebug from '@/webgl/utils/addPointLightDebug.js'
 import addSpotLightDebug from '@/webgl/utils/addSpotLightDebug.js'
-import SelectiveLightManager from '@/webgl/modules/SelectiveLightManager.js'
 
 import settingsLight1 from './lightSettings-1.js'
 import settingsLight2 from './lightSettings-2.js'
@@ -28,14 +27,6 @@ export default class LightsMain {
 		this._lightSettings = []
 		this._pointLightSettings = [settingsPointLight1]
 		this._spotLightSettings = [settingsSpotLight1]
-
-		// Initialize selective light manager
-		this._selectiveLightManager = new SelectiveLightManager()
-		this._selectiveLightManager.initializeLights(this._lightSettings)
-		this._selectiveLightManager.updateGlobalUniforms()
-
-		// Make the manager available globally through the experience
-		this._experience.selectiveLightManager = this._selectiveLightManager
 
 		if (this._debug.active) this._createDebug()
 

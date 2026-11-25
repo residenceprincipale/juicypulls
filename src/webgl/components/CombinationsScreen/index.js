@@ -1,13 +1,12 @@
 import Experience from 'core/Experience.js'
-import vertexShader from './shaders/vertex.glsl'
-import fragmentShader from './shaders/fragment.glsl'
+import combinationsScreenNodes from './nodes/screen.js'
 
 import screenSettings from './screenSettings'
 import metalSettings from './metalSettings'
 import ledsSettings from './ledsSettings'
 import ScreenText from 'components/ScreenText/index.js'
 
-import { Color, Mesh, PlaneGeometry, ShaderMaterial } from 'three'
+import { Color, Mesh, PlaneGeometry } from 'three'
 import gsap from 'gsap'
 import { RoughEase } from 'gsap/EasePack'
 gsap.registerPlugin(RoughEase)
@@ -248,8 +247,7 @@ export default class CombinationsScreen {
 				USE_MATCAP: true,
 				USE_AO: false,
 			},
-			vertexShader: vertexShader,
-			fragmentShader: fragmentShader,
+			nodes: combinationsScreenNodes,
 		})
 
 		this._metalMaterial = new PhongCustomMaterial({

@@ -8,14 +8,13 @@ import {
     DoubleSide,
     Box3,
     Vector2,
-    ShaderMaterial,
     Object3D
 } from 'three'
 import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addTransformDebug from '@/webgl/utils/addTransformDebug'
-import faceVertexShader from './shaders/vertex.glsl'
-import faceFragmentShader from './shaders/fragment.glsl'
+import faceNodes from './nodes/face.js'
+import { UnlitCustomMaterial } from '@/webgl/materials/PhongMaterial'
 
 export default class Target {
     constructor(position = new Vector3(-2.661, -0.897, -12.000)) {
@@ -318,15 +317,15 @@ export default class Target {
         this._faceMesh = this._modelPaperFaces.scene.clone()
 
         // Create custom face material with shader
-        this._faceMaterial = new ShaderMaterial({
+        this._faceMaterial = new UnlitCustomMaterial({
+            name: 'Target Face Material',
             uniforms: {
                 uFaceTexture: { value: this._textureFaces },
                 uFaceIndex: { value: Math.floor(Math.random() * 9) }, // Random face (0-8)
                 uOpacity: { value: 1.0 }
             },
-            vertexShader: faceVertexShader,
-            fragmentShader: faceFragmentShader,
-            transparent: true
+            parameters: { transparent: true },
+            nodes: faceNodes,
         })
 
         // Apply the custom material to all meshes in the face model

@@ -1,10 +1,14 @@
 import Experience from 'core/Experience.js'
-import { CineonToneMapping, PCFSoftShadowMap, SRGBColorSpace, WebGLRenderer } from 'three'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { CustomUnrealBloomPass } from 'webgl/vendor/bloom/CustomUnrealBloomPass.js'
+import { CineonToneMapping, PostProcessing, SRGBColorSpace, WebGPURenderer } from 'three/webgpu'
+import { float, mrt, output, pass, uniform } from 'three/tsl'
+import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js'
 import PostProcessingSettings from 'core/PostProcessingSettings.js'
 
+/**
+ * WebGPURenderer (falls back to WebGL2 where WebGPU isn't available; `?force-webgl` forces the fallback).
+ * Selective bloom: the scene pass writes a `bloomIntensity` target next to the color, 0 by default and 1 for
+ * meshes with `userData.renderBloom = true` (see `#syncBloomFlags`). The bloom only blurs color × intensity.
+ */
 export default class Renderer {
 	constructor() {
 		this.experience = new Experience()
@@ -18,40 +22,38 @@ export default class Renderer {
 	}
 
 	setInstance() {
-		this.instance = new WebGLRenderer({
+		this.instance = new WebGPURenderer({
 			canvas: this.canvas,
 			powerPreference: 'high-performance',
 			alpha: true,
+			forceWebGL: new URLSearchParams(location.search).has('force-webgl'),
 		})
 		this.instance.outputColorSpace = SRGBColorSpace
 		this.instance.toneMapping = CineonToneMapping
 		this.instance.toneMappingExposure = 1.75
-		this.instance.shadowMap.enabled = true
-		this.instance.shadowMap.type = PCFSoftShadowMap
 		this.instance.setClearColor('#211d20')
 		this.instance.setSize(this.sizes.width, this.sizes.height)
 		this.instance.setPixelRatio(this.sizes.pixelRatio)
+
+		// The renderer initializes asynchronously (WebGPU device); frames are skipped until it's ready
+		this.isReady = false
+		this.instance.init().then(() => {
+			this.isReady = true
+			console.info(`Renderer: ${this.instance.backend.isWebGPUBackend ? 'WebGPU' : 'WebGL2 fallback'}`)
+		})
 	}
 
 	resize() {
 		this.instance.setSize(this.sizes.width, this.sizes.height)
 		this.instance.setPixelRatio(this.sizes.pixelRatio)
-
-		// Resize composer
-		if (this.composer) {
-			this.composer.setSize(this.sizes.width, this.sizes.height)
-		}
-
-		// Resize bloom pass
-		if (this.bloomPass) {
-			this.bloomPass.setSize(this.sizes.width, this.sizes.height)
-		}
 	}
 
 	update() {
-		// Use composer if available, otherwise render directly
-		if (this.composer) {
-			this.composer.render()
+		if (!this.isReady) return
+
+		if (this.postProcessing) {
+			this.#syncBloomFlags()
+			this.postProcessing.render()
 		} else {
 			this.instance.render(this.scene, this.camera.instance)
 		}
@@ -66,14 +68,12 @@ export default class Renderer {
 	}
 
 	createPostProcessing() {
-		// Clear any existing composer
-		this.composer = null
+		this.postProcessing = null
 		this.bloomPass = null
 
 		const sceneName = this.getCurrentSceneName()
 		const bloomSettings = this.postProcessingSettings.getBloomSettings(sceneName)
 
-		// Only create post-processing if there are passes to use
 		if (!bloomSettings || !bloomSettings.enabled) {
 			console.log('No post-processing passes needed, using direct rendering')
 			return
@@ -83,35 +83,46 @@ export default class Renderer {
 	}
 
 	createBloomPostProcessing(bloomSettings) {
-		this.composer = new EffectComposer(this.instance)
+		this.scenePass = pass(this.scene, this.camera.instance)
+		this.scenePass.setMRT(mrt({ output, bloomIntensity: float(0) }))
 
-		// Add render pass
-		const renderPass = new RenderPass(this.scene, this.camera.instance)
-		this.composer.addPass(renderPass)
+		const sceneColor = this.scenePass.getTextureNode('output')
+		const bloomIntensity = this.scenePass.getTextureNode('bloomIntensity')
 
-		// Create and configure bloom pass
-		this.bloomPass = new CustomUnrealBloomPass({
-			type: bloomSettings.type,
-			strength: bloomSettings.strength,
-			radius: bloomSettings.radius,
-			threshold: bloomSettings.threshold,
-			smoothWidth: bloomSettings.smoothWidth,
-			resolution: bloomSettings.resolution,
-			camera: this.camera.instance,
-			scene: this.scene,
-			dpr: this.sizes.pixelRatio,
-		})
+		this.bloomPass = bloom(
+			sceneColor.mul(bloomIntensity),
+			bloomSettings.strength,
+			bloomSettings.radius,
+			bloomSettings.threshold,
+		)
+		this.sceneColor = sceneColor
 
-		this.composer.addPass(this.bloomPass)
+		this.postProcessing = new PostProcessing(this.instance)
+		this.#setBloomEnabled(true)
 
-		// Set initial size
-		this.composer.setSize(this.sizes.width, this.sizes.height)
-		this.bloomPass.setSize(this.sizes.width, this.sizes.height)
-
-		// Add debug controls if debug is active
 		if (this.experience.debug.active) {
 			this.addBloomDebugControls(bloomSettings)
 		}
+	}
+
+	#setBloomEnabled(value) {
+		this.postProcessing.outputNode = value ? this.sceneColor.add(this.bloomPass) : this.sceneColor
+		this.postProcessing.needsUpdate = true
+	}
+
+	// Gives the materials of flagged meshes a bloom intensity output, driven by the flag (no recompile on toggle)
+	#syncBloomFlags() {
+		this.scene.traverse((object) => {
+			if (object.userData.renderBloom === undefined || !object.material) return
+
+			const material = object.material
+			if (!material.userData.bloomIntensity) {
+				material.userData.bloomIntensity = uniform(0)
+				material.mrtNode = mrt({ bloomIntensity: material.userData.bloomIntensity })
+				material.needsUpdate = true
+			}
+			material.userData.bloomIntensity.value = object.userData.renderBloom && object.visible ? 1 : 0
+		})
 	}
 
 	addBloomDebugControls(bloomSettings) {
@@ -125,9 +136,7 @@ export default class Renderer {
 				label: 'Enabled',
 			})
 			.on('change', (ev) => {
-				if (this.bloomPass) {
-					this.bloomPass.enabled = ev.value
-				}
+				if (this.bloomPass) this.#setBloomEnabled(ev.value)
 			})
 
 		folder
@@ -138,9 +147,7 @@ export default class Renderer {
 				step: 0.01,
 			})
 			.on('change', (ev) => {
-				if (this.bloomPass) {
-					this.bloomPass.strength = ev.value
-				}
+				if (this.bloomPass) this.bloomPass.strength.value = ev.value
 			})
 
 		folder
@@ -151,9 +158,7 @@ export default class Renderer {
 				step: 0.01,
 			})
 			.on('change', (ev) => {
-				if (this.bloomPass) {
-					this.bloomPass.radius = ev.value
-				}
+				if (this.bloomPass) this.bloomPass.radius.value = ev.value
 			})
 
 		folder
@@ -164,9 +169,7 @@ export default class Renderer {
 				step: 0.01,
 			})
 			.on('change', (ev) => {
-				if (this.bloomPass) {
-					this.bloomPass.threshold = ev.value
-				}
+				if (this.bloomPass) this.bloomPass.threshold.value = ev.value
 			})
 
 		folder
@@ -177,9 +180,7 @@ export default class Renderer {
 				step: 0.01,
 			})
 			.on('change', (ev) => {
-				if (this.bloomPass) {
-					this.bloomPass.smoothWidth = ev.value
-				}
+				if (this.bloomPass) this.bloomPass.smoothWidth.value = ev.value
 			})
 
 		// Add copy settings button
@@ -247,33 +248,14 @@ export default class Renderer {
 
 	// Method to update camera references in postprocessing
 	updateCameraReferences() {
-		if (!this.composer) return
-
-		this.composer.passes.forEach((pass) => {
-			if (pass.camera) {
-				pass.camera = this.camera.instance
-			}
-		})
-
-		// Update bloom pass camera reference
-		if (this.bloomPass && this.bloomPass._camera) {
-			this.bloomPass._camera = this.camera.instance
-		}
-
-		console.log('Updated camera references in postprocessing')
+		if (this.scenePass) this.scenePass.camera = this.camera.instance
 	}
 
 	dispose() {
-		// Dispose composer
-		if (this.composer) {
-			this.composer.dispose()
-			this.composer = null
-		}
-
-		// Dispose bloom pass
-		if (this.bloomPass) {
-			this.bloomPass.dispose()
-			this.bloomPass = null
-		}
+		this.postProcessing?.dispose()
+		this.postProcessing = null
+		this.bloomPass?.dispose()
+		this.bloomPass = null
+		this.instance.dispose()
 	}
 }

@@ -1,8 +1,6 @@
 import Experience from 'core/Experience.js'
-import vertexShader from './shaders/vertex.glsl'
-import fragmentShader from './shaders/fragment.glsl'
-import characterVertexShader from './shadersCharacters/vertex.glsl'
-import characterFragmentShader from './shadersCharacters/fragment.glsl'
+import scoreScreenNodes from './nodes/screen.js'
+import charactersNodes, { packCharacterAttributes } from './nodes/characters.js'
 
 import screenSettings from './screenSettings'
 import screenCharactersSettings from './screenCharactersSettings'
@@ -296,6 +294,7 @@ export default class ScoreScreen {
 			}
 			if (child.name === 'screenCharacters-score') {
 				this._charactersMesh = child
+				packCharacterAttributes(child.geometry)
 				this._charactersMesh.material = this._charactersMaterial
 			}
 			if (child.name === 'metal-score') {
@@ -337,8 +336,7 @@ export default class ScoreScreen {
 				USE_MATCAP: true,
 				USE_AO: false,
 			},
-			vertexShader: vertexShader,
-			fragmentShader: fragmentShader,
+			nodes: scoreScreenNodes,
 		})
 
 		this._charactersMaterial = new PhongCustomMaterial({
@@ -350,8 +348,7 @@ export default class ScoreScreen {
 				USE_MATCAP: true,
 				USE_AO: false,
 			},
-			vertexShader: characterVertexShader,
-			fragmentShader: characterFragmentShader,
+			nodes: charactersNodes,
 		})
 
 		this._metalMaterial = new PhongCustomMaterial({

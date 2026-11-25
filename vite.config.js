@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import glslify from 'vite-plugin-glslify'
 import path from 'path'
 
 export default defineConfig({
@@ -16,15 +15,16 @@ export default defineConfig({
 		},
 	},
 	resolve: {
-		alias: {
-			'@': path.resolve(__dirname, 'src'),
-			webgl: path.resolve(__dirname, 'src/webgl'),
-			utils: path.resolve(__dirname, 'src/webgl/utils'),
-			scenes: path.resolve(__dirname, 'src/webgl/scenes'),
-			components: path.resolve(__dirname, 'src/webgl/components'),
-			core: path.resolve(__dirname, 'src/webgl/core'),
-		},
+		alias: [
+			// Everything (the game and the three/examples addons) imports the WebGPU build, so there's one Three.js instance
+			{ find: /^three$/, replacement: 'three/webgpu' },
+			{ find: '@', replacement: path.resolve(__dirname, 'src') },
+			{ find: 'webgl', replacement: path.resolve(__dirname, 'src/webgl') },
+			{ find: 'utils', replacement: path.resolve(__dirname, 'src/webgl/utils') },
+			{ find: 'scenes', replacement: path.resolve(__dirname, 'src/webgl/scenes') },
+			{ find: 'components', replacement: path.resolve(__dirname, 'src/webgl/components') },
+			{ find: 'core', replacement: path.resolve(__dirname, 'src/webgl/core') },
+		],
 	},
-	plugins: [glslify()],
 	envDir: path.resolve(__dirname),
 })

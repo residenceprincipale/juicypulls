@@ -2,7 +2,7 @@ export default class PostProcessingSettings {
 	constructor() {
 		this.sceneSettings = {
 			main: {
-				// SELECTIVE: only meshes with `userData.renderBloom = true` bloom (threshold and smoothWidth unused)
+				// SELECTIVE: only meshes with `userData.renderBloom = true` bloom (core/Renderer.js)
 				bloom: {
 					enabled: true,
 					type: 'SELECTIVE', // 'LUMINOSITY', 'SELECTIVE', 'TEXTURE'

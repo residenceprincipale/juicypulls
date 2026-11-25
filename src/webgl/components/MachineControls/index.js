@@ -8,7 +8,8 @@ const BUTTON_KEY_CODES = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5']
 // LED colors of the original cabinet's buttons
 const BUTTON_COLORS = ['#ffff00', '#ff0000', '#0000ff', '#00ff40', '#ff00f0']
 const COLLECT_COLOR = '#ffffff'
-const GLOW_INTENSITY = 0.6
+// Emissive strength of a glowing button (the lit color is clamped, so this saturates it for the bloom)
+const GLOW_INTENSITY = 3
 // Travel of a pressed button along its own axis, in meters
 const PRESS_DEPTH = 0.008
 // Lever swing toward the player, in radians
@@ -111,7 +112,6 @@ export default class MachineControls {
 		;[...this._buttons, this._collect].forEach((control) => {
 			control.pressTimeline?.kill()
 			control.mesh.material.dispose()
-			control.bloomMaterial.dispose()
 		})
 	}
 
@@ -126,17 +126,14 @@ export default class MachineControls {
 	}
 
 	_createControl(mesh, color) {
-		// Own material for the glow, sharing every other uniform with the cabinet material (so its debug still applies)
-		const sharedMaterial = mesh.material
-		mesh.material = sharedMaterial.clone()
-		mesh.material.uniforms = { ...sharedMaterial.uniforms, uEmissiveColor: { value: new Color(0x000000) } }
+		// Own copy of the cabinet material for the glow (debug changes to the cabinet material don't reach it)
+		mesh.material = mesh.material.clone()
 
 		const direction = new Vector3(0, 0, 1).applyQuaternion(mesh.quaternion)
 
 		return {
 			mesh,
 			color: new Color(color),
-			bloomMaterial: new MeshBasicMaterial({ color }),
 			isGlowing: false,
 			restPosition: mesh.position.clone(),
 			pressedPosition: mesh.position.clone().addScaledVector(direction, PRESS_DEPTH),
@@ -153,7 +150,6 @@ export default class MachineControls {
 		const size = box.getSize(new Vector3())
 		this._leverHitArea = new Mesh(new BoxGeometry(size.x, size.y, size.z), new MeshBasicMaterial({ visible: false }))
 		this._leverHitArea.name = 'lever hit area'
-		this._leverHitArea.userData.renderBloom = false
 		box.getCenter(this._leverHitArea.position)
 		this._lever.add(this._leverHitArea)
 	}
@@ -165,13 +161,10 @@ export default class MachineControls {
 		const emissive = control.mesh.material.uniforms.uEmissiveColor.value
 		if (value) {
 			emissive.copy(control.color).multiplyScalar(GLOW_INTENSITY)
-			control.mesh.userData.renderBloom = true
-			control.mesh.userData.bloomMaterial = control.bloomMaterial
 		} else {
 			emissive.setRGB(0, 0, 0)
-			delete control.mesh.userData.renderBloom
-			delete control.mesh.userData.bloomMaterial
 		}
+		control.mesh.userData.renderBloom = value
 	}
 
 	_animatePress(control) {

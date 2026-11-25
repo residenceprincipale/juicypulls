@@ -1,16 +1,7 @@
 import Experience from 'core/Experience.js'
-import rouletteVertexShader from './shadersRoulette/vertex.glsl'
-import rouletteFragmentShader from './shadersRoulette/fragment.glsl'
-import innerReflectionVertexShader from './shadersInnerReflection/vertex.glsl'
-import innerReflectionFragmentShader from './shadersInnerReflection/fragment.glsl'
-import ledsVertexShader from './shadersLeds/vertex.glsl'
-import ledsFragmentShader from './shadersLeds/fragment.glsl'
-import innerLedsVertexShader from './shadersInnerLeds/vertex.glsl'
-import innerLedsFragmentShader from './shadersInnerLeds/fragment.glsl'
 import {
 	BoxGeometry,
 	Mesh,
-	ShaderMaterial,
 	Vector3,
 	MeshBasicMaterial,
 	Vector2,
@@ -27,13 +18,14 @@ import gsap from 'gsap'
 import addObjectDebug from 'utils/addObjectDebug.js'
 import addMaterialDebug from '@/webgl/utils/addMaterialDebug'
 import addCustomMaterialDebug from '@/webgl/utils/addCustomMaterialDebug'
-import { PhongCustomMaterial } from '@/webgl/materials/PhongMaterial'
+import { PhongCustomMaterial, UnlitCustomMaterial } from '@/webgl/materials/PhongMaterial'
+import rouletteNodes from './nodes/roulette.js'
+import { innerLedsNodes, ledsNodes } from './nodes/leds.js'
 
 import rouletteMaterialUniforms from './rouletteMaterialSettings.js'
 import baseMaterialUniforms from './baseMaterialSettings.js'
 import goldMaterialUniforms from './goldMaterialSettings.js'
 import goldLogoMaterialUniforms from './goldLogoMaterialSettings.js'
-import innerReflectionMaterialUniforms from './innerReflectionMaterialSettings.js'
 export default class Machine {
 	constructor() {
 		this._experience = new Experience()
@@ -48,7 +40,6 @@ export default class Machine {
 		this._createBaseMaterial()
 		this._createGoldMaterial()
 		this._createGoldLogoMaterial()
-		// this._createInnerReflectionMaterial()
 		this._createLedsMaterial()
 		this._createInnerLedsMaterial()
 		this._createModel()
@@ -698,7 +689,6 @@ export default class Machine {
 
 		this._wheels.forEach((wheel, index) => {
 			wheel.rotation = this._rouletteMaterial.uniforms[`uRotation${index}`]
-			// this._innerReflectionMaterial.uniforms[`uRotation${index}`] = wheel.rotation
 			// wheel.rotation.value = (1.0 / this._segments) / 2
 		})
 	}
@@ -719,27 +709,13 @@ export default class Machine {
 
 	_createRouletteMaterial() {
 		this._rouletteMaterial = new PhongCustomMaterial({
-			vertexShader: rouletteVertexShader,
-			fragmentShader: rouletteFragmentShader,
 			uniforms: rouletteMaterialUniforms,
 			name: 'Roulette Material',
 			defines: {
 				USE_ROUGHNESS: true,
 				USE_MATCAP: true,
 			},
-		})
-	}
-
-	_createInnerReflectionMaterial() {
-		this._innerReflectionMaterial = new PhongCustomMaterial({
-			vertexShader: innerReflectionVertexShader,
-			fragmentShader: innerReflectionFragmentShader,
-			uniforms: innerReflectionMaterialUniforms,
-			name: 'Inner Reflection Material',
-			defines: {
-				USE_ROUGHNESS: true,
-				USE_MATCAP: true,
-			},
+			nodes: rouletteNodes,
 		})
 	}
 
@@ -768,11 +744,10 @@ export default class Machine {
 	}
 
 	_createLedsMaterial() {
-		this._ledsMaterial = new ShaderMaterial({
-			vertexShader: ledsVertexShader,
-			fragmentShader: ledsFragmentShader,
+		this._ledsMaterial = new UnlitCustomMaterial({
 			name: 'Leds Material',
-			transparent: true,
+			parameters: { transparent: true },
+			nodes: ledsNodes,
 			uniforms: {
 				uColor: { value: new Color(0xffffff) },
 				uOpacity: { value: 1.0 },
@@ -785,11 +760,10 @@ export default class Machine {
 	_createInnerLedsMaterial() {
 		this._defaultWheelLockColor = '#ffe161'
 
-		this._innerWheelsLedsMaterial = new ShaderMaterial({
-			vertexShader: innerLedsVertexShader,
-			fragmentShader: innerLedsFragmentShader,
+		this._innerWheelsLedsMaterial = new UnlitCustomMaterial({
 			name: 'Inner Leds Material',
-			transparent: true,
+			parameters: { transparent: true },
+			nodes: innerLedsNodes,
 			uniforms: {
 				uColor: { value: new Color(0xffffff) },
 				uOpacity: { value: 1 },
@@ -870,6 +844,5 @@ export default class Machine {
 		addCustomMaterialDebug(folder, baseMaterialUniforms, this._resources, this._baseMaterial)
 		addCustomMaterialDebug(folder, goldMaterialUniforms, this._resources, this._goldMaterial)
 		addCustomMaterialDebug(folder, goldLogoMaterialUniforms, this._resources, this._goldLogoMaterial)
-		// addCustomMaterialDebug(folder, innerReflectionMaterialUniforms, this._resources, this._innerReflectionMaterial)
 	}
 }

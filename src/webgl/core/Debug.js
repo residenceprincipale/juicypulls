@@ -589,10 +589,6 @@ export default class Debug {
 				value: () => this.experience.renderer.instance.info.memory.geometries,
 			},
 			{
-				name: 'Materials',
-				value: () => this.experience.renderer.instance.info.programs.length,
-			},
-			{
 				name: 'Textures',
 				value: () => this.experience.renderer.instance.info.memory.textures,
 			},

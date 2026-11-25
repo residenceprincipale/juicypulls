@@ -28,9 +28,10 @@ export default function addCustomMaterialDebug(folder, settings, resources, mate
     });
 }
 
+// The uniforms are TSL nodes: changing `.value` is enough, no material rebuild
 function updateMaterial({ material, element, key, settings }) {
-    if (typeof element.value === 'string' && element.value.includes('#')) {
-        material.uniforms[key].value.set(element.value);
+    if (typeof element.value === 'string') {
+        material.uniforms[key].value.set(element.value.startsWith('0x') ? parseInt(element.value) : element.value);
     } else if (element.value.z !== undefined) {
         material.uniforms[key].value.set(element.value.x, element.value.y, element.value.z);
     } else if (element.value.y !== undefined) {
@@ -38,14 +39,8 @@ function updateMaterial({ material, element, key, settings }) {
     } else {
         material.uniforms[key].value = element.value;
     }
-    material.needsUpdate = true;
 }
 
-function updateImages({ material, key, value, isAdditionalUniforms }) {
-    if (isAdditionalUniforms) {
-        material.uniforms[key].value = value;
-    } else {
-        material.uniforms[key].value.map = value;
-    }
-    material.needsUpdate = true;
+function updateImages({ material, key, value }) {
+    material.uniforms[key].value = value;
 }

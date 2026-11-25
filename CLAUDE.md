@@ -10,6 +10,7 @@ It started as a physical installation (cabinet with a lever, 5 hold buttons, a c
 - No tests and no linter, only Prettier + `.editorconfig`. Check changes in the browser.
 - `#debug` in the URL turns on Tweakpane, stats, and a "Game Events" folder (rigged spins, shooter and lose triggers).
 - `?skip-intro` skips the intro and tutorial and starts a game at once (10 jetons, quota 200). The headless checks use it.
+- `?force-webgl` forces the renderer's WebGL2 fallback (it's used automatically where WebGPU isn't available).
 - Controls (`components/MachineControls`, on the cabinet model's own meshes `BOUTON_1–5`, `BOUTON_COLLECT`, `MANCHE`):
   - Click or tap the lever, the hold buttons and the collect button. Keyboard: Space = lever, Enter = collect, number row = hold buttons 0–4 (matched by physical key: AZERTY `& é " ' (`, QWERTY `1–5`).
   - A hold button glows in its cabinet LED color while its wheel is held, the collect button while there are points to bank.
@@ -17,7 +18,9 @@ It started as a physical installation (cabinet with a lever, 5 hold buttons, a c
 
 ## Stack
 
-Vite 6 (root `src/pages`, single entry `index.html`; static files in `public/`), Three.js r181 with `WebGLRenderer`, GLSL through `vite-plugin-glslify`, GSAP, Howler, Tweakpane 4. Plain JS ES modules, no TypeScript (`jsconfig.json` only declares the aliases).
+Vite 6 (root `src/pages`, single entry `index.html`; static files in `public/`), Three.js r181 with `WebGPURenderer` and TSL node materials (no GLSL left), GSAP, Howler, Tweakpane 4. Plain JS ES modules, no TypeScript (`jsconfig.json` only declares the aliases).
+
+`vite.config.js` aliases `three` to `three/webgpu`, so the game and the `three/examples` addons share one Three.js instance. Import TSL functions from `three/tsl`. WebGL-only APIs (`WebGLRenderer`, `ShaderChunk`, `UniformsLib`, `EffectComposer`) aren't available.
 
 `three-msdf-text-utils` is a dependency but isn't imported (it's kept for future screen text). Its default build `require()`s a second copy of Three plus the WebGPU build, so check for the "Multiple instances of Three.js" warning when you import it.
 
@@ -36,8 +39,8 @@ Vite 6 (root `src/pages`, single entry `index.html`; static files in `public/`),
   - `MachineManager` holds the Farkle rules.
   - The others are `ShooterManager`, `TutorialManager`, `FlashLightManager`, and `ScoreScreenManager` / `CombinationsScreenManager`, which drive the two screens.
   - `screenSymbols.js` maps symbols to screen rows and tints.
-- `materials/PhongMaterial`: `PhongCustomMaterial`, a `ShaderMaterial` built on three `ShaderChunk` includes (lights + fog), used by most meshes.
-- `shaders/chunks/` holds the custom light chunks, and `vendor/bloom/` the selective `CustomUnrealBloomPass`.
+- `materials/PhongMaterial`: `PhongCustomMaterial` (a `MeshPhongNodeMaterial` with the project's lighting model), used by most meshes, and `UnlitCustomMaterial` (LEDs, torch beam, targets). Both build their nodes from a settings file, plus optional per-component `nodes`.
+- `core/Renderer.js`: `WebGPURenderer` and the TSL post-processing (selective bloom).
 - `utils/`: `add*Debug` Tweakpane helpers, `AnimationController` (AnimationMixer wrapper), `GltfClone`, `InputManager` (keyboard/mouse singleton).
 - `src/pages/script.js` is the entry point. It also handles the DOM overlays: the subliminal messages, and the screamer video on `lose-final`.
 
@@ -56,12 +59,15 @@ Vite 6 (root `src/pages`, single entry `index.html`; static files in `public/`),
   - Value types: a `'#hex'` or `'0x..'` string is a color, any other string is a texture name from resources, and `{x,y}` / `{x,y,z}` become vectors.
   - In `#debug`, the "Copy settings" button (`addCustomMaterialDebug`, `addLightDebug`) produces the new file content, so keep this shape to preserve the copy-paste round trip.
   - Bloom settings live in `core/PostProcessingSettings.js`.
-- Shaders: `shaders/vertex.glsl` + `fragment.glsl` per component, or `shadersXxx/` folders when a component has several. Uniforms are named `uName`, varyings `vName`. Feature defines: `USE_ROUGHNESS`, `USE_MATCAP`, `USE_AO`, `USE_POINT_LIGHTS`, `USE_SPOT_LIGHTS`, `SELECTIVE_DIR_LIGHTS`.
-  - Lit shaders include the custom light chunks (`custom_lights_phong_pars_fragment` / `custom_lights_phong_fragment`), whose ambient is `uAmbientColor`. Three's stock light chunks ignore it, and with no ambient or directional light in the scene they render black (only `BackgroundEnvironment` uses them, on purpose).
+- Shading is TSL. A component's custom shading lives in `components/<Name>/nodes/*.js`: a function of the material's uniforms, passed as `nodes`.
+  - For `PhongCustomMaterial` it returns any of `{ diffuse, roughness, specularStrength, opacity, post(color, { matcap, aoColor }) }`. For `UnlitCustomMaterial`, `{ color, opacity }`.
+  - `material.uniforms.uName` are TSL uniform/texture nodes with a `.value`, so game code, GSAP tweens and the debug panel change them live (no `needsUpdate`). `material.clone()` gives the clone its own uniforms.
+  - `defines` are feature flags read in JS: `USE_ALBEDO`, `USE_ROUGHNESS`, `USE_MATCAP`, `USE_AO`, `USE_NORMAL`, plus `USE_POINT_LIGHTS` / `USE_SPOT_LIGHTS` (which scene lights reach the material, see `docs/SelectiveLighting.md`).
+  - The ambient term is the material's `uAmbientColor` × `uAmbientIntensity` (on its emissive node), not a scene light. A feature whose texture the settings don't define samples black, like the old GLSL; `#debug` warns about it (today: Flashlight roughness, Gun AO).
 - Assets: list them in `scenes/Main/sources.json`.
   - Fields: `name`, a `path` relative to `public/` such as `./textures/x.jpg`, and optional `flipY`, `repeatWrapping`, `colorSpace`, `loop`, `volume`, `autoplay`. The file extension picks the loader.
   - Read them via `this._scene.resources.items.<name>`. Names are camelCase with a type suffix (`machineModel`, `farkleAudio`, `goldMatcap`). Audio items are Howl instances.
-- Bloom is selective: set `mesh.userData.renderBloom = true` on meshes that should glow.
+- Bloom is selective: set `mesh.userData.renderBloom = true` (or false) on meshes that should glow. The renderer gives their material a `bloomIntensity` output, so meshes sharing a material glow together.
 - Timing goes through GSAP (`gsap.delayedCall`, timelines), not `setTimeout`. Kill a stored timeline before recreating it (`this._tl?.kill()`).
 - Comments and some names mix French and English.
 
@@ -123,14 +129,12 @@ Vite 6 (root `src/pages`, single entry `index.html`; static files in `public/`),
 ## Roadmap
 
 1. Cleanup + single-page web version. **Done.**
-2. WebGPU port at visual parity (see below). **Not started.**
-3. Web features: 3D buttons, screen text, camera framing for any window shape, flashlight look-to-the-side, tutorial back on, audio unlock on first input. **Done, on the WebGL stack** (before step 2, so not in TSL). The new pieces use `MeshBasicMaterial` and canvas textures, so they add no GLSL to port.
+2. WebGPU port (TSL). **Done**; the look is close to the WebGL version but not pixel-identical (bloom especially).
+3. Web features: 3D buttons, screen text, camera framing for any window shape, flashlight look-to-the-side, tutorial back on, audio unlock on first input. **Done** (before step 2, on WebGL, then ported).
 
-## WebGPU migration: what is tied to WebGL
+## WebGPU notes
 
-- `core/Renderer.js` uses `WebGLRenderer`, plus three `EffectComposer` + `CustomUnrealBloomPass` for the selective bloom.
-- Every custom material is a GLSL `ShaderMaterial`, mostly built on three `ShaderChunk` `#include`s: `PhongCustomMaterial`, 12 component shader pairs, and the custom light chunks in `shaders/chunks/`. `WebGPURenderer` can't run them, so they need porting to node materials / TSL (`three/webgpu`, `three/tsl`). The settings-file and debug-panel workflow should keep working after the port.
-- Also tied to WebGL:
-  - `Resources` creates a throwaway `new WebGLRenderer()` for `ktx2Loader.detectSupport`.
-  - `Debug` stats read `renderer.info.programs`.
-- `vite-plugin-glslify` can be removed once the GLSL is gone.
+- WebGPU allows 8 vertex buffers per mesh: the score digits model had 10 attributes, so `packCharacterAttributes` (`ScoreScreen/nodes/characters.js`) packs its flags into two.
+- Video textures must be `SRGBColorSpace` (set in `Resources`).
+- The renderer initializes asynchronously: frames are skipped until `renderer.isReady`.
+- `KTX2Loader.detectSupport` needs the initialized renderer, so it runs on the first `.ktx2` source (none are listed today).

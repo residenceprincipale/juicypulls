@@ -2,7 +2,6 @@ import Experience from 'core/Experience.js'
 import {
     BoxGeometry,
     Mesh,
-    ShaderMaterial,
     Vector3,
     MeshBasicMaterial,
     Vector2,
